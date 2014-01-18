@@ -27,3 +27,11 @@ TravelCost.prototype.getType = function() {
 TravelCost.prototype.getValue = function() {
   throw new Error("Interface Implementation");
 };
+
+/**
+ * @return {everoute.travel.TravelCost} The resulting cost from this and other.
+ * @memberof! everoute.universe.TravelCost.prototype
+ */
+TravelCost.prototype.join = function(other) {
+  throw new Error("Interface Implementation");
+};

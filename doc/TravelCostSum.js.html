@@ -33,11 +33,70 @@
  *
  * @constructor
  * @memberof everoute.travel
+ * @param {Object.&lt;String, TravelCost>} [initCosts] optional initial costs
  */
-function TravelCostSum() {
-  this.costs = {};
+function TravelCostSum(initCosts) {
+  this.costs = initCosts || {};
 }
 
+/**
+ * Returns a contained cost of the same type as given cost or the given cost
+ * if this type is unknown.
+ *
+ * @param {everoute.travel.TravelCost} nullCost The cost to default to
+ * @return {everoute.travel.TravelCost} The corresponing cost
+ * @memberof! everoute.travel.TravelCostSum.prototype
+ */
+TravelCostSum.prototype.getCost = function(nullCost) {
+  return this.costs[nullCost.getType()] || nullCost;
+};
+
+/**
+ * @return {Array.&lt;everoute.travel.TravelCost>} Array of all costs in this sum.
+ * @memberof! everoute.travel.TravelCostSum.prototype
+ */
+TravelCostSum.prototype.getTotal = function() {
+  var result = [];
+  var key;
+
+  for (key in this.costs) {
+    if (this.costs.hasOwnProperty(key)) {
+      result.push(this.costs[key]);
+    }
+  }
+
+  return result;
+};
+
+/**
+ * Adds an array of costs to the current sum, returning a new sum.
+ *
+ * @param {Array.&lt;everoute.travel.TravelCost>} costs Array of costs to add.
+ * @memberof! everoute.travel.TravelCostSum.prototype
+ */
+TravelCostSum.prototype.add = function(costs) {
+  var oldCosts = this.costs;
+  var newCosts = {};
+  var key;
+
+  costs.forEach(function(cost) {
+    var type = cost.getType();
+
+    if (oldCosts.hasOwnProperty(type)) {
+      newCosts[type] = cost.join(oldCosts[type]);
+    } else {
+      newCosts[type] = cost;
+    }
+  });
+
+  for (key in this.costs) {
+    if (this.costs.hasOwnProperty(key) && !newCosts.hasOwnProperty(key)) {
+      newCosts[key] = this.costs[key];
+    }
+  }
+
+  return new TravelCostSum(newCosts);
+};
 
 module.exports = TravelCostSum;
 </code></pre>
@@ -50,13 +109,13 @@ module.exports = TravelCostSum;
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="everoute.travel.AnyLocation.html">AnyLocation</a></li><li><a href="everoute.travel.Jump.html">Jump</a></li><li><a href="everoute.travel.JumpBuilder.html">JumpBuilder</a></li><li><a href="everoute.travel.Location.html">Location</a></li><li><a href="everoute.travel.SpecificLocation.html">SpecificLocation</a></li><li><a href="everoute.travel.TravelCost.html">TravelCost</a></li><li><a href="everoute.travel.TravelCostSum.html">TravelCostSum</a></li><li><a href="everoute.universe.EmptySolarSystem.html">EmptySolarSystem</a></li><li><a href="everoute.universe.EmptyUniverse.html">EmptyUniverse</a></li><li><a href="everoute.universe.ExtendedSolarSystem.html">ExtendedSolarSystem</a></li><li><a href="everoute.universe.ExtendedUniverse.html">ExtendedUniverse</a></li><li><a href="everoute.universe.SolarSystem.html">SolarSystem</a></li><li><a href="everoute.universe.SolarSystemExtension.html">SolarSystemExtension</a></li><li><a href="everoute.universe.SolarSystemExtensionData.html">SolarSystemExtensionData</a></li><li><a href="everoute.universe.Universe.html">Universe</a></li><li><a href="everoute.universe.UniverseBuilder.html">UniverseBuilder</a></li><li><a href="everoute.universe.UniverseExtensionData.html">UniverseExtensionData</a></li></ul><h3>Namespaces</h3><ul><li><a href="everoute.html">everoute</a></li><li><a href="everoute.travel.html">travel</a></li><li><a href="everoute.universe.html">universe</a></li><li><a href="everoute.util.html">util</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="everoute.travel.AddingTravelCost.html">AddingTravelCost</a></li><li><a href="everoute.travel.AnyLocation.html">AnyLocation</a></li><li><a href="everoute.travel.Jump.html">Jump</a></li><li><a href="everoute.travel.JumpBuilder.html">JumpBuilder</a></li><li><a href="everoute.travel.Location.html">Location</a></li><li><a href="everoute.travel.SpecificLocation.html">SpecificLocation</a></li><li><a href="everoute.travel.TravelCost.html">TravelCost</a></li><li><a href="everoute.travel.TravelCostSum.html">TravelCostSum</a></li><li><a href="everoute.universe.EmptySolarSystem.html">EmptySolarSystem</a></li><li><a href="everoute.universe.EmptyUniverse.html">EmptyUniverse</a></li><li><a href="everoute.universe.ExtendedSolarSystem.html">ExtendedSolarSystem</a></li><li><a href="everoute.universe.ExtendedUniverse.html">ExtendedUniverse</a></li><li><a href="everoute.universe.SolarSystem.html">SolarSystem</a></li><li><a href="everoute.universe.SolarSystemExtension.html">SolarSystemExtension</a></li><li><a href="everoute.universe.SolarSystemExtensionData.html">SolarSystemExtensionData</a></li><li><a href="everoute.universe.Universe.html">Universe</a></li><li><a href="everoute.universe.UniverseBuilder.html">UniverseBuilder</a></li></ul><h3>Namespaces</h3><ul><li><a href="everoute.html">everoute</a></li><li><a href="everoute.travel.html">travel</a></li><li><a href="everoute.universe.html">universe</a></li><li><a href="everoute.util.html">util</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Fri Jan 17 2014 20:00:48 GMT-0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 18 2014 07:12:48 GMT-0000 (GMT)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: index.js</title>
+    <title>JSDoc: Source: travel/AddingTravelCost.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: index.js</h1>
+    <h1 class="page-title">Source: travel/AddingTravelCost.js</h1>
     
     
 
@@ -28,29 +28,30 @@
             <pre class="prettyprint source"><code>"use strict";
 
 /**
- * This is the root namespace for everything in this library.
+ * This class is a travel cost that adds up.
  *
- * @namespace everoute
+ * @constructor
+ * @implements {everoute.travel.TravelCost}
+ * @extends {everoute.travel.TravelCost}
+ * @memberof everoute.travel
+ * @param {String} type cost type
+ * @param {Number} value the value
  */
+function AddingTravelCost(type, value) {
+  this.getType = function() {
+    return type;
+  };
 
-var universe = require("./universe");
+  this.getValue = function() {
+    return value;
+  };
 
+  this.join = function(other) {
+    return new AddingTravelCost(type, value + other.getValue());
+  };
+}
 
-/**
- * @return {everoute.universe.UniverseBuilder} a fresh universe builder based on an empty universe.
- * @memberof everoute
- */
-var newUniverseBuilder = function() {
-  return new universe.UniverseBuilder();
-};
-
-module.exports = {
-  travel: require("./travel"),
-  universe: universe,
-  util: require("./util"),
-
-  newUniverseBuilder: newUniverseBuilder
-};
+module.exports = AddingTravelCost;
 </code></pre>
         </article>
     </section>

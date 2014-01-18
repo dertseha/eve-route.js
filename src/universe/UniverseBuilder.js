@@ -30,7 +30,9 @@ function UniverseBuilder(base) {
     var key;
 
     for (key in solarSystemExtensionData) {
-      extensionData.solarSystems.push(new ExtendedSolarSystem(solarSystemExtensionData[key]));
+      if (solarSystemExtensionData.hasOwnProperty(key)) {
+        extensionData.solarSystems.push(new ExtendedSolarSystem(solarSystemExtensionData[key]));
+      }
     }
 
     return new ExtendedUniverse(extensionData);

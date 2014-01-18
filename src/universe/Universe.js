@@ -49,6 +49,7 @@ Universe.prototype.getSolarSystem = function(id) {
 
 /**
  * @return {Array.<Number>} Array of IDs from all known solar systems
+ * @memberof! everoute.universe.Universe.prototype
  */
 Universe.prototype.getSolarSystemIds = function() {
   throw new Error("Interface Implementation");

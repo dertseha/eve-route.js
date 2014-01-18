@@ -5,6 +5,7 @@
  * ExtendedUniverse.
  *
  * @constructor
+ * @private
  * @param {everoute.universe.Universe} base the base universe.
  * @memberof everoute.universe
  */

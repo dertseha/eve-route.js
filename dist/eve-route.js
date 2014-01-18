@@ -26,7 +26,36 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":6,"./universe":15,"./util":16}],2:[function(require,module,exports){
+},{"./travel":8,"./universe":17,"./util":18}],2:[function(require,module,exports){
+"use strict";
+
+/**
+ * This class is a travel cost that adds up.
+ *
+ * @constructor
+ * @implements {everoute.travel.TravelCost}
+ * @extends {everoute.travel.TravelCost}
+ * @memberof everoute.travel
+ * @param {String} type cost type
+ * @param {Number} value the value
+ */
+function AddingTravelCost(type, value) {
+  this.getType = function() {
+    return type;
+  };
+
+  this.getValue = function() {
+    return value;
+  };
+
+  this.join = function(other) {
+    return new AddingTravelCost(type, value + other.getValue());
+  };
+}
+
+module.exports = AddingTravelCost;
+
+},{}],3:[function(require,module,exports){
 "use strict";
 
 /**
@@ -52,11 +81,11 @@ AnyLocation.prototype.distanceTo = function(other) {
 
 module.exports = AnyLocation;
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 
 /**
- * This interface represents the read-only access to a jump across the universe.
+ * This class represents a jump across the universe.
  *
  * @constructor
  * @memberof everoute.travel
@@ -108,7 +137,7 @@ function Jump(ofType, fromLocation, toSystemId, toLocation, costs) {
 
 module.exports = Jump;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 
 var AnyLocation = require("./AnyLocation");
@@ -178,7 +207,7 @@ function JumpBuilder(jumpType, destinationId) {
 
 module.exports = JumpBuilder;
 
-},{"./AnyLocation":2,"./Jump":3}],5:[function(require,module,exports){
+},{"./AnyLocation":3,"./Jump":4}],6:[function(require,module,exports){
 "use strict";
 
 /**
@@ -209,7 +238,83 @@ function SpecificLocation(x, y, z) {
 
 module.exports = SpecificLocation;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
+"use strict";
+
+/**
+ * This is the simplest Universe implementation that is completely empty.
+ * It can be used as a basis for extension - i.e., creating a filled universe.
+ *
+ * @constructor
+ * @memberof everoute.travel
+ * @param {Object.<String, TravelCost>} [initCosts] optional initial costs
+ */
+function TravelCostSum(initCosts) {
+  this.costs = initCosts || {};
+}
+
+/**
+ * Returns a contained cost of the same type as given cost or the given cost
+ * if this type is unknown.
+ *
+ * @param {everoute.travel.TravelCost} nullCost The cost to default to
+ * @return {everoute.travel.TravelCost} The corresponing cost
+ * @memberof! everoute.travel.TravelCostSum.prototype
+ */
+TravelCostSum.prototype.getCost = function(nullCost) {
+  return this.costs[nullCost.getType()] || nullCost;
+};
+
+/**
+ * @return {Array.<everoute.travel.TravelCost>} Array of all costs in this sum.
+ * @memberof! everoute.travel.TravelCostSum.prototype
+ */
+TravelCostSum.prototype.getTotal = function() {
+  var result = [];
+  var key;
+
+  for (key in this.costs) {
+    if (this.costs.hasOwnProperty(key)) {
+      result.push(this.costs[key]);
+    }
+  }
+
+  return result;
+};
+
+/**
+ * Adds an array of costs to the current sum, returning a new sum.
+ *
+ * @param {Array.<everoute.travel.TravelCost>} costs Array of costs to add.
+ * @memberof! everoute.travel.TravelCostSum.prototype
+ */
+TravelCostSum.prototype.add = function(costs) {
+  var oldCosts = this.costs;
+  var newCosts = {};
+  var key;
+
+  costs.forEach(function(cost) {
+    var type = cost.getType();
+
+    if (oldCosts.hasOwnProperty(type)) {
+      newCosts[type] = cost.join(oldCosts[type]);
+    } else {
+      newCosts[type] = cost;
+    }
+  });
+
+  for (key in this.costs) {
+    if (this.costs.hasOwnProperty(key) && !newCosts.hasOwnProperty(key)) {
+      newCosts[key] = this.costs[key];
+    }
+  }
+
+  return new TravelCostSum(newCosts);
+};
+
+module.exports = TravelCostSum;
+
+},{}],8:[function(require,module,exports){
 /**
  * This namespace contains entries regarding travel.
  *
@@ -217,13 +322,15 @@ module.exports = SpecificLocation;
  * @memberof everoute
  */
 module.exports = {
+  AddingTravelCost: require("./AddingTravelCost"),
   AnyLocation: require("./AnyLocation"),
   Jump: require("./Jump"),
   JumpBuilder: require("./JumpBuilder"),
-  SpecificLocation: require("./SpecificLocation")
+  SpecificLocation: require("./SpecificLocation"),
+  TravelCostSum: require("./TravelCostSum")
 };
 
-},{"./AnyLocation":2,"./Jump":3,"./JumpBuilder":4,"./SpecificLocation":5}],7:[function(require,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./SpecificLocation":6,"./TravelCostSum":7}],9:[function(require,module,exports){
 "use strict";
 
 /**
@@ -298,7 +405,7 @@ EmptySolarSystem.prototype.getJumps = function(jumpType) {
 
 module.exports = EmptySolarSystem;
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 var UniverseBuilder = require("./UniverseBuilder");
@@ -334,7 +441,7 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":13}],9:[function(require,module,exports){
+},{"./UniverseBuilder":15}],11:[function(require,module,exports){
 "use strict";
 
 /**
@@ -412,7 +519,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 /**
@@ -474,7 +581,9 @@ function ExtendedUniverse(data) {
     };
 
     for (key in solarSystems) {
-      addId(solarSystems[key].getId());
+      if (solarSystems.hasOwnProperty(key)) {
+        addId(solarSystems[key].getId());
+      }
     }
 
     return result.sort();
@@ -491,7 +600,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":13}],11:[function(require,module,exports){
+},{"./UniverseBuilder":15}],13:[function(require,module,exports){
 "use strict";
 
 var JumpBuilder = require("../travel/JumpBuilder");
@@ -532,7 +641,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":4}],12:[function(require,module,exports){
+},{"../travel/JumpBuilder":5}],14:[function(require,module,exports){
 "use strict";
 
 /**
@@ -562,7 +671,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 var EmptySolarSystem = require("./EmptySolarSystem");
@@ -595,7 +704,9 @@ function UniverseBuilder(base) {
     var key;
 
     for (key in solarSystemExtensionData) {
-      extensionData.solarSystems.push(new ExtendedSolarSystem(solarSystemExtensionData[key]));
+      if (solarSystemExtensionData.hasOwnProperty(key)) {
+        extensionData.solarSystems.push(new ExtendedSolarSystem(solarSystemExtensionData[key]));
+      }
     }
 
     return new ExtendedUniverse(extensionData);
@@ -650,7 +761,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":7,"./ExtendedSolarSystem":9,"./ExtendedUniverse":10,"./SolarSystemExtension":11,"./SolarSystemExtensionData":12,"./UniverseExtensionData":14}],14:[function(require,module,exports){
+},{"./EmptySolarSystem":9,"./ExtendedSolarSystem":11,"./ExtendedUniverse":12,"./SolarSystemExtension":13,"./SolarSystemExtensionData":14,"./UniverseExtensionData":16}],16:[function(require,module,exports){
 "use strict";
 
 /**
@@ -658,6 +769,7 @@ module.exports = UniverseBuilder;
  * ExtendedUniverse.
  *
  * @constructor
+ * @private
  * @param {everoute.universe.Universe} base the base universe.
  * @memberof everoute.universe
  */
@@ -675,7 +787,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -695,7 +807,7 @@ module.exports = {
   SolarSystemExtensionData: require("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":7,"./EmptyUniverse":8,"./ExtendedSolarSystem":9,"./ExtendedUniverse":10,"./SolarSystemExtension":11,"./SolarSystemExtensionData":12,"./UniverseBuilder":13,"./UniverseExtensionData":14}],16:[function(require,module,exports){
+},{"./EmptySolarSystem":9,"./EmptyUniverse":10,"./ExtendedSolarSystem":11,"./ExtendedUniverse":12,"./SolarSystemExtension":13,"./SolarSystemExtensionData":14,"./UniverseBuilder":15,"./UniverseExtensionData":16}],18:[function(require,module,exports){
 "use strict";
 
 /**

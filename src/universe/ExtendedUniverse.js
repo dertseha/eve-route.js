@@ -59,7 +59,9 @@ function ExtendedUniverse(data) {
     };
 
     for (key in solarSystems) {
-      addId(solarSystems[key].getId());
+      if (solarSystems.hasOwnProperty(key)) {
+        addId(solarSystems[key].getId());
+      }
     }
 
     return result.sort();
