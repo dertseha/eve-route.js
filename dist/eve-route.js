@@ -26,7 +26,7 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":12,"./universe":21,"./util":22}],2:[function(require,module,exports){
+},{"./travel":16,"./universe":25,"./util":26}],2:[function(require,module,exports){
 "use strict";
 
 /**
@@ -229,6 +229,13 @@ function Path(step, previous) {
 }
 
 /**
+ * @return {String} A key that identifies the current end location
+ */
+Path.prototype.getDestinationKey = function() {
+  return this.step.getSolarSystemId().toString();
+};
+
+/**
  * @return {Boolean} true if this is the first step of the path
  * @memberof! everoute.travel.Path.prototype
  */
@@ -288,7 +295,7 @@ Path.prototype.getCostSum = function() {
 
 module.exports = Path;
 
-},{"./TravelCostSum":10}],7:[function(require,module,exports){
+},{"./TravelCostSum":11}],7:[function(require,module,exports){
 "use strict";
 
 /**
@@ -304,7 +311,7 @@ module.exports = Path;
  */
 function PathContest(rule) {
 
-  var pathsBySystemId = {};
+  var pathsByDestinationKey = {};
 
   /**
    * Requests to enter the given path into the contest. All predecessors of given
@@ -315,15 +322,15 @@ function PathContest(rule) {
    */
   this.enter = function(path) {
     var result = true;
-    var systemId = path.getStep().getSolarSystemId();
-    var oldPath = pathsBySystemId[systemId];
+    var destinationKey = path.getDestinationKey();
+    var oldPath = pathsByDestinationKey[destinationKey];
 
     if (oldPath && (oldPath !== path) && rule.compare(path.getCostSum(), oldPath.getCostSum()) >= 0) {
       result = false;
     } else if (!path.isStart() && !isPathStillCurrent(path.getPrevious())) {
       result = false;
     } else {
-      pathsBySystemId[systemId] = path;
+      pathsByDestinationKey[destinationKey] = path;
     }
 
     return result;
@@ -334,9 +341,9 @@ function PathContest(rule) {
     var result;
 
     function isEntryCurrent() {
-      var systemId = entry.getStep().getSolarSystemId();
+      var destinationKey = entry.getDestinationKey();
 
-      return pathsBySystemId[systemId] === entry;
+      return pathsByDestinationKey[destinationKey] === entry;
     }
 
     result = isEntryCurrent();
@@ -386,6 +393,27 @@ module.exports = SpecificLocation;
 "use strict";
 
 /**
+ * A provider that returns a predetermined contest.
+ *
+ * @constructor
+ * @implements {everoute.travel.PathContestProvider}
+ * @extends {everoute.travel.PathContestProvider}
+ * @param {everoute.travel.PathContest} contest The contest to provide.
+ * @memberof everoute.travel
+ */
+function StaticPathContestProvider(contest) {
+
+  this.getContest = function() {
+    return contest;
+  };
+}
+
+module.exports = StaticPathContestProvider;
+
+},{}],10:[function(require,module,exports){
+"use strict";
+
+/**
  * A step is one entry in a travel path. It only contains information about
  * the completed step - i.e., the destination information.
  *
@@ -424,7 +452,7 @@ Step.prototype.getCosts = function() {
 
 module.exports = Step;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 /**
@@ -491,7 +519,7 @@ TravelCostSum.prototype.add = function(costs) {
 
 module.exports = TravelCostSum;
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 /**
@@ -523,7 +551,89 @@ TravelRuleset.prototype.compare = function(sumA, sumB) {
 
 module.exports = TravelRuleset;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
+"use strict";
+
+/**
+ * This capability combines a set of other capabilities. The result is the
+ * combination of all contained capabilities.
+ *
+ * @constructor
+ * @implements everoute.travel.capabilities.TravelCapability
+ * @extends everoute.travel.capabilities.TravelCapability
+ * @param {Array.<everoute.travel.capabilies.TravelCapability>} capabilities The capabilities to combine.
+ * @memberof everoute.travel.capabilities
+ */
+function CombiningTravelCapability(capabilities) {
+
+  this.getNextPaths = function(origin) {
+    var result = [];
+
+    capabilities.forEach(function(capability) {
+      result = result.concat(capability.getNextPaths(origin));
+    });
+
+    return result;
+  };
+}
+
+module.exports = CombiningTravelCapability;
+
+},{}],14:[function(require,module,exports){
+"use strict";
+
+/**
+ * This capability puts the result of another capability into a contest and
+ * provides only the best for each destination.
+ *
+ * @constructor
+ * @implements everoute.travel.capabilities.TravelCapability
+ * @extends everoute.travel.capabilities.TravelCapability
+ * @param {everoute.travel.capabilities.TravelCapability} capability The base capability.
+ * @param {everoute.travel.PathContestProvider} contestProvider provider for the contests.
+ * @memberof everoute.travel.capabilities
+ */
+function OptimizingTravelCapability(capability, contestProvider) {
+
+  this.getNextPaths = function(origin) {
+    var contest = contestProvider.getContest();
+    var result = [];
+    var best = {};
+    var temp;
+
+    if (contest.enter(origin)) {
+      temp = capability.getNextPaths(origin);
+      temp.forEach(function(path) {
+        if (contest.enter(path)) {
+          best[path.getDestinationKey()] = path;
+        }
+      });
+    }
+    for (temp in best) {
+      if (best.hasOwnProperty(temp)) {
+        result.push(best[temp]);
+      }
+    }
+
+    return result;
+  };
+}
+
+module.exports = OptimizingTravelCapability;
+
+},{}],15:[function(require,module,exports){
+/**
+ * This namespace contains everything about travel capabilities.
+ *
+ * @namespace capabilities
+ * @memberof everoute.travel
+ */
+module.exports = {
+  CombiningTravelCapability: require("./CombiningTravelCapability"),
+  OptimizingTravelCapability: require("./OptimizingTravelCapability")
+};
+
+},{"./CombiningTravelCapability":13,"./OptimizingTravelCapability":14}],16:[function(require,module,exports){
 /**
  * This namespace contains entries regarding travel.
  *
@@ -531,6 +641,8 @@ module.exports = TravelRuleset;
  * @memberof everoute
  */
 module.exports = {
+  capabilities: require("./capabilities"),
+
   AddingTravelCost: require("./AddingTravelCost"),
   AnyLocation: require("./AnyLocation"),
   Jump: require("./Jump"),
@@ -538,12 +650,13 @@ module.exports = {
   Path: require("./Path"),
   PathContest: require("./PathContest"),
   SpecificLocation: require("./SpecificLocation"),
+  StaticPathContestProvider: require("./StaticPathContestProvider"),
   Step: require("./Step"),
   TravelCostSum: require("./TravelCostSum"),
   TravelRuleset: require("./TravelRuleset")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./Step":9,"./TravelCostSum":10,"./TravelRuleset":11}],13:[function(require,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./TravelCostSum":11,"./TravelRuleset":12,"./capabilities":15}],17:[function(require,module,exports){
 "use strict";
 
 /**
@@ -622,7 +735,7 @@ EmptySolarSystem.prototype.getCosts = function() {
 
 module.exports = EmptySolarSystem;
 
-},{}],14:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 
 var UniverseBuilder = require("./UniverseBuilder");
@@ -658,7 +771,7 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":19}],15:[function(require,module,exports){
+},{"./UniverseBuilder":23}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -748,7 +861,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{}],16:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 /**
@@ -829,7 +942,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":19}],17:[function(require,module,exports){
+},{"./UniverseBuilder":23}],21:[function(require,module,exports){
 "use strict";
 
 var JumpBuilder = require("../travel/JumpBuilder");
@@ -870,7 +983,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],18:[function(require,module,exports){
+},{"../travel/JumpBuilder":5}],22:[function(require,module,exports){
 "use strict";
 
 /**
@@ -900,7 +1013,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],19:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 "use strict";
 
 var EmptySolarSystem = require("./EmptySolarSystem");
@@ -990,7 +1103,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":13,"./ExtendedSolarSystem":15,"./ExtendedUniverse":16,"./SolarSystemExtension":17,"./SolarSystemExtensionData":18,"./UniverseExtensionData":20}],20:[function(require,module,exports){
+},{"./EmptySolarSystem":17,"./ExtendedSolarSystem":19,"./ExtendedUniverse":20,"./SolarSystemExtension":21,"./SolarSystemExtensionData":22,"./UniverseExtensionData":24}],24:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1016,7 +1129,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],21:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -1036,7 +1149,7 @@ module.exports = {
   SolarSystemExtensionData: require("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":13,"./EmptyUniverse":14,"./ExtendedSolarSystem":15,"./ExtendedUniverse":16,"./SolarSystemExtension":17,"./SolarSystemExtensionData":18,"./UniverseBuilder":19,"./UniverseExtensionData":20}],22:[function(require,module,exports){
+},{"./EmptySolarSystem":17,"./EmptyUniverse":18,"./ExtendedSolarSystem":19,"./ExtendedUniverse":20,"./SolarSystemExtension":21,"./SolarSystemExtensionData":22,"./UniverseBuilder":23,"./UniverseExtensionData":24}],26:[function(require,module,exports){
 "use strict";
 
 /**

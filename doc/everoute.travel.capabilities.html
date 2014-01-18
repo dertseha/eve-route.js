@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: PathContest</title>
+    <title>JSDoc: Namespace: capabilities</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: PathContest</h1>
+    <h1 class="page-title">Namespace: capabilities</h1>
     
     
 
@@ -29,7 +29,7 @@
     <h2>
         <span class="ancestors"><a href="everoute.html">everoute</a><a href="everoute.travel.html">.travel</a>.</span>
     
-    PathContest
+    capabilities
     </h2>
     
 </header>  
@@ -40,78 +40,10 @@
     
     
         
-<dt>
-    <h4 class="name" id="PathContest"><span class="type-signature"></span>new PathContest<span class="signature">(rule)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        A contest to provide the best paths to a given destination. A path may enter
-(and stay in) the contest as long as:
-Its previous steps are still the current best for their respective destination,
-No other contestant exists for the destination,
-Its cost is better than the previous destination (if different)
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
+            <div class="description">This namespace contains everything about travel capabilities.</div>
         
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>rule</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">everoute.travel.TraveRule</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">the rule by which this contest is held.</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
+        
+        
 <dl class="details">
     
         
@@ -134,7 +66,7 @@ Its cost is better than the previous destination (if different)
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="PathContest.js.html">travel/PathContest.js</a>, <a href="PathContest.js.html#line14">line 14</a>
+        <a href="index.js__.html">travel/capabilities/index.js</a>, <a href="index.js__.html#line1">line 1</a>
     </li></ul></dd>
     
     
@@ -145,20 +77,8 @@ Its cost is better than the previous destination (if different)
     
 </dl>
 
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
+        
+        
     
     </div>
     
@@ -169,155 +89,24 @@ Its cost is better than the previous destination (if different)
     
     
     
-    
-    
-    
-    
-    
-    
-        <h3 class="subsection-title">Methods</h3>
+        <h3 class="subsection-title">Classes</h3>
         
         <dl>
-            
-<dt>
-    <h4 class="name" id="enter"><span class="type-signature"></span>enter<span class="signature">(path)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Requests to enter the given path into the contest. All predecessors of given
-path must have been entered previously.
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
+            <dt><a href="everoute.travel.capabilities.CombiningTravelCapability.html">CombiningTravelCapability</a></dt>
+            <dd></dd>
         
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>path</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type"><a href="everoute.travel.Path.html">everoute.travel.Path</a></span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">The contesting path.</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
+            <dt><a href="everoute.travel.capabilities.OptimizingTravelCapability.html">OptimizingTravelCapability</a></dt>
+            <dd></dd>
         
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="PathContest.js.html">travel/PathContest.js</a>, <a href="PathContest.js.html#line25">line 25</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    true if the given path is (still) a valid contestant.
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Boolean</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
+            <dt><a href="everoute.travel.capabilities.TravelCapability.html">TravelCapability</a></dt>
+            <dd></dd>
         </dl>
+    
+    
+    
+    
+    
+    
     
     
     

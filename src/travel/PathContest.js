@@ -13,7 +13,7 @@
  */
 function PathContest(rule) {
 
-  var pathsBySystemId = {};
+  var pathsByDestinationKey = {};
 
   /**
    * Requests to enter the given path into the contest. All predecessors of given
@@ -24,15 +24,15 @@ function PathContest(rule) {
    */
   this.enter = function(path) {
     var result = true;
-    var systemId = path.getStep().getSolarSystemId();
-    var oldPath = pathsBySystemId[systemId];
+    var destinationKey = path.getDestinationKey();
+    var oldPath = pathsByDestinationKey[destinationKey];
 
     if (oldPath && (oldPath !== path) && rule.compare(path.getCostSum(), oldPath.getCostSum()) >= 0) {
       result = false;
     } else if (!path.isStart() && !isPathStillCurrent(path.getPrevious())) {
       result = false;
     } else {
-      pathsBySystemId[systemId] = path;
+      pathsByDestinationKey[destinationKey] = path;
     }
 
     return result;
@@ -43,9 +43,9 @@ function PathContest(rule) {
     var result;
 
     function isEntryCurrent() {
-      var systemId = entry.getStep().getSolarSystemId();
+      var destinationKey = entry.getDestinationKey();
 
-      return pathsBySystemId[systemId] === entry;
+      return pathsByDestinationKey[destinationKey] === entry;
     }
 
     result = isEntryCurrent();

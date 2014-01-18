@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: travel/AddingTravelCost.js</title>
+    <title>JSDoc: Source: travel/capabilities/CombiningTravelCapability.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: travel/AddingTravelCost.js</h1>
+    <h1 class="page-title">Source: travel/capabilities/CombiningTravelCapability.js</h1>
     
     
 
@@ -28,30 +28,29 @@
             <pre class="prettyprint source"><code>"use strict";
 
 /**
- * This class is a travel cost that adds up.
+ * This capability combines a set of other capabilities. The result is the
+ * combination of all contained capabilities.
  *
  * @constructor
- * @implements {everoute.travel.TravelCost}
- * @extends {everoute.travel.TravelCost}
- * @memberof everoute.travel
- * @param {String} type cost type
- * @param {Number} value the value
+ * @implements everoute.travel.capabilities.TravelCapability
+ * @extends everoute.travel.capabilities.TravelCapability
+ * @param {Array.&lt;everoute.travel.capabilies.TravelCapability>} capabilities The capabilities to combine.
+ * @memberof everoute.travel.capabilities
  */
-function AddingTravelCost(type, value) {
-  this.getType = function() {
-    return type;
-  };
+function CombiningTravelCapability(capabilities) {
 
-  this.getValue = function() {
-    return value;
-  };
+  this.getNextPaths = function(origin) {
+    var result = [];
 
-  this.join = function(other) {
-    return new AddingTravelCost(type, value + other.getValue());
+    capabilities.forEach(function(capability) {
+      result = result.concat(capability.getNextPaths(origin));
+    });
+
+    return result;
   };
 }
 
-module.exports = AddingTravelCost;
+module.exports = CombiningTravelCapability;
 </code></pre>
         </article>
     </section>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: travel/AddingTravelCost.js</title>
+    <title>JSDoc: Source: util/index.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: travel/AddingTravelCost.js</h1>
+    <h1 class="page-title">Source: util/index.js</h1>
     
     
 
@@ -28,30 +28,23 @@
             <pre class="prettyprint source"><code>"use strict";
 
 /**
- * This class is a travel cost that adds up.
+ * This namespace contains utility helper for the library.
  *
- * @constructor
- * @implements {everoute.travel.TravelCost}
- * @extends {everoute.travel.TravelCost}
- * @memberof everoute.travel
- * @param {String} type cost type
- * @param {Number} value the value
+ * @namespace util
+ * @memberof everoute
  */
-function AddingTravelCost(type, value) {
-  this.getType = function() {
-    return type;
-  };
 
-  this.getValue = function() {
-    return value;
-  };
+/**
+ * A null function (no operation)
+ * @memberof everoute.util
+ */
+var noop = function() {
 
-  this.join = function(other) {
-    return new AddingTravelCost(type, value + other.getValue());
-  };
-}
+};
 
-module.exports = AddingTravelCost;
+module.exports = {
+  noop: noop
+};
 </code></pre>
         </article>
     </section>

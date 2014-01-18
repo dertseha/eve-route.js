@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: travel/AddingTravelCost.js</title>
+    <title>JSDoc: Source: travel/capabilities/OptimizingTravelCapability.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: travel/AddingTravelCost.js</h1>
+    <h1 class="page-title">Source: travel/capabilities/OptimizingTravelCapability.js</h1>
     
     
 
@@ -28,30 +28,43 @@
             <pre class="prettyprint source"><code>"use strict";
 
 /**
- * This class is a travel cost that adds up.
+ * This capability puts the result of another capability into a contest and
+ * provides only the best for each destination.
  *
  * @constructor
- * @implements {everoute.travel.TravelCost}
- * @extends {everoute.travel.TravelCost}
- * @memberof everoute.travel
- * @param {String} type cost type
- * @param {Number} value the value
+ * @implements everoute.travel.capabilities.TravelCapability
+ * @extends everoute.travel.capabilities.TravelCapability
+ * @param {everoute.travel.capabilities.TravelCapability} capability The base capability.
+ * @param {everoute.travel.PathContestProvider} contestProvider provider for the contests.
+ * @memberof everoute.travel.capabilities
  */
-function AddingTravelCost(type, value) {
-  this.getType = function() {
-    return type;
-  };
+function OptimizingTravelCapability(capability, contestProvider) {
 
-  this.getValue = function() {
-    return value;
-  };
+  this.getNextPaths = function(origin) {
+    var contest = contestProvider.getContest();
+    var result = [];
+    var best = {};
+    var temp;
 
-  this.join = function(other) {
-    return new AddingTravelCost(type, value + other.getValue());
+    if (contest.enter(origin)) {
+      temp = capability.getNextPaths(origin);
+      temp.forEach(function(path) {
+        if (contest.enter(path)) {
+          best[path.getDestinationKey()] = path;
+        }
+      });
+    }
+    for (temp in best) {
+      if (best.hasOwnProperty(temp)) {
+        result.push(best[temp]);
+      }
+    }
+
+    return result;
   };
 }
 
-module.exports = AddingTravelCost;
+module.exports = OptimizingTravelCapability;
 </code></pre>
         </article>
     </section>

@@ -19,6 +19,13 @@ function Path(step, previous) {
 }
 
 /**
+ * @return {String} A key that identifies the current end location
+ */
+Path.prototype.getDestinationKey = function() {
+  return this.step.getSolarSystemId().toString();
+};
+
+/**
  * @return {Boolean} true if this is the first step of the path
  * @memberof! everoute.travel.Path.prototype
  */

@@ -5,6 +5,8 @@
  * @memberof everoute
  */
 module.exports = {
+  capabilities: require("./capabilities"),
+
   AddingTravelCost: require("./AddingTravelCost"),
   AnyLocation: require("./AnyLocation"),
   Jump: require("./Jump"),
@@ -12,6 +14,7 @@ module.exports = {
   Path: require("./Path"),
   PathContest: require("./PathContest"),
   SpecificLocation: require("./SpecificLocation"),
+  StaticPathContestProvider: require("./StaticPathContestProvider"),
   Step: require("./Step"),
   TravelCostSum: require("./TravelCostSum"),
   TravelRuleset: require("./TravelRuleset")

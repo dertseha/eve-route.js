@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: travel/AddingTravelCost.js</title>
+    <title>JSDoc: Source: travel/capabilities/TravelCapability.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: travel/AddingTravelCost.js</h1>
+    <h1 class="page-title">Source: travel/capabilities/TravelCapability.js</h1>
     
     
 
@@ -28,30 +28,26 @@
             <pre class="prettyprint source"><code>"use strict";
 
 /**
- * This class is a travel cost that adds up.
+ * A travel capability produces a list of destinations from a starting point.
  *
- * @constructor
- * @implements {everoute.travel.TravelCost}
- * @extends {everoute.travel.TravelCost}
- * @memberof everoute.travel
- * @param {String} type cost type
- * @param {Number} value the value
+ * @class
+ * @interface
+ * @memberof everoute.travel.capabilities
  */
-function AddingTravelCost(type, value) {
-  this.getType = function() {
-    return type;
-  };
+function TravelCapability() {
 
-  this.getValue = function() {
-    return value;
-  };
-
-  this.join = function(other) {
-    return new AddingTravelCost(type, value + other.getValue());
-  };
 }
 
-module.exports = AddingTravelCost;
+/**
+ * Calculates and returns a list of possible next steps from given path.
+ *
+ * @param  {everoute.travel.Path} origin The start path from which to provide further options.
+ * @return {Array.&lt;everoute.travel.Path>} List of possible further paths.
+ * @memberof! everoute.travel.capabilities.TravelCapability.prototype
+ */
+TravelCapability.prototype.getNextPaths = function(origin) {
+  throw new Error("Interface Implementation");
+};
 </code></pre>
         </article>
     </section>
