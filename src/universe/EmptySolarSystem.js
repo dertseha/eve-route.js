@@ -70,4 +70,8 @@ EmptySolarSystem.prototype.getJumps = function(jumpType) {
   return [];
 };
 
+EmptySolarSystem.prototype.getCosts = function() {
+  return [];
+};
+
 module.exports = EmptySolarSystem;

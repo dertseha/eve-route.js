@@ -403,6 +403,10 @@ EmptySolarSystem.prototype.getJumps = function(jumpType) {
   return [];
 };
 
+EmptySolarSystem.prototype.getCosts = function() {
+  return [];
+};
+
 module.exports = EmptySolarSystem;
 
 },{}],10:[function(require,module,exports){
@@ -469,6 +473,12 @@ function ExtendedSolarSystem(data) {
    */
   var jumps = {};
 
+  /**
+   * @type {Array.<everoute.travel.TravelCost>}
+   * @private
+   */
+  var costs = data.costs.slice(0);
+
   data.jumpBuilders.forEach(function(builder) {
     var jump = builder.build();
     var jumpType = jump.getType();
@@ -513,6 +523,12 @@ function ExtendedSolarSystem(data) {
     }
 
     return result;
+  };
+
+  this.getCosts = function() {
+    var result = base.getCosts();
+
+    return result.concat(costs);
   };
 
 }

@@ -67,3 +67,11 @@ SolarSystem.prototype.getSecurityValue = function() {
 SolarSystem.prototype.getJumps = function(jumpType) {
   throw new Error("Interface Implementation");
 };
+
+/**
+ * @return {Array.<everoute.travel.TravelCost>} Array of costs this system has.
+ * @memberof! everoute.universe.SolarSystem.prototype
+ */
+SolarSystem.prototype.getCosts = function() {
+  throw new Error("Interface Implementation");
+};
