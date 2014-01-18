@@ -10,6 +10,7 @@ module.exports = {
   Jump: require("./Jump"),
   JumpBuilder: require("./JumpBuilder"),
   Path: require("./Path"),
+  PathContest: require("./PathContest"),
   SpecificLocation: require("./SpecificLocation"),
   Step: require("./Step"),
   TravelCostSum: require("./TravelCostSum"),

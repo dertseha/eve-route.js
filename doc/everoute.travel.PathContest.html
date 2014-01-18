@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: TravelCostSum</title>
+    <title>JSDoc: Class: PathContest</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: TravelCostSum</h1>
+    <h1 class="page-title">Class: PathContest</h1>
     
     
 
@@ -29,7 +29,7 @@
     <h2>
         <span class="ancestors"><a href="everoute.html">everoute</a><a href="everoute.travel.html">.travel</a>.</span>
     
-    TravelCostSum
+    PathContest
     </h2>
     
 </header>  
@@ -41,7 +41,7 @@
     
         
 <dt>
-    <h4 class="name" id="TravelCostSum"><span class="type-signature"></span>new TravelCostSum<span class="signature">(initCosts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="PathContest"><span class="type-signature"></span>new PathContest<span class="signature">(rule)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -49,7 +49,11 @@
     
     
     <div class="description">
-        This class collects travel costs and can add costs up to new sums.
+        A contest to provide the best paths to a given destination. A path may enter
+(and stay in) the contest as long as:
+Its previous steps are still the current best for their respective destination,
+No other contestant exists for the destination,
+Its cost is better than the previous destination (if different)
     </div>
     
 
@@ -83,13 +87,13 @@
 	
         <tr>
             
-                <td class="name"><code>initCosts</code></td>
+                <td class="name"><code>rule</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>></span>
+<span class="param-type">everoute.travel.TraveRule</span>
 
 
             
@@ -99,7 +103,7 @@
             
             
             
-            <td class="description last">initial costs</td>
+            <td class="description last">the rule by which this contest is held.</td>
         </tr>
 	
 	
@@ -130,7 +134,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TravelCostSum.js.html">travel/TravelCostSum.js</a>, <a href="TravelCostSum.js.html#line10">line 10</a>
+        <a href="PathContest.js.html">travel/PathContest.js</a>, <a href="PathContest.js.html#line14">line 14</a>
     </li></ul></dd>
     
     
@@ -176,7 +180,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="add"><span class="type-signature"></span>TravelCostSum#add<span class="signature">(costs)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="enter"><span class="type-signature"></span>enter<span class="signature">(path)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
     
     
 </dt>
@@ -184,7 +188,8 @@
     
     
     <div class="description">
-        Adds an array of costs to the current sum, returning a new sum.
+        Requests to enter the given path into the contest. All predecessors of given
+path must have been entered previously.
     </div>
     
 
@@ -218,13 +223,13 @@
 	
         <tr>
             
-                <td class="name"><code>costs</code></td>
+                <td class="name"><code>path</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>></span>
+<span class="param-type"><a href="everoute.travel.Path.html">everoute.travel.Path</a></span>
 
 
             
@@ -234,7 +239,7 @@
             
             
             
-            <td class="description last">Array of costs to add.</td>
+            <td class="description last">The contesting path.</td>
         </tr>
 	
 	
@@ -265,125 +270,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TravelCostSum.js.html">travel/TravelCostSum.js</a>, <a href="TravelCostSum.js.html#line61">line 61</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="getCost"><span class="type-signature"></span>TravelCostSum#getCost<span class="signature">(nullCost)</span><span class="type-signature"> &rarr; {<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Returns a contained cost of the same type as given cost or the given cost
-if this type is unknown.
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>nullCost</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type"><a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a></span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">The cost to default to</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TravelCostSum.js.html">travel/TravelCostSum.js</a>, <a href="TravelCostSum.js.html#line34">line 34</a>
+        <a href="PathContest.js.html">travel/PathContest.js</a>, <a href="PathContest.js.html#line25">line 25</a>
     </li></ul></dd>
     
     
@@ -408,7 +295,7 @@ if this type is unknown.
     
             
 <div class="param-desc">
-    The corresponing cost
+    true if the given path is (still) a valid contestant.
 </div>
 
 
@@ -419,94 +306,7 @@ if this type is unknown.
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a></span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="getTotal"><span class="type-signature"></span>TravelCostSum#getTotal<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TravelCostSum.js.html">travel/TravelCostSum.js</a>, <a href="TravelCostSum.js.html#line42">line 42</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    Array of all costs in this sum.
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>></span>
+<span class="param-type">Boolean</span>
 
 
 	</dd>
