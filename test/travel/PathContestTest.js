@@ -7,18 +7,15 @@ describe("PathContest", function() {
   var PathContest = everoute.travel.PathContest;
   var Path = everoute.travel.Path;
   var StepBuilder = everoute.travel.StepBuilder;
+  var NaturalOrderTravelRule = everoute.travel.rules.NaturalOrderTravelRule;
 
-  var rule;
+  var nullCost = new AddingTravelCost("test", 0);
+  var rule = new NaturalOrderTravelRule(nullCost);
+
   var contest;
   var result;
-  var nullCost = new AddingTravelCost("test", 0);
 
   beforeEach(function() {
-    rule = {
-      compare: function(sumA, sumB) {
-        return sumA.getCost(nullCost).getValue() - sumB.getCost(nullCost).getValue();
-      }
-    };
     contest = new PathContest(rule);
     result = null;
   });

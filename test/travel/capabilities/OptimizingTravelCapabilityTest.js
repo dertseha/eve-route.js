@@ -9,14 +9,15 @@ describe("OptimizingTravelCapability", function() {
   var AnyLocation = everoute.travel.AnyLocation;
   var Path = everoute.travel.Path;
   var StepBuilder = everoute.travel.StepBuilder;
+  var NaturalOrderTravelRule = everoute.travel.rules.NaturalOrderTravelRule;
 
   var baseCap;
   var capability;
 
-  var rule;
-  var contest;
   var nullCost = new AddingTravelCost("test", 0);
+  var rule = new NaturalOrderTravelRule(nullCost);
 
+  var contest;
   var nextSteps;
 
   beforeEach(function() {
@@ -33,11 +34,6 @@ describe("OptimizingTravelCapability", function() {
         });
 
         return result;
-      }
-    };
-    rule = {
-      compare: function(sumA, sumB) {
-        return sumA.getCost(nullCost).getValue() - sumB.getCost(nullCost).getValue();
       }
     };
     contest = new PathContest(rule);
