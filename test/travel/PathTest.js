@@ -5,7 +5,7 @@ describe("Path", function() {
   var AddingTravelCost = everoute.travel.AddingTravelCost;
   var AnyLocation = everoute.travel.AnyLocation;
   var Path = everoute.travel.Path;
-  var Step = everoute.travel.Step;
+  var StepBuilder = everoute.travel.StepBuilder;
 
   describe("sequence", function() {
     var firstStep;
@@ -60,7 +60,7 @@ describe("Path", function() {
     });
 
     function createStep() {
-      return new Step(0, new AnyLocation(), [], []);
+      return new StepBuilder(0).build();
     }
   });
 
@@ -87,7 +87,7 @@ describe("Path", function() {
     }
 
     function createStep(costs) {
-      return new Step(0, new AnyLocation(), costs, []);
+      return new StepBuilder(0).withEnterCosts(costs).build();
     }
   });
 });

@@ -75,3 +75,11 @@ SolarSystem.prototype.getJumps = function(jumpType) {
 SolarSystem.prototype.getCosts = function() {
   throw new Error("Interface Implementation");
 };
+
+/**
+ * @return {everoute.travel.Path} A path with this solar system as the first step.
+ * @memberof! everoute.universe.SolarSystem.prototype
+ */
+SolarSystem.prototype.startPath = function() {
+  throw new Error("Interface Implementation");
+};

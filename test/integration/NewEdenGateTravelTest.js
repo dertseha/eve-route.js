@@ -9,7 +9,7 @@ describe("New Eden Gate Travel", function() {
   var Path = everoute.travel.Path;
   var PathContest = everoute.travel.PathContest;
   var StaticPathContestProvider = everoute.travel.StaticPathContestProvider;
-  var Step = everoute.travel.Step;
+  var StepBuilder = everoute.travel.StepBuilder;
   var OptimizingTravelCapability = everoute.travel.capabilities.OptimizingTravelCapability;
   var DestinationSystemSearchCriterion = everoute.travel.search.DestinationSystemSearchCriterion;
   var TravelRuleset = everoute.travel.rules.TravelRuleset;
@@ -24,7 +24,7 @@ describe("New Eden Gate Travel", function() {
 
       var solarSystem = universe.getSolarSystem(path.getStep().getSolarSystemId());
       solarSystem.getJumps("jumpGate").forEach(function(jump) {
-        var step = new Step(jump.getDestinationId(), new AnyLocation(), jump.getCosts(), solarSystem.getCosts());
+        var step = new StepBuilder(jump.getDestinationId()).withEnterCosts(jump.getCosts()).withContinueCosts(solarSystem.getCosts()).build();
 
         result.push(path.extend(step));
       });
@@ -54,7 +54,7 @@ describe("New Eden Gate Travel", function() {
 
   function verifyRoute(from, to, expected) {
     var result;
-    var start = new Path(new Step(getIdByName(from), new AnyLocation(), [], []));
+    var start = universe.getSolarSystem(getIdByName(from)).startPath();
     var contest = new PathContest(new TravelRuleset(rules));
     var capability = new OptimizingTravelCapability(gateCapability, new StaticPathContestProvider(contest));
     var criterion = new DestinationSystemSearchCriterion(getIdByName(to));

@@ -1,5 +1,7 @@
 "use strict";
 
+var StepBuilder = require("../travel/StepBuilder");
+
 /**
  * An extended solar system that is based on another, but has its own extensions.
  * Queries that can not be handled within this system will be delegated to
@@ -83,6 +85,9 @@ function ExtendedSolarSystem(data) {
     return result.concat(costs);
   };
 
+  this.startPath = function() {
+    return base.startPath();
+  };
 }
 
 module.exports = ExtendedSolarSystem;

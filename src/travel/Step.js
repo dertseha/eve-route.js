@@ -9,6 +9,9 @@
  * does not contribute to the cost of the path if the system is the last one
  * (the destination).
  *
+ * The user does not need to create an instance directly and should use the
+ * StepBuilder instead.
+ *
  * @constructor
  * @param {Number} solarSystemId The ID of the solar system in which this step ends
  * @param {everoute.travel.Location} location the location where the step ends

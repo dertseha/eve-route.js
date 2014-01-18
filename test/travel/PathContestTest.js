@@ -6,7 +6,7 @@ describe("PathContest", function() {
   var AnyLocation = everoute.travel.AnyLocation;
   var PathContest = everoute.travel.PathContest;
   var Path = everoute.travel.Path;
-  var Step = everoute.travel.Step;
+  var StepBuilder = everoute.travel.StepBuilder;
 
   var rule;
   var contest;
@@ -102,7 +102,7 @@ describe("PathContest", function() {
   function createStep(systemId, costValue) {
     var cost = new AddingTravelCost("test", costValue);
 
-    return new Step(systemId, new AnyLocation(), [cost], []);
+    return new StepBuilder(systemId).withEnterCosts([cost]).build();
   }
 
   function givenAnEnteredPath(path) {

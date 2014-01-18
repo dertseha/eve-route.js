@@ -18,5 +18,6 @@ module.exports = {
   SpecificLocation: require("./SpecificLocation"),
   StaticPathContestProvider: require("./StaticPathContestProvider"),
   Step: require("./Step"),
+  StepBuilder: require("./StepBuilder"),
   TravelCostSum: require("./TravelCostSum")
 };

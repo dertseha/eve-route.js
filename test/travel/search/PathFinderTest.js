@@ -5,7 +5,7 @@ describe("PathFinder", function() {
   var PathFinder = everoute.travel.search.PathFinder;
   var AnyLocation = everoute.travel.AnyLocation;
   var Path = everoute.travel.Path;
-  var Step = everoute.travel.Step;
+  var StepBuilder = everoute.travel.StepBuilder;
 
   var nextSteps;
   var capability;
@@ -119,7 +119,7 @@ describe("PathFinder", function() {
   }
 
   function createStep(systemId) {
-    return new Step(systemId, new AnyLocation(), [], []);
+    return new StepBuilder(systemId).build();
   }
 
   function givenNextStepsAre(forId, list) {

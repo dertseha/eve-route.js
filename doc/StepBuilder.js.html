@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: universe/ExtendedUniverse.js</title>
+    <title>JSDoc: Source: travel/StepBuilder.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: universe/ExtendedUniverse.js</h1>
+    <h1 class="page-title">Source: travel/StepBuilder.js</h1>
     
     
 
@@ -27,83 +27,69 @@
         <article>
             <pre class="prettyprint source"><code>"use strict";
 
+var AnyLocation = require("./AnyLocation");
+var Step = require("./Step");
+
 /**
- * An extended universe that is based on another, but has its own extensions.
- * Queries that can not be handled within this universe will be delegated to
- * the base universe.
+ * This builder helps creating steps, using common defaults where possible.
  *
  * @constructor
- * @implements everoute.universe.Universe
- * @extends {everoute.universe.Universe}
- * @param {everoute.universe.UniverseExtensionData} data the data this extension is based on.
- * @memberof everoute.universe
+ * @param {Number} solarSystemId The ID of the solar system in which this step ends
+ * @memberof everoute.travel
  */
-function ExtendedUniverse(data) {
+function StepBuilder(solarSystemId) {
+
+  var to = new AnyLocation();
+  var enterCosts = [];
+  var continueCosts = [];
 
   /**
-   * @type {everoute.universe.Universe}
-   * @private
+   * Builds a step instance with the current contained data.
+   * @return {everoute.travel.Step} The built step instance.
    */
-  var base = data.base;
+  this.build = function() {
+    return new Step(solarSystemId, to, enterCosts, continueCosts);
+  };
 
   /**
-   * @type {Object.&lt;Number, everoute.universe.SolarSystem>}
-   * @private
+   * The location in the solar system where the step is completing.
+   * Defaults to AnyLocation.
+   *
+   * @param  {everoute.travel.Location} location the destination location
+   * @return {everoute.travel.StepBuilder} this instance
    */
-  var solarSystems = {};
+  this.to = function(location) {
+    to = location;
+
+    return this;
+  };
 
   /**
-   * Constructor
-   * @private
+   * Sets the enter costs for this step. Defaults to empty array.
+   *
+   * @param {Array.&lt;everoute.travel.TravelCost>} costs the enter costs.
+   * @return {everoute.travel.StepBuilder} this instance
    */
-  function constructor() {
-    data.solarSystems.forEach(function(system) {
-      solarSystems[system.getId()] = system;
-    });
-  }
+  this.withEnterCosts = function(costs) {
+    enterCosts = costs.slice(0);
 
-  this.hasSolarSystem = function(id) {
-    var result = solarSystems.hasOwnProperty(id) || base.hasSolarSystem(id);
-
-    return result;
+    return this;
   };
 
-  this.getSolarSystem = function(id) {
-    var result = solarSystems[id] || base.getSolarSystem(id);
+  /**
+   * Sets the continue costs for this step. Defaults to empty array.
+   *
+   * @param {Array.&lt;everoute.travel.TravelCost>} costs the continue costs.
+   * @return {everoute.travel.StepBuilder} this instance
+   */
+  this.withContinueCosts = function(costs) {
+    continueCosts = costs.slice(0);
 
-    return result;
+    return this;
   };
-
-  this.getSolarSystemIds = function() {
-    var result = base.getSolarSystemIds();
-    var key;
-    var addId = function(id) {
-      var index = result.indexOf(id);
-
-      if (index &lt; 0) {
-        result.push(id);
-      }
-    };
-
-    for (key in solarSystems) {
-      if (solarSystems.hasOwnProperty(key)) {
-        addId(solarSystems[key].getId());
-      }
-    }
-
-    return result.sort();
-  };
-
-  constructor();
 }
 
-ExtendedUniverse.prototype.extend = function() {
-  var UniverseBuilder = require("./UniverseBuilder");
-
-  return new UniverseBuilder(this);
-};
-
-module.exports = ExtendedUniverse;
+module.exports = StepBuilder;
 </code></pre>
         </article>
     </section>

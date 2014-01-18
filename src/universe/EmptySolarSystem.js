@@ -1,5 +1,8 @@
 "use strict";
 
+var Path = require("../travel/Path");
+var StepBuilder = require("../travel/StepBuilder");
+
 /**
  * This is an empty solar system. It doesn't contain anything and provides only
  * the basic information.
@@ -72,6 +75,10 @@ EmptySolarSystem.prototype.getJumps = function(jumpType) {
 
 EmptySolarSystem.prototype.getCosts = function() {
   return [];
+};
+
+EmptySolarSystem.prototype.startPath = function() {
+  return new Path(new StepBuilder(this.id).build());
 };
 
 module.exports = EmptySolarSystem;

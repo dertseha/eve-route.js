@@ -26,7 +26,7 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":15,"./universe":29,"./util":30}],2:[function(require,module,exports){
+},{"./travel":16,"./universe":30,"./util":31}],2:[function(require,module,exports){
 "use strict";
 
 /**
@@ -298,7 +298,7 @@ Path.prototype.getCostSum = function() {
 
 module.exports = Path;
 
-},{"./TravelCostSum":11}],7:[function(require,module,exports){
+},{"./TravelCostSum":12}],7:[function(require,module,exports){
 "use strict";
 
 /**
@@ -425,6 +425,9 @@ module.exports = StaticPathContestProvider;
  * does not contribute to the cost of the path if the system is the last one
  * (the destination).
  *
+ * The user does not need to create an instance directly and should use the
+ * StepBuilder instead.
+ *
  * @constructor
  * @param {Number} solarSystemId The ID of the solar system in which this step ends
  * @param {everoute.travel.Location} location the location where the step ends
@@ -482,6 +485,73 @@ Step.prototype.getContinueCosts = function() {
 module.exports = Step;
 
 },{}],11:[function(require,module,exports){
+"use strict";
+
+var AnyLocation = require("./AnyLocation");
+var Step = require("./Step");
+
+/**
+ * This builder helps creating steps, using common defaults where possible.
+ *
+ * @constructor
+ * @param {Number} solarSystemId The ID of the solar system in which this step ends
+ * @memberof everoute.travel
+ */
+function StepBuilder(solarSystemId) {
+
+  var to = new AnyLocation();
+  var enterCosts = [];
+  var continueCosts = [];
+
+  /**
+   * Builds a step instance with the current contained data.
+   * @return {everoute.travel.Step} The built step instance.
+   */
+  this.build = function() {
+    return new Step(solarSystemId, to, enterCosts, continueCosts);
+  };
+
+  /**
+   * The location in the solar system where the step is completing.
+   * Defaults to AnyLocation.
+   *
+   * @param  {everoute.travel.Location} location the destination location
+   * @return {everoute.travel.StepBuilder} this instance
+   */
+  this.to = function(location) {
+    to = location;
+
+    return this;
+  };
+
+  /**
+   * Sets the enter costs for this step. Defaults to empty array.
+   *
+   * @param {Array.<everoute.travel.TravelCost>} costs the enter costs.
+   * @return {everoute.travel.StepBuilder} this instance
+   */
+  this.withEnterCosts = function(costs) {
+    enterCosts = costs.slice(0);
+
+    return this;
+  };
+
+  /**
+   * Sets the continue costs for this step. Defaults to empty array.
+   *
+   * @param {Array.<everoute.travel.TravelCost>} costs the continue costs.
+   * @return {everoute.travel.StepBuilder} this instance
+   */
+  this.withContinueCosts = function(costs) {
+    continueCosts = costs.slice(0);
+
+    return this;
+  };
+}
+
+module.exports = StepBuilder;
+
+},{"./AnyLocation":3,"./Step":10}],12:[function(require,module,exports){
 "use strict";
 
 /**
@@ -548,7 +618,7 @@ TravelCostSum.prototype.add = function(costs) {
 
 module.exports = TravelCostSum;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 /**
@@ -576,7 +646,7 @@ function CombiningTravelCapability(capabilities) {
 
 module.exports = CombiningTravelCapability;
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 
 /**
@@ -618,7 +688,7 @@ function OptimizingTravelCapability(capability, contestProvider) {
 
 module.exports = OptimizingTravelCapability;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * This namespace contains everything about travel capabilities.
  *
@@ -630,7 +700,7 @@ module.exports = {
   OptimizingTravelCapability: require("./OptimizingTravelCapability")
 };
 
-},{"./CombiningTravelCapability":12,"./OptimizingTravelCapability":13}],15:[function(require,module,exports){
+},{"./CombiningTravelCapability":13,"./OptimizingTravelCapability":14}],16:[function(require,module,exports){
 /**
  * This namespace contains entries regarding travel.
  *
@@ -651,10 +721,11 @@ module.exports = {
   SpecificLocation: require("./SpecificLocation"),
   StaticPathContestProvider: require("./StaticPathContestProvider"),
   Step: require("./Step"),
+  StepBuilder: require("./StepBuilder"),
   TravelCostSum: require("./TravelCostSum")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./TravelCostSum":11,"./capabilities":14,"./rules":17,"./search":20}],16:[function(require,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":18,"./search":21}],17:[function(require,module,exports){
 "use strict";
 
 /**
@@ -686,7 +757,7 @@ TravelRuleset.prototype.compare = function(sumA, sumB) {
 
 module.exports = TravelRuleset;
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * This namespace contains rules for travelling.
  *
@@ -697,7 +768,7 @@ module.exports = {
   TravelRuleset: require("./TravelRuleset")
 };
 
-},{"./TravelRuleset":16}],18:[function(require,module,exports){
+},{"./TravelRuleset":17}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -723,7 +794,7 @@ function DestinationSystemSearchCriterion(systemId) {
 
 module.exports = DestinationSystemSearchCriterion;
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 /**
@@ -784,7 +855,7 @@ function PathFinder(start, capability, criterion, collector) {
 
 module.exports = PathFinder;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /**
  * This namespace contains logic for searching paths.
  *
@@ -796,8 +867,11 @@ module.exports = {
   PathFinder: require("./PathFinder")
 };
 
-},{"./DestinationSystemSearchCriterion":18,"./PathFinder":19}],21:[function(require,module,exports){
+},{"./DestinationSystemSearchCriterion":19,"./PathFinder":20}],22:[function(require,module,exports){
 "use strict";
+
+var Path = require("../travel/Path");
+var StepBuilder = require("../travel/StepBuilder");
 
 /**
  * This is an empty solar system. It doesn't contain anything and provides only
@@ -873,9 +947,13 @@ EmptySolarSystem.prototype.getCosts = function() {
   return [];
 };
 
+EmptySolarSystem.prototype.startPath = function() {
+  return new Path(new StepBuilder(this.id).build());
+};
+
 module.exports = EmptySolarSystem;
 
-},{}],22:[function(require,module,exports){
+},{"../travel/Path":6,"../travel/StepBuilder":11}],23:[function(require,module,exports){
 "use strict";
 
 var UniverseBuilder = require("./UniverseBuilder");
@@ -911,8 +989,10 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":27}],23:[function(require,module,exports){
+},{"./UniverseBuilder":28}],24:[function(require,module,exports){
 "use strict";
+
+var StepBuilder = require("../travel/StepBuilder");
 
 /**
  * An extended solar system that is based on another, but has its own extensions.
@@ -997,11 +1077,14 @@ function ExtendedSolarSystem(data) {
     return result.concat(costs);
   };
 
+  this.startPath = function() {
+    return base.startPath();
+  };
 }
 
 module.exports = ExtendedSolarSystem;
 
-},{}],24:[function(require,module,exports){
+},{"../travel/StepBuilder":11}],25:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1082,7 +1165,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":27}],25:[function(require,module,exports){
+},{"./UniverseBuilder":28}],26:[function(require,module,exports){
 "use strict";
 
 var JumpBuilder = require("../travel/JumpBuilder");
@@ -1123,7 +1206,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],26:[function(require,module,exports){
+},{"../travel/JumpBuilder":5}],27:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1153,7 +1236,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 var EmptySolarSystem = require("./EmptySolarSystem");
@@ -1266,7 +1349,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":21,"./ExtendedSolarSystem":23,"./ExtendedUniverse":24,"./SolarSystemExtension":25,"./SolarSystemExtensionData":26,"./UniverseExtensionData":28}],28:[function(require,module,exports){
+},{"./EmptySolarSystem":22,"./ExtendedSolarSystem":24,"./ExtendedUniverse":25,"./SolarSystemExtension":26,"./SolarSystemExtensionData":27,"./UniverseExtensionData":29}],29:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1292,7 +1375,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -1312,7 +1395,7 @@ module.exports = {
   SolarSystemExtensionData: require("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":21,"./EmptyUniverse":22,"./ExtendedSolarSystem":23,"./ExtendedUniverse":24,"./SolarSystemExtension":25,"./SolarSystemExtensionData":26,"./UniverseBuilder":27,"./UniverseExtensionData":28}],30:[function(require,module,exports){
+},{"./EmptySolarSystem":22,"./EmptyUniverse":23,"./ExtendedSolarSystem":24,"./ExtendedUniverse":25,"./SolarSystemExtension":26,"./SolarSystemExtensionData":27,"./UniverseBuilder":28,"./UniverseExtensionData":29}],31:[function(require,module,exports){
 "use strict";
 
 /**

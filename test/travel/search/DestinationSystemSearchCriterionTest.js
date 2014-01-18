@@ -5,7 +5,7 @@ describe("DestinationSystemSearchCriterion", function() {
   var DestinationSystemSearchCriterion = everoute.travel.search.DestinationSystemSearchCriterion;
   var AnyLocation = everoute.travel.AnyLocation;
   var Path = everoute.travel.Path;
-  var Step = everoute.travel.Step;
+  var StepBuilder = everoute.travel.StepBuilder;
 
   describe("isDesired()", function() {
     it("should return true for a path with the requested system ID", function() {
@@ -44,7 +44,7 @@ describe("DestinationSystemSearchCriterion", function() {
   });
 
   function createPathTo(systemId) {
-    return new Path(new Step(systemId, new AnyLocation(), [], []));
+    return new Path(new StepBuilder(systemId).build());
   }
 
 });
