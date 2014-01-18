@@ -75,9 +75,9 @@ describe("OptimizingTravelCapability", function() {
     var path = new Path(createStep(0, 100));
 
     givenNextStepsAre(0, [
-      createStep(1, 10),
+      createStep(1, 5),
       createStep(2, 20),
-      createStep(1, 5)
+      createStep(1, 10)
     ]);
 
     var result = capability.getNextPaths(path);
