@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: travel/Jump.js</title>
+    <title>JSDoc: Source: travel/Path.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: travel/Jump.js</h1>
+    <h1 class="page-title">Source: travel/Path.js</h1>
     
     
 
@@ -27,58 +27,75 @@
         <article>
             <pre class="prettyprint source"><code>"use strict";
 
+var TravelCostSum = require("./TravelCostSum");
+
 /**
- * This class represents a jump across the universe.
+ * A path is a sequence of steps and a running total of costs.
+ * The sequence of steps is realized using back references to the previous
+ * path.
  *
  * @constructor
  * @memberof everoute.travel
- * @param {String} ofType jump type specification
- * @param {everoute.travel.Location} fromLocation Source location
- * @param {Number} toSystemId Identifying the destination solar system
- * @param {everoute.travel.Location} toLocation location within destination system
- * @param {Array.&lt;everoute.travel.TravelCost>} costs Array of costs involved with this jump
  */
-function Jump(ofType, fromLocation, toSystemId, toLocation, costs) {
+function Path(step, previous) {
+  var stepCosts = step.getCosts();
 
-  var jumpCosts = costs.slice(0);
-
-  /**
-   * @return {String} Type identifying how the jump is performed.
-   */
-  this.getType = function() {
-    return ofType;
-  };
-
-  /**
-   * @return {Number} Identifying the destination solar system.
-   */
-  this.getDestinationId = function() {
-    return toSystemId;
-  };
-
-  /**
-   * @param {everoute.travel.Location} Location within the source system.
-   */
-  this.getSourceLocation = function() {
-    return fromLocation;
-  };
-
-  /**
-   * @param {everoute.travel.Location} toLocation location within destination system.
-   */
-  this.getDestinationLocation = function() {
-    return toLocation;
-  };
-
-  /**
-   * @param {Array.&lt;everoute.travel.TravelCost>} Array of costs involved with this jump
-   */
-  this.getCosts = function() {
-    return jumpCosts.slice(0);
-  };
+  this.step = step;
+  this.previous = previous;
+  this.costSum = previous ? previous.getCostSum().add(stepCosts) : new TravelCostSum(stepCosts);
 }
 
-module.exports = Jump;
+/**
+ * @return {Boolean} true if this is the first step of the path
+ * @memberof! everoute.travel.Path.prototype
+ */
+Path.prototype.isStart = function() {
+  return !this.previous;
+};
+
+/**
+ * @return {everoute.travel.Path} the path preceeding this one
+ * @throws {Error} When this path is the start
+ * @memberof! everoute.travel.Path.prototype
+ */
+Path.prototype.getPrevious = function() {
+  if (this.isStart()) {
+    throw new Error("Start of a path has no predecessor");
+  }
+
+  return this.previous;
+};
+
+/**
+ * Extends this path with another step, returning a new path.
+ *
+ * @param {everoute.travel.Step} step the new step
+ * @return {everoute.travel.Path} the resulting new path
+ * @memberof! everoute.travel.Path.prototype
+ */
+Path.prototype.extend = function(step) {
+  return new Path(step, this);
+};
+
+/**
+ * @return {Array.&lt;everoute.travel.Step>} The list of steps of this path
+ * @memberof! everoute.travel.Path.prototype
+ */
+Path.prototype.getSteps = function() {
+  var result = [this.step];
+
+  return this.isStart() ? result : this.previous.getSteps().concat(result);
+};
+
+/**
+ * @return {everoute.travel.TravelCostSum} The current sum of costs
+ * @memberof! everoute.travel.Path.prototype
+ */
+Path.prototype.getCostSum = function() {
+  return this.costSum;
+};
+
+module.exports = Path;
 </code></pre>
         </article>
     </section>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: AnyLocation</title>
+    <title>JSDoc: Class: Step</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: AnyLocation</h1>
+    <h1 class="page-title">Class: Step</h1>
     
     
 
@@ -29,7 +29,7 @@
     <h2>
         <span class="ancestors"><a href="everoute.html">everoute</a><a href="everoute.travel.html">.travel</a>.</span>
     
-    AnyLocation
+    Step
     </h2>
     
 </header>  
@@ -41,7 +41,7 @@
     
         
 <dt>
-    <h4 class="name" id="AnyLocation"><span class="type-signature"></span>new AnyLocation<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Step"><span class="type-signature"></span>new Step<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -49,8 +49,8 @@
     
     
     <div class="description">
-        This location is 'any' location. Compared to others, it will always refer
-to the other location.
+        A step is one entry in a travel path. It only contains information about
+the completed step - i.e., the destination information.
     </div>
     
 
@@ -83,7 +83,7 @@ to the other location.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="AnyLocation.js.html">travel/AnyLocation.js</a>, <a href="AnyLocation.js.html#line12">line 12</a>
+        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line10">line 10</a>
     </li></ul></dd>
     
     
@@ -111,12 +111,6 @@ to the other location.
     
     </div>
     
-    
-        <h3 class="subsection-title">Extends</h3>
-        
-        <ul>
-            <li><a href="everoute.travel.Location.html">everoute.travel.Location</a></li>
-        </ul>
     
     
     
@@ -135,70 +129,18 @@ to the other location.
         <dl>
             
 <dt>
-    <h4 class="name" id="distanceTo"><span class="type-signature"></span>Location#distanceTo<span class="signature">(other)</span><span class="type-signature"> &rarr; {Number}</span></h4>
+    <h4 class="name" id="getCosts"><span class="type-signature"></span>Step#getCosts<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>>}</span></h4>
     
     
 </dt>
 <dd>
     
     
-    <div class="description">
-        Calculates the distance to the given other location.
-    </div>
-    
 
     
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>other</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type"><a href="everoute.travel.Location.html">everoute.travel.Location</a></span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">The other location to measure against.</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
     
     
     
@@ -209,11 +151,6 @@ to the other location.
     
     
 
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="everoute.travel.Location.html#Location#distanceTo">everoute.travel.Location#Location#distanceTo</a>
-    </li></dd>
     
     
     
@@ -229,7 +166,7 @@ to the other location.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Location.js.html">travel/Location.js</a>, <a href="Location.js.html#line32">line 32</a>
+        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line36">line 36</a>
     </li></ul></dd>
     
     
@@ -254,7 +191,7 @@ to the other location.
     
             
 <div class="param-desc">
-    The vector distance between this and the other location.
+    The costs involved in this step.
 </div>
 
 
@@ -265,7 +202,7 @@ to the other location.
 	</dt>
 	<dd>
 		
-<span class="param-type">Number</span>
+<span class="param-type">Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>></span>
 
 
 	</dd>
@@ -279,70 +216,18 @@ to the other location.
         
             
 <dt>
-    <h4 class="name" id="getPositionRelativeTo"><span class="type-signature"></span>Location#getPositionRelativeTo<span class="signature">(origin)</span><span class="type-signature"> &rarr; {Array.&lt;Number>}</span></h4>
+    <h4 class="name" id="getLocation"><span class="type-signature"></span>Step#getLocation<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="everoute.travel.Location.html">everoute.travel.Location</a>}</span></h4>
     
     
 </dt>
 <dd>
     
     
-    <div class="description">
-        Returns the vector for this location, relative to given origin.
-    </div>
-    
 
     
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>origin</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Number></span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">The origin vector to relate to.</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
     
     
     
@@ -353,11 +238,6 @@ to the other location.
     
     
 
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="everoute.travel.Location.html#Location#getPositionRelativeTo">everoute.travel.Location#Location#getPositionRelativeTo</a>
-    </li></dd>
     
     
     
@@ -373,7 +253,7 @@ to the other location.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Location.js.html">travel/Location.js</a>, <a href="Location.js.html#line21">line 21</a>
+        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line28">line 28</a>
     </li></ul></dd>
     
     
@@ -398,7 +278,7 @@ to the other location.
     
             
 <div class="param-desc">
-    The relative vector. Origin + result = this location.
+    The location within the solar system.
 </div>
 
 
@@ -409,7 +289,94 @@ to the other location.
 	</dt>
 	<dd>
 		
-<span class="param-type">Array.&lt;Number></span>
+<span class="param-type"><a href="everoute.travel.Location.html">everoute.travel.Location</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getSolarSystemId"><span class="type-signature"></span>Step#getSolarSystemId<span class="signature">()</span><span class="type-signature"> &rarr; {Number}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line20">line 20</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The ID of the solar system this step ended.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Number</span>
 
 
 	</dd>
@@ -442,7 +409,7 @@ to the other location.
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 18 2014 08:28:33 GMT-0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 18 2014 08:28:34 GMT-0000 (GMT)
 </footer>
 
 <script> prettyPrint(); </script>

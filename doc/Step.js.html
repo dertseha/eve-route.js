@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: travel/Jump.js</title>
+    <title>JSDoc: Source: travel/Step.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: travel/Jump.js</h1>
+    <h1 class="page-title">Source: travel/Step.js</h1>
     
     
 
@@ -28,57 +28,43 @@
             <pre class="prettyprint source"><code>"use strict";
 
 /**
- * This class represents a jump across the universe.
+ * A step is one entry in a travel path. It only contains information about
+ * the completed step - i.e., the destination information.
  *
  * @constructor
  * @memberof everoute.travel
- * @param {String} ofType jump type specification
- * @param {everoute.travel.Location} fromLocation Source location
- * @param {Number} toSystemId Identifying the destination solar system
- * @param {everoute.travel.Location} toLocation location within destination system
- * @param {Array.&lt;everoute.travel.TravelCost>} costs Array of costs involved with this jump
  */
-function Jump(ofType, fromLocation, toSystemId, toLocation, costs) {
-
-  var jumpCosts = costs.slice(0);
-
-  /**
-   * @return {String} Type identifying how the jump is performed.
-   */
-  this.getType = function() {
-    return ofType;
-  };
-
-  /**
-   * @return {Number} Identifying the destination solar system.
-   */
-  this.getDestinationId = function() {
-    return toSystemId;
-  };
-
-  /**
-   * @param {everoute.travel.Location} Location within the source system.
-   */
-  this.getSourceLocation = function() {
-    return fromLocation;
-  };
-
-  /**
-   * @param {everoute.travel.Location} toLocation location within destination system.
-   */
-  this.getDestinationLocation = function() {
-    return toLocation;
-  };
-
-  /**
-   * @param {Array.&lt;everoute.travel.TravelCost>} Array of costs involved with this jump
-   */
-  this.getCosts = function() {
-    return jumpCosts.slice(0);
-  };
+function Step(solarSystemId, location, costs) {
+  this.solarSystemId = solarSystemId;
+  this.location = location;
+  this.costs = costs.slice(0);
 }
 
-module.exports = Jump;
+/**
+ * @return {Number} The ID of the solar system this step ended.
+ * @memberof! everoute.travel.Step.prototype
+ */
+Step.prototype.getSolarSystemId = function() {
+  return this.solarSystemId;
+};
+
+/**
+ * @return {everoute.travel.Location} The location within the solar system.
+ * @memberof! everoute.travel.Step.prototype
+ */
+Step.prototype.getLocation = function() {
+  return this.location;
+};
+
+/**
+ * @return {Array.&lt;everoute.travel.TravelCost>} The costs involved in this step.
+ * @memberof! everoute.travel.Step.prototype
+ */
+Step.prototype.getCosts = function() {
+  return this.costs.slice(0);
+};
+
+module.exports = Step;
 </code></pre>
         </article>
     </section>

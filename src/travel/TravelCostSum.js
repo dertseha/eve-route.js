@@ -5,10 +5,22 @@
  *
  * @constructor
  * @memberof everoute.travel
- * @param {Object.<String, TravelCost>} [initCosts] optional initial costs
+ * @param {Array.<everoute.travel.TravelCost>} initCosts initial costs
  */
 function TravelCostSum(initCosts) {
-  this.costs = initCosts || {};
+  var costs = {};
+
+  initCosts.forEach(function(cost) {
+    var type = cost.getType();
+
+    if (costs.hasOwnProperty(type)) {
+      costs[type] = cost.join(costs[type]);
+    } else {
+      costs[type] = cost;
+    }
+  });
+
+  this.costs = costs;
 }
 
 /**
@@ -47,27 +59,7 @@ TravelCostSum.prototype.getTotal = function() {
  * @memberof! everoute.travel.TravelCostSum.prototype
  */
 TravelCostSum.prototype.add = function(costs) {
-  var oldCosts = this.costs;
-  var newCosts = {};
-  var key;
-
-  for (key in this.costs) {
-    if (this.costs.hasOwnProperty(key)) {
-      newCosts[key] = this.costs[key];
-    }
-  }
-
-  costs.forEach(function(cost) {
-    var type = cost.getType();
-
-    if (newCosts.hasOwnProperty(type)) {
-      newCosts[type] = cost.join(newCosts[type]);
-    } else {
-      newCosts[type] = cost;
-    }
-  });
-
-  return new TravelCostSum(newCosts);
+  return new TravelCostSum(this.getTotal().concat(costs));
 };
 
 module.exports = TravelCostSum;

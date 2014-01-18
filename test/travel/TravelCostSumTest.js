@@ -8,7 +8,7 @@ describe("TravelCostSum", function() {
   var sum;
 
   beforeEach(function() {
-    sum = new TravelCostSum();
+    sum = new TravelCostSum([]);
   });
 
   it("should return an empty total when no costs involved", function() {

@@ -9,6 +9,8 @@ module.exports = {
   AnyLocation: require("./AnyLocation"),
   Jump: require("./Jump"),
   JumpBuilder: require("./JumpBuilder"),
+  Path: require("./Path"),
   SpecificLocation: require("./SpecificLocation"),
+  Step: require("./Step"),
   TravelCostSum: require("./TravelCostSum")
 };
