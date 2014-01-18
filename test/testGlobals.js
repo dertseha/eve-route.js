@@ -19,6 +19,3 @@ global.sinon = require("sinon");
 
 global.expect = require("expect.js");
 global.expect = require("sinon-expect").enhance(global.expect, global.sinon, "was");
-
-// explicitly extend object prototype to have all foreach loops safeguard with hasOwnProperty()
-Object.prototype.forLoopShouldCheckProperties = true;

@@ -7,6 +7,7 @@
 module.exports = {
   capabilities: require("./capabilities"),
   rules: require("./rules"),
+  search: require("./search"),
 
   AddingTravelCost: require("./AddingTravelCost"),
   AnyLocation: require("./AnyLocation"),

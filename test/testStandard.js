@@ -10,3 +10,6 @@
 // in Node.js .
 
 global.everoute = require("../src");
+
+// explicitly extend object prototype to have all foreach loops safeguard with hasOwnProperty()
+Object.prototype.forLoopShouldCheckProperties = true;

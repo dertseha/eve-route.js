@@ -26,7 +26,7 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":15,"./universe":26,"./util":27}],2:[function(require,module,exports){
+},{"./travel":15,"./universe":29,"./util":30}],2:[function(require,module,exports){
 "use strict";
 
 /**
@@ -611,6 +611,7 @@ module.exports = {
 module.exports = {
   capabilities: require("./capabilities"),
   rules: require("./rules"),
+  search: require("./search"),
 
   AddingTravelCost: require("./AddingTravelCost"),
   AnyLocation: require("./AnyLocation"),
@@ -624,7 +625,7 @@ module.exports = {
   TravelCostSum: require("./TravelCostSum")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./TravelCostSum":11,"./capabilities":14,"./rules":17}],16:[function(require,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./TravelCostSum":11,"./capabilities":14,"./rules":17,"./search":20}],16:[function(require,module,exports){
 "use strict";
 
 /**
@@ -668,6 +669,105 @@ module.exports = {
 };
 
 },{"./TravelRuleset":16}],18:[function(require,module,exports){
+"use strict";
+
+/**
+ * A search criterion that looks for a specific system and stops searches
+ * when this system has been reached.
+ *
+ * @constructor
+ * @implements everoute.travel.search.SearchCriterion
+ * @extends everoute.travel.search.SearchCriterion
+ * @param {Number} systemId The ID of the solar system to look for
+ * @memberof everoute.travel.search
+ */
+function DestinationSystemSearchCriterion(systemId) {
+
+  this.isDesired = function(path) {
+    return path.getStep().getSolarSystemId() === systemId;
+  };
+
+  this.shouldSearchContinueWith = function(path) {
+    return path.getStep().getSolarSystemId() !== systemId;
+  };
+}
+
+module.exports = DestinationSystemSearchCriterion;
+
+},{}],19:[function(require,module,exports){
+"use strict";
+
+/**
+ * A path finder uses a travel capability to search from a starting path one or
+ * more paths to other destinations.
+ * A search criterion determines whether a found path should be reported to a
+ * collector and whether the search should continue with a found path.
+ *
+ * Since the search might take longer time, it is realized with a queue that
+ * is processed one candidate at a time. The user is in control when and how
+ * often to continue the search.
+ *
+ * Note that as long as the travel capability returns new results for any of
+ * the found paths, this finder will continue to search. The search criterion
+ * only governs whether a specific path is worth continuing.
+ * The finder is used best in combination with the OptimizingTravelCapability.
+ *
+ * @constructor
+ * @param {everoute.travel.Path} start The start for the search.
+ * @param {everoute.travel.capabilities.TravelCapability} capability the capability to use for advancing.
+ * @param {everoute.travel.search.SearchCriterion} criterion The criterion by which to determine results.
+ * @param {everoute.travel.search.SearchResultCollector} collector The collector for any found paths.
+ * @memberof everoute.travel.search
+ */
+function PathFinder(start, capability, criterion, collector) {
+
+  var candidates = [start];
+
+  /**
+   * Continues the search. This method should be called until it returned false.
+   *
+   * @return {Boolean} false if the search has completed and no more possibilities exist.
+   */
+  this.continueSearch = function() {
+    if (candidates.length > 0) {
+      candidates = candidates.concat(findNextCandidates(candidates.pop()));
+    }
+
+    return candidates.length !== 0;
+  };
+
+  function findNextCandidates(startCandidate) {
+    var nextPaths = capability.getNextPaths(startCandidate);
+    var result = [];
+
+    nextPaths.forEach(function(path) {
+      if (criterion.isDesired(path)) {
+        collector.collect(path);
+      }
+      if (criterion.shouldContinueSearchWith(path)) {
+        result.push(path);
+      }
+    });
+
+    return result;
+  }
+}
+
+module.exports = PathFinder;
+
+},{}],20:[function(require,module,exports){
+/**
+ * This namespace contains logic for searching paths.
+ *
+ * @namespace search
+ * @memberof everoute.travel
+ */
+module.exports = {
+  DestinationSystemSearchCriterion: require("./DestinationSystemSearchCriterion"),
+  PathFinder: require("./PathFinder")
+};
+
+},{"./DestinationSystemSearchCriterion":18,"./PathFinder":19}],21:[function(require,module,exports){
 "use strict";
 
 /**
@@ -746,7 +846,7 @@ EmptySolarSystem.prototype.getCosts = function() {
 
 module.exports = EmptySolarSystem;
 
-},{}],19:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 
 var UniverseBuilder = require("./UniverseBuilder");
@@ -782,7 +882,7 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":24}],20:[function(require,module,exports){
+},{"./UniverseBuilder":27}],23:[function(require,module,exports){
 "use strict";
 
 /**
@@ -872,7 +972,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{}],21:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 /**
@@ -953,7 +1053,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":24}],22:[function(require,module,exports){
+},{"./UniverseBuilder":27}],25:[function(require,module,exports){
 "use strict";
 
 var JumpBuilder = require("../travel/JumpBuilder");
@@ -994,7 +1094,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],23:[function(require,module,exports){
+},{"../travel/JumpBuilder":5}],26:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1024,7 +1124,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],24:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 var EmptySolarSystem = require("./EmptySolarSystem");
@@ -1114,7 +1214,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":18,"./ExtendedSolarSystem":20,"./ExtendedUniverse":21,"./SolarSystemExtension":22,"./SolarSystemExtensionData":23,"./UniverseExtensionData":25}],25:[function(require,module,exports){
+},{"./EmptySolarSystem":21,"./ExtendedSolarSystem":23,"./ExtendedUniverse":24,"./SolarSystemExtension":25,"./SolarSystemExtensionData":26,"./UniverseExtensionData":28}],28:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1140,7 +1240,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],26:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -1160,7 +1260,7 @@ module.exports = {
   SolarSystemExtensionData: require("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":18,"./EmptyUniverse":19,"./ExtendedSolarSystem":20,"./ExtendedUniverse":21,"./SolarSystemExtension":22,"./SolarSystemExtensionData":23,"./UniverseBuilder":24,"./UniverseExtensionData":25}],27:[function(require,module,exports){
+},{"./EmptySolarSystem":21,"./EmptyUniverse":22,"./ExtendedSolarSystem":23,"./ExtendedUniverse":24,"./SolarSystemExtension":25,"./SolarSystemExtensionData":26,"./UniverseBuilder":27,"./UniverseExtensionData":28}],30:[function(require,module,exports){
 "use strict";
 
 /**
