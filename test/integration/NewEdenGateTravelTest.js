@@ -13,6 +13,7 @@ describe("New Eden Gate Travel", function() {
   var OptimizingTravelCapability = everoute.travel.capabilities.OptimizingTravelCapability;
   var DestinationSystemSearchCriterion = everoute.travel.search.DestinationSystemSearchCriterion;
   var TravelRuleset = everoute.travel.rules.TravelRuleset;
+  var NaturalOrderTravelRule = everoute.travel.rules.NaturalOrderTravelRule;
 
   var solarSystemNamesById = {};
   var solarSystemIdsByName = {};
@@ -34,13 +35,7 @@ describe("New Eden Gate Travel", function() {
   };
 
   var nullCost = new AddingTravelCost("jumps", 0);
-
-  var jumpCountRule = {
-    compare: function(sumA, sumB) {
-      return sumA.getCost(nullCost).getValue() - sumB.getCost(nullCost).getValue();
-    }
-  };
-
+  var jumpCountRule = new NaturalOrderTravelRule(nullCost);
   var rules = [jumpCountRule];
 
   it("should find a route from Rens to Pator", function() {

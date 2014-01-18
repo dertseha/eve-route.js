@@ -5,5 +5,6 @@
  * @memberof everoute.travel
  */
 module.exports = {
+  NaturalOrderTravelRule: require("./NaturalOrderTravelRule"),
   TravelRuleset: require("./TravelRuleset")
 };

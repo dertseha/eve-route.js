@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: travel/AnyLocation.js</title>
+    <title>JSDoc: Source: travel/rules/NaturalOrderTravelRule.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: travel/AnyLocation.js</h1>
+    <h1 class="page-title">Source: travel/rules/NaturalOrderTravelRule.js</h1>
     
     
 
@@ -28,27 +28,23 @@
             <pre class="prettyprint source"><code>"use strict";
 
 /**
- * This location is 'any' location. Compared to others, it will always refer
- * to the other location.
+ * The rule compares costs according to their natural order. Lower values
+ * are considered better than higher values.
  *
  * @constructor
- * @implements everoute.travel.Location
- * @extends everoute.travel.Location
- * @memberof everoute.travel
+ * @implements {everoute.travel.rules.TravelRule}
+ * @extends {everoute.travel.rules.TravelRule}
+ * @param {everoute.travel.TravelCost} nullCost the default cost value.
+ * @memberof everoute.travel.rules
  */
-function AnyLocation() {
+function NaturalOrderTravelRule(nullCost) {
 
+  this.compare = function(sumA, sumB) {
+    return sumA.getCost(nullCost).getValue() - sumB.getCost(nullCost).getValue();
+  };
 }
 
-AnyLocation.prototype.getPositionRelativeTo = function(origin) {
-  return [0, 0, 0];
-};
-
-AnyLocation.prototype.distanceTo = function(other) {
-  return 0;
-};
-
-module.exports = AnyLocation;
+module.exports = NaturalOrderTravelRule;
 </code></pre>
         </article>
     </section>

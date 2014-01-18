@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: SpecificLocation</title>
+    <title>JSDoc: Class: NaturalOrderTravelRule</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: SpecificLocation</h1>
+    <h1 class="page-title">Class: NaturalOrderTravelRule</h1>
     
     
 
@@ -27,9 +27,9 @@
     
 <header>
     <h2>
-        <span class="ancestors"><a href="everoute.html">everoute</a><a href="everoute.travel.html">.travel</a>.</span>
+        <span class="ancestors"><a href="everoute.html">everoute</a><a href="everoute.travel.html">.travel</a><a href="everoute.travel.rules.html">.rules</a>.</span>
     
-    SpecificLocation
+    NaturalOrderTravelRule
     </h2>
     
 </header>  
@@ -41,7 +41,7 @@
     
         
 <dt>
-    <h4 class="name" id="SpecificLocation"><span class="type-signature"></span>new SpecificLocation<span class="signature">(x, y, z)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="NaturalOrderTravelRule"><span class="type-signature"></span>new NaturalOrderTravelRule<span class="signature">(nullCost)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -49,8 +49,8 @@
     
     
     <div class="description">
-        This location has a specific position in space. It can provide results
-when compared to other specific locations.
+        The rule compares costs according to their natural order. Lower values
+are considered better than higher values.
     </div>
     
 
@@ -84,13 +84,13 @@ when compared to other specific locations.
 	
         <tr>
             
-                <td class="name"><code>x</code></td>
+                <td class="name"><code>nullCost</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">Number</span>
+<span class="param-type"><a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a></span>
 
 
             
@@ -100,53 +100,7 @@ when compared to other specific locations.
             
             
             
-            <td class="description last">The X coordinate.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>y</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">The Y coordinate.</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>z</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">The Z coordinate.</td>
+            <td class="description last">the default cost value.</td>
         </tr>
 	
 	
@@ -177,7 +131,7 @@ when compared to other specific locations.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="SpecificLocation.js.html">travel/SpecificLocation.js</a>, <a href="SpecificLocation.js.html#line15">line 15</a>
+        <a href="NaturalOrderTravelRule.js.html">travel/rules/NaturalOrderTravelRule.js</a>, <a href="NaturalOrderTravelRule.js.html#line13">line 13</a>
     </li></ul></dd>
     
     
@@ -209,7 +163,7 @@ when compared to other specific locations.
         <h3 class="subsection-title">Extends</h3>
         
         <ul>
-            <li><a href="everoute.travel.Location.html">everoute.travel.Location</a></li>
+            <li><a href="everoute.travel.rules.TravelRule.html">everoute.travel.rules.TravelRule</a></li>
         </ul>
     
     
@@ -229,7 +183,7 @@ when compared to other specific locations.
         <dl>
             
 <dt>
-    <h4 class="name" id="distanceTo"><span class="type-signature"></span>Location#distanceTo<span class="signature">(other)</span><span class="type-signature"> &rarr; {Number}</span></h4>
+    <h4 class="name" id="compare"><span class="type-signature"></span>TravelRule#compare<span class="signature">(sumA, sumB)</span><span class="type-signature"> &rarr; {Number}</span></h4>
     
     
 </dt>
@@ -237,7 +191,7 @@ when compared to other specific locations.
     
     
     <div class="description">
-        Calculates the distance to the given other location.
+        Compares the two given sums.
     </div>
     
 
@@ -271,13 +225,13 @@ when compared to other specific locations.
 	
         <tr>
             
-                <td class="name"><code>other</code></td>
+                <td class="name"><code>sumA</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type"><a href="everoute.travel.Location.html">everoute.travel.Location</a></span>
+<span class="param-type"><a href="everoute.travel.TravelCostSum.html">everoute.travel.TravelCostSum</a></span>
 
 
             
@@ -287,7 +241,30 @@ when compared to other specific locations.
             
             
             
-            <td class="description last">The other location to measure against.</td>
+            <td class="description last">the first cost sum</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>sumB</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="everoute.travel.TravelCostSum.html">everoute.travel.TravelCostSum</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">the second cost sum</td>
         </tr>
 	
 	
@@ -306,7 +283,7 @@ when compared to other specific locations.
     
     <dt class="inherited-from">Inherited From:</dt>
     <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="everoute.travel.Location.html#Location#distanceTo">everoute.travel.Location#Location#distanceTo</a>
+        <a href="everoute.travel.rules.TravelRule.html#TravelRule#compare">everoute.travel.rules.TravelRule#TravelRule#compare</a>
     </li></dd>
     
     
@@ -323,7 +300,7 @@ when compared to other specific locations.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Location.js.html">travel/Location.js</a>, <a href="Location.js.html#line32">line 32</a>
+        <a href="TravelRule.js.html">travel/rules/TravelRule.js</a>, <a href="TravelRule.js.html#line23">line 23</a>
     </li></ul></dd>
     
     
@@ -348,7 +325,7 @@ when compared to other specific locations.
     
             
 <div class="param-desc">
-    The vector distance between this and the other location.
+    The comparison result. <0: A is better than B, >0 A is worse than B, 0 if equal.
 </div>
 
 
@@ -360,150 +337,6 @@ when compared to other specific locations.
 	<dd>
 		
 <span class="param-type">Number</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="getPositionRelativeTo"><span class="type-signature"></span>Location#getPositionRelativeTo<span class="signature">(origin)</span><span class="type-signature"> &rarr; {Array.&lt;Number>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Returns the vector for this location, relative to given origin.
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>origin</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Number></span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">The origin vector to relate to.</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="everoute.travel.Location.html#Location#getPositionRelativeTo">everoute.travel.Location#Location#getPositionRelativeTo</a>
-    </li></dd>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Location.js.html">travel/Location.js</a>, <a href="Location.js.html#line21">line 21</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    The relative vector. Origin + result = this location.
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Array.&lt;Number></span>
 
 
 	</dd>
@@ -536,7 +369,7 @@ when compared to other specific locations.
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 18 2014 21:02:21 GMT-0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 18 2014 21:02:20 GMT-0000 (GMT)
 </footer>
 
 <script> prettyPrint(); </script>
