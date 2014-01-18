@@ -8,21 +8,22 @@ var TravelCostSum = require("./TravelCostSum");
  * path.
  *
  * @constructor
+ * @param {everoute.travel.Step} step the step that made this path
+ * @param {everoute.travel.Path} [previous] the previous path this one extends. Internal parameter.
+ * @param {everoute.travel.TravelCostSum} [costSum] the new cost sum. Internal parameter.
  * @memberof everoute.travel
  */
-function Path(step, previous) {
-  var stepCosts = step.getCosts();
-
+function Path(step, previous, costSum) {
   this.step = step;
   this.previous = previous;
-  this.costSum = previous ? previous.getCostSum().add(stepCosts) : new TravelCostSum(stepCosts);
+  this.costSum = costSum ? costSum : new TravelCostSum(step.getEnterCosts());
 }
 
 /**
  * @return {String} A key that identifies the current end location
  */
 Path.prototype.getDestinationKey = function() {
-  return this.step.getSolarSystemId().toString();
+  return this.step.getKey();
 };
 
 /**
@@ -54,7 +55,9 @@ Path.prototype.getPrevious = function() {
  * @memberof! everoute.travel.Path.prototype
  */
 Path.prototype.extend = function(step) {
-  return new Path(step, this);
+  var costs = this.step.getContinueCosts().concat(step.getEnterCosts());
+
+  return new Path(step, this, this.costSum.add(costs));
 };
 
 /**

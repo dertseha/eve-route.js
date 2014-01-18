@@ -14,7 +14,7 @@ var universe = require("./universe");
  * @memberof everoute
  */
 var newUniverseBuilder = function() {
-  return new universe.UniverseBuilder();
+  return new universe.UniverseBuilder(new universe.EmptyUniverse());
 };
 
 module.exports = {

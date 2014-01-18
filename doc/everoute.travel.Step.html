@@ -41,7 +41,7 @@
     
         
 <dt>
-    <h4 class="name" id="Step"><span class="type-signature"></span>new Step<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Step"><span class="type-signature"></span>new Step<span class="signature">(solarSystemId, location, enterCosts, continueCosts)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -51,6 +51,11 @@
     <div class="description">
         A step is one entry in a travel path. It only contains information about
 the completed step - i.e., the destination information.
+
+'Continue' costs are those that are necessary if this step is only an
+intermediary step in a journey. For example, the security status of a system
+does not contribute to the cost of the path if the system is the last one
+(the destination).
     </div>
     
 
@@ -58,6 +63,123 @@ the completed step - i.e., the destination information.
     
     
     
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>solarSystemId</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The ID of the solar system in which this step ends</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>location</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="everoute.travel.Location.html">everoute.travel.Location</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">the location where the step ends</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>enterCosts</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">costs necessary to do this step</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>continueCosts</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">costs necessary to continue the journey</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
     
     
     
@@ -83,7 +205,7 @@ the completed step - i.e., the destination information.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line10">line 10</a>
+        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line19">line 19</a>
     </li></ul></dd>
     
     
@@ -129,7 +251,7 @@ the completed step - i.e., the destination information.
         <dl>
             
 <dt>
-    <h4 class="name" id="getCosts"><span class="type-signature"></span>Step#getCosts<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>>}</span></h4>
+    <h4 class="name" id="getContinueCosts"><span class="type-signature"></span>Step#getContinueCosts<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>>}</span></h4>
     
     
 </dt>
@@ -166,7 +288,7 @@ the completed step - i.e., the destination information.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line36">line 36</a>
+        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line62">line 62</a>
     </li></ul></dd>
     
     
@@ -191,7 +313,7 @@ the completed step - i.e., the destination information.
     
             
 <div class="param-desc">
-    The costs involved in this step.
+    The costs necessary to continue the journey.
 </div>
 
 
@@ -203,6 +325,180 @@ the completed step - i.e., the destination information.
 	<dd>
 		
 <span class="param-type">Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getEnterCosts"><span class="type-signature"></span>Step#getEnterCosts<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line54">line 54</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The costs involved in reaching this step.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getKey"><span class="type-signature"></span>Step#getKey<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line30">line 30</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    A key that identifies this destination location
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">String</span>
 
 
 	</dd>
@@ -253,7 +549,7 @@ the completed step - i.e., the destination information.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line28">line 28</a>
+        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line46">line 46</a>
     </li></ul></dd>
     
     
@@ -340,7 +636,7 @@ the completed step - i.e., the destination information.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line20">line 20</a>
+        <a href="Step.js.html">travel/Step.js</a>, <a href="Step.js.html#line38">line 38</a>
     </li></ul></dd>
     
     
@@ -409,7 +705,7 @@ the completed step - i.e., the destination information.
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 18 2014 15:51:15 GMT-0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 18 2014 20:12:02 GMT-0000 (GMT)
 </footer>
 
 <script> prettyPrint(); </script>

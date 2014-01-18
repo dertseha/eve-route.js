@@ -88,7 +88,7 @@ describe("OptimizingTravelCapability", function() {
   function createStep(systemId, costValue) {
     var cost = new AddingTravelCost("test", costValue);
 
-    return new Step(systemId, new AnyLocation(), [cost]);
+    return new Step(systemId, new AnyLocation(), [cost], []);
   }
 
   function givenNextStepsAre(forId, list) {

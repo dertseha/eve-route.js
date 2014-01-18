@@ -44,7 +44,7 @@ describe("DestinationSystemSearchCriterion", function() {
   });
 
   function createPathTo(systemId) {
-    return new Path(new Step(systemId, new AnyLocation(), []));
+    return new Path(new Step(systemId, new AnyLocation(), [], []));
   }
 
 });

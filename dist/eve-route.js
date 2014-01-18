@@ -15,7 +15,7 @@ var universe = require("./universe");
  * @memberof everoute
  */
 var newUniverseBuilder = function() {
-  return new universe.UniverseBuilder();
+  return new universe.UniverseBuilder(new universe.EmptyUniverse());
 };
 
 module.exports = {
@@ -218,21 +218,22 @@ var TravelCostSum = require("./TravelCostSum");
  * path.
  *
  * @constructor
+ * @param {everoute.travel.Step} step the step that made this path
+ * @param {everoute.travel.Path} [previous] the previous path this one extends. Internal parameter.
+ * @param {everoute.travel.TravelCostSum} [costSum] the new cost sum. Internal parameter.
  * @memberof everoute.travel
  */
-function Path(step, previous) {
-  var stepCosts = step.getCosts();
-
+function Path(step, previous, costSum) {
   this.step = step;
   this.previous = previous;
-  this.costSum = previous ? previous.getCostSum().add(stepCosts) : new TravelCostSum(stepCosts);
+  this.costSum = costSum ? costSum : new TravelCostSum(step.getEnterCosts());
 }
 
 /**
  * @return {String} A key that identifies the current end location
  */
 Path.prototype.getDestinationKey = function() {
-  return this.step.getSolarSystemId().toString();
+  return this.step.getKey();
 };
 
 /**
@@ -264,7 +265,9 @@ Path.prototype.getPrevious = function() {
  * @memberof! everoute.travel.Path.prototype
  */
 Path.prototype.extend = function(step) {
-  return new Path(step, this);
+  var costs = this.step.getContinueCosts().concat(step.getEnterCosts());
+
+  return new Path(step, this, this.costSum.add(costs));
 };
 
 /**
@@ -417,14 +420,32 @@ module.exports = StaticPathContestProvider;
  * A step is one entry in a travel path. It only contains information about
  * the completed step - i.e., the destination information.
  *
+ * 'Continue' costs are those that are necessary if this step is only an
+ * intermediary step in a journey. For example, the security status of a system
+ * does not contribute to the cost of the path if the system is the last one
+ * (the destination).
+ *
  * @constructor
+ * @param {Number} solarSystemId The ID of the solar system in which this step ends
+ * @param {everoute.travel.Location} location the location where the step ends
+ * @param {Array.<everoute.travel.TravelCost>} enterCosts costs necessary to do this step
+ * @param {Array.<everoute.travel.TravelCost>} continueCosts costs necessary to continue the journey
  * @memberof everoute.travel
  */
-function Step(solarSystemId, location, costs) {
+function Step(solarSystemId, location, enterCosts, continueCosts) {
   this.solarSystemId = solarSystemId;
   this.location = location;
-  this.costs = costs.slice(0);
+  this.enterCosts = enterCosts.slice(0);
+  this.continueCosts = continueCosts.slice(0);
 }
+
+/**
+ * @return {String} A key that identifies this destination location
+ * @memberof! everoute.travel.Step.prototype
+ */
+Step.prototype.getKey = function() {
+  return this.solarSystemId.toString();
+};
 
 /**
  * @return {Number} The ID of the solar system this step ended.
@@ -443,11 +464,19 @@ Step.prototype.getLocation = function() {
 };
 
 /**
- * @return {Array.<everoute.travel.TravelCost>} The costs involved in this step.
+ * @return {Array.<everoute.travel.TravelCost>} The costs involved in reaching this step.
  * @memberof! everoute.travel.Step.prototype
  */
-Step.prototype.getCosts = function() {
-  return this.costs.slice(0);
+Step.prototype.getEnterCosts = function() {
+  return this.enterCosts.slice(0);
+};
+
+/**
+ * @return {Array.<everoute.travel.TravelCost>} The costs necessary to continue the journey.
+ * @memberof! everoute.travel.Step.prototype
+ */
+Step.prototype.getContinueCosts = function() {
+  return this.continueCosts.slice(0);
 };
 
 module.exports = Step;
@@ -744,7 +773,7 @@ function PathFinder(start, capability, criterion, collector) {
       if (criterion.isDesired(path)) {
         collector.collect(path);
       }
-      if (criterion.shouldContinueSearchWith(path)) {
+      if (criterion.shouldSearchContinueWith(path)) {
         result.push(path);
       }
     });
@@ -1184,6 +1213,29 @@ function UniverseBuilder(base) {
     } else {
       throw new Error("Solar System " + id + " already exists.");
     }
+  };
+
+  /**
+   * @return {Array.<Number>} All IDs from the base universe and the extension so far.
+   */
+  this.getSolarSystemIds = function() {
+    var result = base.getSolarSystemIds();
+    var key;
+    var addId = function(id) {
+      var index = result.indexOf(id);
+
+      if (index < 0) {
+        result.push(id);
+      }
+    };
+
+    for (key in solarSystemExtensionData) {
+      if (solarSystemExtensionData.hasOwnProperty(key)) {
+        addId(solarSystemExtensionData[key].base.getId());
+      }
+    }
+
+    return result.sort();
   };
 
   /**

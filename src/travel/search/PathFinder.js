@@ -47,7 +47,7 @@ function PathFinder(start, capability, criterion, collector) {
       if (criterion.isDesired(path)) {
         collector.collect(path);
       }
-      if (criterion.shouldContinueSearchWith(path)) {
+      if (criterion.shouldSearchContinueWith(path)) {
         result.push(path);
       }
     });

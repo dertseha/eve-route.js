@@ -46,7 +46,7 @@ describe("PathFinder", function() {
       isDesired: function(path) {
         return false;
       },
-      shouldContinueSearchWith: function(path) {
+      shouldSearchContinueWith: function(path) {
         return true;
       }
     };
@@ -93,7 +93,7 @@ describe("PathFinder", function() {
     givenNextStepsAre(0, [createStep(1)]);
     givenNextStepsAre(1, [createStep(2)]);
 
-    criterion.shouldContinueSearchWith = function(path) {
+    criterion.shouldSearchContinueWith = function(path) {
       return path.getStep().getSolarSystemId() !== 2;
     };
 
@@ -119,7 +119,7 @@ describe("PathFinder", function() {
   }
 
   function createStep(systemId) {
-    return new Step(systemId, new AnyLocation(), []);
+    return new Step(systemId, new AnyLocation(), [], []);
   }
 
   function givenNextStepsAre(forId, list) {

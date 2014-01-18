@@ -60,6 +60,29 @@ function UniverseBuilder(base) {
   };
 
   /**
+   * @return {Array.<Number>} All IDs from the base universe and the extension so far.
+   */
+  this.getSolarSystemIds = function() {
+    var result = base.getSolarSystemIds();
+    var key;
+    var addId = function(id) {
+      var index = result.indexOf(id);
+
+      if (index < 0) {
+        result.push(id);
+      }
+    };
+
+    for (key in solarSystemExtensionData) {
+      if (solarSystemExtensionData.hasOwnProperty(key)) {
+        addId(solarSystemExtensionData[key].base.getId());
+      }
+    }
+
+    return result.sort();
+  };
+
+  /**
    * Requests to extend an existing solar system.
    *
    * @param  {Number} id The unique key of the solar system.

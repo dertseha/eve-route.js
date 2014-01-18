@@ -109,6 +109,29 @@ describe("UniverseBuilder", function() {
     }
   });
 
+  describe("getSolarSystemIds()", function() {
+    it("should return an empty array if universe is empty", function() {
+      whenABuilderIsCreated();
+
+      thenGetSolarSystemIdsShouldReturn([]);
+    });
+
+    it("should return all IDs from base universe and extension", function() {
+      givenBaseUniverseHasSolarSystem(1900);
+      givenABuilder();
+
+      whenASolarSystemIsAdded(2000);
+
+      thenGetSolarSystemIdsShouldReturn([1900, 2000]);
+    });
+
+    function thenGetSolarSystemIdsShouldReturn(expected) {
+      var result = builder.getSolarSystemIds();
+
+      expect(result).to.be.eql(expected);
+    }
+  });
+
   function givenBaseUniverseHasSolarSystem(id) {
     var baseExtension = universe.extend();
 

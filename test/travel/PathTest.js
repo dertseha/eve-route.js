@@ -60,7 +60,7 @@ describe("Path", function() {
     });
 
     function createStep() {
-      return new Step(0, new AnyLocation(), []);
+      return new Step(0, new AnyLocation(), [], []);
     }
   });
 
@@ -87,7 +87,7 @@ describe("Path", function() {
     }
 
     function createStep(costs) {
-      return new Step(0, new AnyLocation(), costs);
+      return new Step(0, new AnyLocation(), costs, []);
     }
   });
 });
