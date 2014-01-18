@@ -3,7 +3,7 @@
 
 describe("TravelRuleset", function() {
   var TravelCostSum = everoute.travel.TravelCostSum;
-  var TravelRuleset = everoute.travel.TravelRuleset;
+  var TravelRuleset = everoute.travel.rules.TravelRuleset;
 
   var rules;
   var result;

@@ -8,7 +8,7 @@ var PathContest = require("./PathContest");
  * @constructor
  * @implements {everoute.travel.PathContestProvider}
  * @extends {everoute.travel.PathContestProvider}
- * @param {everoute.travel.TravelRule} rule the rule for new contests.
+ * @param {everoute.travel.rules.TravelRule} rule the rule for new contests.
  * @memberof everoute.travel
  */
 function ManufacturingPathContestProvider(rule) {

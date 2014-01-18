@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: travel/TravelRule.js</title>
+    <title>JSDoc: Source: travel/rules/TravelRule.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: travel/TravelRule.js</h1>
+    <h1 class="page-title">Source: travel/rules/TravelRule.js</h1>
     
     
 
@@ -33,7 +33,7 @@
  *
  * @class
  * @interface
- * @memberof everoute.travel
+ * @memberof everoute.travel.rules
  */
 function TravelRule() {
 
@@ -45,7 +45,7 @@ function TravelRule() {
  * @param {everoute.travel.TravelCostSum} sumA the first cost sum
  * @param {everoute.travel.TravelCostSum} sumB the second cost sum
  * @return {Number} The comparison result. &lt;0: A is better than B, >0 A is worse than B, 0 if equal.
- * @memberof! everoute.travel.TravelRule.prototype
+ * @memberof! everoute.travel.rules.TravelRule.prototype
  */
 TravelRule.prototype.compare = function(sumA, sumB) {
   throw new Error("Interface Implementation");
@@ -60,13 +60,13 @@ TravelRule.prototype.compare = function(sumA, sumB) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="everoute.travel.AddingTravelCost.html">AddingTravelCost</a></li><li><a href="everoute.travel.AnyLocation.html">AnyLocation</a></li><li><a href="everoute.travel.capabilities.CombiningTravelCapability.html">CombiningTravelCapability</a></li><li><a href="everoute.travel.capabilities.OptimizingTravelCapability.html">OptimizingTravelCapability</a></li><li><a href="everoute.travel.capabilities.TravelCapability.html">TravelCapability</a></li><li><a href="everoute.travel.Jump.html">Jump</a></li><li><a href="everoute.travel.JumpBuilder.html">JumpBuilder</a></li><li><a href="everoute.travel.Location.html">Location</a></li><li><a href="everoute.travel.ManufacturingPathContestProvider.html">ManufacturingPathContestProvider</a></li><li><a href="everoute.travel.Path.html">Path</a></li><li><a href="everoute.travel.PathContest.html">PathContest</a></li><li><a href="everoute.travel.PathContestProvider.html">PathContestProvider</a></li><li><a href="everoute.travel.SpecificLocation.html">SpecificLocation</a></li><li><a href="everoute.travel.StaticPathContestProvider.html">StaticPathContestProvider</a></li><li><a href="everoute.travel.Step.html">Step</a></li><li><a href="everoute.travel.TravelCost.html">TravelCost</a></li><li><a href="everoute.travel.TravelCostSum.html">TravelCostSum</a></li><li><a href="everoute.travel.TravelRule.html">TravelRule</a></li><li><a href="everoute.travel.TravelRuleset.html">TravelRuleset</a></li><li><a href="everoute.universe.EmptySolarSystem.html">EmptySolarSystem</a></li><li><a href="everoute.universe.EmptyUniverse.html">EmptyUniverse</a></li><li><a href="everoute.universe.ExtendedSolarSystem.html">ExtendedSolarSystem</a></li><li><a href="everoute.universe.ExtendedUniverse.html">ExtendedUniverse</a></li><li><a href="everoute.universe.SolarSystem.html">SolarSystem</a></li><li><a href="everoute.universe.SolarSystemExtension.html">SolarSystemExtension</a></li><li><a href="everoute.universe.SolarSystemExtensionData.html">SolarSystemExtensionData</a></li><li><a href="everoute.universe.Universe.html">Universe</a></li><li><a href="everoute.universe.UniverseBuilder.html">UniverseBuilder</a></li></ul><h3>Namespaces</h3><ul><li><a href="everoute.html">everoute</a></li><li><a href="everoute.travel.html">travel</a></li><li><a href="everoute.travel.capabilities.html">capabilities</a></li><li><a href="everoute.universe.html">universe</a></li><li><a href="everoute.util.html">util</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="everoute.travel.AddingTravelCost.html">AddingTravelCost</a></li><li><a href="everoute.travel.AnyLocation.html">AnyLocation</a></li><li><a href="everoute.travel.capabilities.CombiningTravelCapability.html">CombiningTravelCapability</a></li><li><a href="everoute.travel.capabilities.OptimizingTravelCapability.html">OptimizingTravelCapability</a></li><li><a href="everoute.travel.capabilities.TravelCapability.html">TravelCapability</a></li><li><a href="everoute.travel.Jump.html">Jump</a></li><li><a href="everoute.travel.JumpBuilder.html">JumpBuilder</a></li><li><a href="everoute.travel.Location.html">Location</a></li><li><a href="everoute.travel.ManufacturingPathContestProvider.html">ManufacturingPathContestProvider</a></li><li><a href="everoute.travel.Path.html">Path</a></li><li><a href="everoute.travel.PathContest.html">PathContest</a></li><li><a href="everoute.travel.PathContestProvider.html">PathContestProvider</a></li><li><a href="everoute.travel.rules.TravelRule.html">TravelRule</a></li><li><a href="everoute.travel.rules.TravelRuleset.html">TravelRuleset</a></li><li><a href="everoute.travel.SpecificLocation.html">SpecificLocation</a></li><li><a href="everoute.travel.StaticPathContestProvider.html">StaticPathContestProvider</a></li><li><a href="everoute.travel.Step.html">Step</a></li><li><a href="everoute.travel.TravelCost.html">TravelCost</a></li><li><a href="everoute.travel.TravelCostSum.html">TravelCostSum</a></li><li><a href="everoute.universe.EmptySolarSystem.html">EmptySolarSystem</a></li><li><a href="everoute.universe.EmptyUniverse.html">EmptyUniverse</a></li><li><a href="everoute.universe.ExtendedSolarSystem.html">ExtendedSolarSystem</a></li><li><a href="everoute.universe.ExtendedUniverse.html">ExtendedUniverse</a></li><li><a href="everoute.universe.SolarSystem.html">SolarSystem</a></li><li><a href="everoute.universe.SolarSystemExtension.html">SolarSystemExtension</a></li><li><a href="everoute.universe.SolarSystemExtensionData.html">SolarSystemExtensionData</a></li><li><a href="everoute.universe.Universe.html">Universe</a></li><li><a href="everoute.universe.UniverseBuilder.html">UniverseBuilder</a></li></ul><h3>Namespaces</h3><ul><li><a href="everoute.html">everoute</a></li><li><a href="everoute.travel.html">travel</a></li><li><a href="everoute.travel.capabilities.html">capabilities</a></li><li><a href="everoute.travel.rules.html">rules</a></li><li><a href="everoute.universe.html">universe</a></li><li><a href="everoute.util.html">util</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 18 2014 13:50:00 GMT-0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 18 2014 13:58:07 GMT-0000 (GMT)
 </footer>
 
 <script> prettyPrint(); </script>

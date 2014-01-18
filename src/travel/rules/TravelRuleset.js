@@ -6,10 +6,10 @@
  * a difference.
  *
  * @constructor
- * @implements {everoute.travel.TravelRule}
- * @extends {everoute.travel.TravelRule}
- * @param {Array.<everoute.travel.TravelRule>} rules the rules to use
- * @memberof everoute.travel
+ * @implements {everoute.travel.rules.TravelRule}
+ * @extends {everoute.travel.rules.TravelRule}
+ * @param {Array.<everoute.travel.rules.TravelRule>} rules the rules to use
+ * @memberof everoute.travel.rules
  */
 function TravelRuleset(rules) {
   this.rules = rules.slice(0);

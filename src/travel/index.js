@@ -6,6 +6,7 @@
  */
 module.exports = {
   capabilities: require("./capabilities"),
+  rules: require("./rules"),
 
   AddingTravelCost: require("./AddingTravelCost"),
   AnyLocation: require("./AnyLocation"),
@@ -16,6 +17,5 @@ module.exports = {
   SpecificLocation: require("./SpecificLocation"),
   StaticPathContestProvider: require("./StaticPathContestProvider"),
   Step: require("./Step"),
-  TravelCostSum: require("./TravelCostSum"),
-  TravelRuleset: require("./TravelRuleset")
+  TravelCostSum: require("./TravelCostSum")
 };
