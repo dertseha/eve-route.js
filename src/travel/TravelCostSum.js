@@ -1,8 +1,7 @@
 "use strict";
 
 /**
- * This is the simplest Universe implementation that is completely empty.
- * It can be used as a basis for extension - i.e., creating a filled universe.
+ * This class collects travel costs and can add costs up to new sums.
  *
  * @constructor
  * @memberof everoute.travel
@@ -52,21 +51,21 @@ TravelCostSum.prototype.add = function(costs) {
   var newCosts = {};
   var key;
 
+  for (key in this.costs) {
+    if (this.costs.hasOwnProperty(key)) {
+      newCosts[key] = this.costs[key];
+    }
+  }
+
   costs.forEach(function(cost) {
     var type = cost.getType();
 
-    if (oldCosts.hasOwnProperty(type)) {
-      newCosts[type] = cost.join(oldCosts[type]);
+    if (newCosts.hasOwnProperty(type)) {
+      newCosts[type] = cost.join(newCosts[type]);
     } else {
       newCosts[type] = cost;
     }
   });
-
-  for (key in this.costs) {
-    if (this.costs.hasOwnProperty(key) && !newCosts.hasOwnProperty(key)) {
-      newCosts[key] = this.costs[key];
-    }
-  }
 
   return new TravelCostSum(newCosts);
 };

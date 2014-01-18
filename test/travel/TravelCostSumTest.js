@@ -66,4 +66,11 @@ describe("TravelCostSum", function() {
 
     expect(result.getValue()).to.be.equal(10);
   });
+
+  it("should adding several costs of the same type", function() {
+    sum = sum.add([new AddingTravelCost("time", 10), new AddingTravelCost("time", 10)]);
+    var result = sum.getTotal();
+
+    expect(result[0].getValue()).to.be.equal(20);
+  });
 });
