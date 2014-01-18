@@ -12,5 +12,6 @@ module.exports = {
   Path: require("./Path"),
   SpecificLocation: require("./SpecificLocation"),
   Step: require("./Step"),
-  TravelCostSum: require("./TravelCostSum")
+  TravelCostSum: require("./TravelCostSum"),
+  TravelRuleset: require("./TravelRuleset")
 };

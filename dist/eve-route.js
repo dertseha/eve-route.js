@@ -26,7 +26,7 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":10,"./universe":19,"./util":20}],2:[function(require,module,exports){
+},{"./travel":11,"./universe":20,"./util":21}],2:[function(require,module,exports){
 "use strict";
 
 /**
@@ -261,6 +261,14 @@ Path.prototype.extend = function(step) {
 };
 
 /**
+ * @return {everoute.travel.Step} The step of this path
+ * @memberof! everoute.travel.Path.prototype
+ */
+Path.prototype.getStep = function() {
+  return this.step;
+};
+
+/**
  * @return {Array.<everoute.travel.Step>} The list of steps of this path
  * @memberof! everoute.travel.Path.prototype
  */
@@ -421,6 +429,38 @@ TravelCostSum.prototype.add = function(costs) {
 module.exports = TravelCostSum;
 
 },{}],10:[function(require,module,exports){
+"use strict";
+
+/**
+ * The ruleset is a list of TravelRules and provides a combined comparison
+ * result. The contained rules are used for comparison until one rule returns
+ * a difference.
+ *
+ * @constructor
+ * @implements {everoute.travel.TravelRule}
+ * @extends {everoute.travel.TravelRule}
+ * @param {Array.<everoute.travel.TravelRule>} rules the rules to use
+ * @memberof everoute.travel
+ */
+function TravelRuleset(rules) {
+  this.rules = rules.slice(0);
+}
+
+TravelRuleset.prototype.compare = function(sumA, sumB) {
+  var amount = this.rules.length;
+  var result = 0;
+  var i;
+
+  for (i = 0; result === 0 && (i < amount); i++) {
+    result = this.rules[i].compare(sumA, sumB);
+  }
+
+  return result;
+};
+
+module.exports = TravelRuleset;
+
+},{}],11:[function(require,module,exports){
 /**
  * This namespace contains entries regarding travel.
  *
@@ -435,10 +475,11 @@ module.exports = {
   Path: require("./Path"),
   SpecificLocation: require("./SpecificLocation"),
   Step: require("./Step"),
-  TravelCostSum: require("./TravelCostSum")
+  TravelCostSum: require("./TravelCostSum"),
+  TravelRuleset: require("./TravelRuleset")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./SpecificLocation":7,"./Step":8,"./TravelCostSum":9}],11:[function(require,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./SpecificLocation":7,"./Step":8,"./TravelCostSum":9,"./TravelRuleset":10}],12:[function(require,module,exports){
 "use strict";
 
 /**
@@ -517,7 +558,7 @@ EmptySolarSystem.prototype.getCosts = function() {
 
 module.exports = EmptySolarSystem;
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 var UniverseBuilder = require("./UniverseBuilder");
@@ -553,7 +594,7 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":17}],13:[function(require,module,exports){
+},{"./UniverseBuilder":18}],14:[function(require,module,exports){
 "use strict";
 
 /**
@@ -643,7 +684,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 
 /**
@@ -724,7 +765,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":17}],15:[function(require,module,exports){
+},{"./UniverseBuilder":18}],16:[function(require,module,exports){
 "use strict";
 
 var JumpBuilder = require("../travel/JumpBuilder");
@@ -765,7 +806,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],16:[function(require,module,exports){
+},{"../travel/JumpBuilder":5}],17:[function(require,module,exports){
 "use strict";
 
 /**
@@ -795,7 +836,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 
 var EmptySolarSystem = require("./EmptySolarSystem");
@@ -885,7 +926,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":11,"./ExtendedSolarSystem":13,"./ExtendedUniverse":14,"./SolarSystemExtension":15,"./SolarSystemExtensionData":16,"./UniverseExtensionData":18}],18:[function(require,module,exports){
+},{"./EmptySolarSystem":12,"./ExtendedSolarSystem":14,"./ExtendedUniverse":15,"./SolarSystemExtension":16,"./SolarSystemExtensionData":17,"./UniverseExtensionData":19}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -911,7 +952,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -931,7 +972,7 @@ module.exports = {
   SolarSystemExtensionData: require("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":11,"./EmptyUniverse":12,"./ExtendedSolarSystem":13,"./ExtendedUniverse":14,"./SolarSystemExtension":15,"./SolarSystemExtensionData":16,"./UniverseBuilder":17,"./UniverseExtensionData":18}],20:[function(require,module,exports){
+},{"./EmptySolarSystem":12,"./EmptyUniverse":13,"./ExtendedSolarSystem":14,"./ExtendedUniverse":15,"./SolarSystemExtension":16,"./SolarSystemExtensionData":17,"./UniverseBuilder":18,"./UniverseExtensionData":19}],21:[function(require,module,exports){
 "use strict";
 
 /**

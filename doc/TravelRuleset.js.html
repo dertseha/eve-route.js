@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: universe/SolarSystemExtensionData.js</title>
+    <title>JSDoc: Source: travel/TravelRuleset.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: universe/SolarSystemExtensionData.js</h1>
+    <h1 class="page-title">Source: travel/TravelRuleset.js</h1>
     
     
 
@@ -28,31 +28,33 @@
             <pre class="prettyprint source"><code>"use strict";
 
 /**
- * The extension data is used as a initialization data for an
- * ExtendedSolarSystem.
+ * The ruleset is a list of TravelRules and provides a combined comparison
+ * result. The contained rules are used for comparison until one rule returns
+ * a difference.
  *
  * @constructor
- * @param {everoute.universe.SolarSystem} baseSystem the base solar system.
- * @memberof everoute.universe
+ * @implements {everoute.travel.TravelRule}
+ * @extends {everoute.travel.TravelRule}
+ * @param {Array.&lt;everoute.travel.TravelRule>} rules the rules to use
+ * @memberof everoute.travel
  */
-function SolarSystemExtensionData(baseSystem) {
-  /**
-   * @type {everoute.universe.SolarSystem}
-   */
-  this.base = baseSystem;
-
-  /**
-   * @type {Array.&lt;everoute.universe.JumpBuilder>}
-   */
-  this.jumpBuilders = [];
-
-  /**
-   * @type {Array.&lt;everoute.travel.TravelCost>}
-   */
-  this.costs = [];
+function TravelRuleset(rules) {
+  this.rules = rules.slice(0);
 }
 
-module.exports = SolarSystemExtensionData;
+TravelRuleset.prototype.compare = function(sumA, sumB) {
+  var amount = this.rules.length;
+  var result = 0;
+  var i;
+
+  for (i = 0; result === 0 && (i &lt; amount); i++) {
+    result = this.rules[i].compare(sumA, sumB);
+  }
+
+  return result;
+};
+
+module.exports = TravelRuleset;
 </code></pre>
         </article>
     </section>

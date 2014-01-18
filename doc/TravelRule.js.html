@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: universe/SolarSystemExtensionData.js</title>
+    <title>JSDoc: Source: travel/TravelRule.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: universe/SolarSystemExtensionData.js</h1>
+    <h1 class="page-title">Source: travel/TravelRule.js</h1>
     
     
 
@@ -28,31 +28,28 @@
             <pre class="prettyprint source"><code>"use strict";
 
 /**
- * The extension data is used as a initialization data for an
- * ExtendedSolarSystem.
+ * This interface represents a rule about travelling. It compares cost sums
+ * to provide decision support.
  *
- * @constructor
- * @param {everoute.universe.SolarSystem} baseSystem the base solar system.
- * @memberof everoute.universe
+ * @class
+ * @interface
+ * @memberof everoute.travel
  */
-function SolarSystemExtensionData(baseSystem) {
-  /**
-   * @type {everoute.universe.SolarSystem}
-   */
-  this.base = baseSystem;
+function TravelRule() {
 
-  /**
-   * @type {Array.&lt;everoute.universe.JumpBuilder>}
-   */
-  this.jumpBuilders = [];
-
-  /**
-   * @type {Array.&lt;everoute.travel.TravelCost>}
-   */
-  this.costs = [];
 }
 
-module.exports = SolarSystemExtensionData;
+/**
+ * Compares the two given sums.
+ *
+ * @param {everoute.travel.TravelCostSum} sumA the first cost sum
+ * @param {everoute.travel.TravelCostSum} sumB the second cost sum
+ * @return {Number} The comparison result. &lt;0: A is worse than B, >0 A is better than B, 0 if equal.
+ * @memberof! everoute.travel.TravelRule.prototype
+ */
+TravelRule.prototype.compare = function(sumA, sumB) {
+  throw new Error("Interface Implementation");
+};
 </code></pre>
         </article>
     </section>

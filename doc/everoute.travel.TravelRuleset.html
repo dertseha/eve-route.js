@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: TravelCostSum</title>
+    <title>JSDoc: Class: TravelRuleset</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: TravelCostSum</h1>
+    <h1 class="page-title">Class: TravelRuleset</h1>
     
     
 
@@ -29,7 +29,7 @@
     <h2>
         <span class="ancestors"><a href="everoute.html">everoute</a><a href="everoute.travel.html">.travel</a>.</span>
     
-    TravelCostSum
+    TravelRuleset
     </h2>
     
 </header>  
@@ -41,7 +41,7 @@
     
         
 <dt>
-    <h4 class="name" id="TravelCostSum"><span class="type-signature"></span>new TravelCostSum<span class="signature">(initCosts)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="TravelRuleset"><span class="type-signature"></span>new TravelRuleset<span class="signature">(rules)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -49,7 +49,9 @@
     
     
     <div class="description">
-        This class collects travel costs and can add costs up to new sums.
+        The ruleset is a list of TravelRules and provides a combined comparison
+result. The contained rules are used for comparison until one rule returns
+a difference.
     </div>
     
 
@@ -83,13 +85,13 @@
 	
         <tr>
             
-                <td class="name"><code>initCosts</code></td>
+                <td class="name"><code>rules</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>></span>
+<span class="param-type">Array.&lt;<a href="everoute.travel.TravelRule.html">everoute.travel.TravelRule</a>></span>
 
 
             
@@ -99,7 +101,7 @@
             
             
             
-            <td class="description last">initial costs</td>
+            <td class="description last">the rules to use</td>
         </tr>
 	
 	
@@ -130,7 +132,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TravelCostSum.js.html">travel/TravelCostSum.js</a>, <a href="TravelCostSum.js.html#line10">line 10</a>
+        <a href="TravelRuleset.js.html">travel/TravelRuleset.js</a>, <a href="TravelRuleset.js.html#line14">line 14</a>
     </li></ul></dd>
     
     
@@ -158,6 +160,12 @@
     
     </div>
     
+    
+        <h3 class="subsection-title">Extends</h3>
+        
+        <ul>
+            <li><a href="everoute.travel.TravelRule.html">everoute.travel.TravelRule</a></li>
+        </ul>
     
     
     
@@ -176,7 +184,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="add"><span class="type-signature"></span>TravelCostSum#add<span class="signature">(costs)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="compare"><span class="type-signature"></span>TravelRule#compare<span class="signature">(sumA, sumB)</span><span class="type-signature"> &rarr; {Number}</span></h4>
     
     
 </dt>
@@ -184,7 +192,7 @@
     
     
     <div class="description">
-        Adds an array of costs to the current sum, returning a new sum.
+        Compares the two given sums.
     </div>
     
 
@@ -218,13 +226,13 @@
 	
         <tr>
             
-                <td class="name"><code>costs</code></td>
+                <td class="name"><code>sumA</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>></span>
+<span class="param-type"><a href="everoute.travel.TravelCostSum.html">everoute.travel.TravelCostSum</a></span>
 
 
             
@@ -234,115 +242,20 @@
             
             
             
-            <td class="description last">Array of costs to add.</td>
+            <td class="description last">the first cost sum</td>
         </tr>
 	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TravelCostSum.js.html">travel/TravelCostSum.js</a>, <a href="TravelCostSum.js.html#line61">line 61</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="getCost"><span class="type-signature"></span>TravelCostSum#getCost<span class="signature">(nullCost)</span><span class="type-signature"> &rarr; {<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Returns a contained cost of the same type as given cost or the given cost
-if this type is unknown.
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
 	
 	
         <tr>
             
-                <td class="name"><code>nullCost</code></td>
+                <td class="name"><code>sumB</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type"><a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a></span>
+<span class="param-type"><a href="everoute.travel.TravelCostSum.html">everoute.travel.TravelCostSum</a></span>
 
 
             
@@ -352,7 +265,7 @@ if this type is unknown.
             
             
             
-            <td class="description last">The cost to default to</td>
+            <td class="description last">the second cost sum</td>
         </tr>
 	
 	
@@ -369,6 +282,11 @@ if this type is unknown.
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="everoute.travel.TravelRule.html#TravelRule#compare">everoute.travel.TravelRule#TravelRule#compare</a>
+    </li></dd>
+    
     
     
     
@@ -383,7 +301,7 @@ if this type is unknown.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TravelCostSum.js.html">travel/TravelCostSum.js</a>, <a href="TravelCostSum.js.html#line34">line 34</a>
+        <a href="TravelRule.js.html">travel/TravelRule.js</a>, <a href="TravelRule.js.html#line23">line 23</a>
     </li></ul></dd>
     
     
@@ -408,7 +326,7 @@ if this type is unknown.
     
             
 <div class="param-desc">
-    The corresponing cost
+    The comparison result. <0: A is worse than B, >0 A is better than B, 0 if equal.
 </div>
 
 
@@ -419,94 +337,7 @@ if this type is unknown.
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a></span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="getTotal"><span class="type-signature"></span>TravelCostSum#getTotal<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TravelCostSum.js.html">travel/TravelCostSum.js</a>, <a href="TravelCostSum.js.html#line42">line 42</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    Array of all costs in this sum.
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Array.&lt;<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>></span>
+<span class="param-type">Number</span>
 
 
 	</dd>

@@ -51,6 +51,14 @@ Path.prototype.extend = function(step) {
 };
 
 /**
+ * @return {everoute.travel.Step} The step of this path
+ * @memberof! everoute.travel.Path.prototype
+ */
+Path.prototype.getStep = function() {
+  return this.step;
+};
+
+/**
  * @return {Array.<everoute.travel.Step>} The list of steps of this path
  * @memberof! everoute.travel.Path.prototype
  */
