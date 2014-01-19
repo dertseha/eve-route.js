@@ -45,10 +45,6 @@ function ExtendedSolarSystem(data) {
     return base.getId();
   };
 
-  this.getId = function() {
-    return base.getId();
-  };
-
   this.getGalaxyId = function() {
     return base.getGalaxyId();
   };

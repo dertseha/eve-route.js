@@ -66,7 +66,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js_____.html">travel/rules/security/index.js</a>, <a href="index.js_____.html#line3">line 3</a>
+        <a href="index.js_____.html">travel/rules/security/index.js</a>, <a href="index.js_____.html#line7">line 7</a>
     </li></ul></dd>
     
     
@@ -92,138 +92,6 @@
     
     
     
-    
-        <h3 class="subsection-title">Members</h3>
-        
-        <dl>
-            
-<dt>
-    <h4 class="name" id="COST_TYPE_MAX"><span class="type-signature">&lt;static, constant> </span>COST_TYPE_MAX<span class="type-signature"> :String</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        The type identification used for maximum security cost: "maxSecurity".
-    </div>
-    
-    
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">String</span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js_____.html">travel/rules/security/index.js</a>, <a href="index.js_____.html#line26">line 26</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="COST_TYPE_MIN"><span class="type-signature">&lt;static, constant> </span>COST_TYPE_MIN<span class="type-signature"> :String</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        The type identification used for minimum security cost: "minSecurity".
-    </div>
-    
-    
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">String</span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js_____.html">travel/rules/security/index.js</a>, <a href="index.js_____.html#line17">line 17</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-</dd>
-
-        </dl>
     
     
     
@@ -323,7 +191,7 @@ cost another time to existing ones.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js_____.html">travel/rules/security/index.js</a>, <a href="index.js_____.html#line36">line 36</a>
+        <a href="index.js_____.html">travel/rules/security/index.js</a>, <a href="index.js_____.html#line22">line 22</a>
     </li></ul></dd>
     
     
@@ -360,7 +228,7 @@ cost another time to existing ones.
     
     <div class="description">
         Returns a rule that prefers a path that has a maximum security value below
-the given limit.
+the given limit. Reasonable values for limit are [0.5 .. 1.0]
     </div>
     
 
@@ -441,7 +309,7 @@ the given limit.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js_____.html">travel/rules/security/index.js</a>, <a href="index.js_____.html#line66">line 66</a>
+        <a href="index.js_____.html">travel/rules/security/index.js</a>, <a href="index.js_____.html#line53">line 53</a>
     </li></ul></dd>
     
     
@@ -500,7 +368,7 @@ the given limit.
     
     <div class="description">
         Returns a rule that prefers a path that has at least the given limit as the
-minimum security value.
+minimum security value. Reasonable values for limit are [0.1 .. 0.5]
     </div>
     
 
@@ -581,7 +449,7 @@ minimum security value.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js_____.html">travel/rules/security/index.js</a>, <a href="index.js_____.html#line54">line 54</a>
+        <a href="index.js_____.html">travel/rules/security/index.js</a>, <a href="index.js_____.html#line41">line 41</a>
     </li></ul></dd>
     
     
@@ -628,6 +496,309 @@ minimum security value.
     
 </dd>
 
+        
+            
+<dt>
+    <h4 class="name" id="getTravelCost"><span class="type-signature">&lt;static> </span>getTravelCost<span class="signature">(security, value)</span><span class="type-signature"> &rarr; {<a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns a travel cost representing given security, having the given value.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>security</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The security value.</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The initial value.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="statics.js.html">travel/rules/security/statics.js</a>, <a href="statics.js.html#line26">line 26</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    The travel cost representing the security value.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getTravelCostType"><span class="type-signature">&lt;static> </span>getTravelCostType<span class="signature">(security)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Returns the travel cost type identifier for given security value. This
+method is meant for the 'visible' security value in the range of 0.0 .. 1.0
+with 0.1 increments. For example, a value of 0.3 will return "security03".
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>security</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">the security value</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="statics.js.html">travel/rules/security/statics.js</a>, <a href="statics.js.html#line14">line 14</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    the travel cost type identifier for given security value.
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">String</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
         </dl>
     
     
@@ -644,13 +815,13 @@ minimum security value.
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="everoute.travel.AddingTravelCost.html">AddingTravelCost</a></li><li><a href="everoute.travel.AnyLocation.html">AnyLocation</a></li><li><a href="everoute.travel.capabilities.CombiningTravelCapability.html">CombiningTravelCapability</a></li><li><a href="everoute.travel.capabilities.jumpGate.JumpGateTravelCapability.html">JumpGateTravelCapability</a></li><li><a href="everoute.travel.capabilities.OptimizingTravelCapability.html">OptimizingTravelCapability</a></li><li><a href="everoute.travel.capabilities.TravelCapability.html">TravelCapability</a></li><li><a href="everoute.travel.Jump.html">Jump</a></li><li><a href="everoute.travel.JumpBuilder.html">JumpBuilder</a></li><li><a href="everoute.travel.Location.html">Location</a></li><li><a href="everoute.travel.ManufacturingPathContestProvider.html">ManufacturingPathContestProvider</a></li><li><a href="everoute.travel.Path.html">Path</a></li><li><a href="everoute.travel.PathContest.html">PathContest</a></li><li><a href="everoute.travel.PathContestProvider.html">PathContestProvider</a></li><li><a href="everoute.travel.rules.NaturalOrderTravelRule.html">NaturalOrderTravelRule</a></li><li><a href="everoute.travel.rules.TravelRule.html">TravelRule</a></li><li><a href="everoute.travel.rules.TravelRuleset.html">TravelRuleset</a></li><li><a href="everoute.travel.search.DestinationSystemSearchCriterion.html">DestinationSystemSearchCriterion</a></li><li><a href="everoute.travel.search.PathFinder.html">PathFinder</a></li><li><a href="everoute.travel.search.SearchCriterion.html">SearchCriterion</a></li><li><a href="everoute.travel.search.SearchResultCollector.html">SearchResultCollector</a></li><li><a href="everoute.travel.SpecificLocation.html">SpecificLocation</a></li><li><a href="everoute.travel.StaticPathContestProvider.html">StaticPathContestProvider</a></li><li><a href="everoute.travel.Step.html">Step</a></li><li><a href="everoute.travel.StepBuilder.html">StepBuilder</a></li><li><a href="everoute.travel.TravelCost.html">TravelCost</a></li><li><a href="everoute.travel.TravelCostSum.html">TravelCostSum</a></li><li><a href="everoute.universe.EmptySolarSystem.html">EmptySolarSystem</a></li><li><a href="everoute.universe.EmptyUniverse.html">EmptyUniverse</a></li><li><a href="everoute.universe.ExtendedSolarSystem.html">ExtendedSolarSystem</a></li><li><a href="everoute.universe.ExtendedUniverse.html">ExtendedUniverse</a></li><li><a href="everoute.universe.SolarSystem.html">SolarSystem</a></li><li><a href="everoute.universe.SolarSystemExtension.html">SolarSystemExtension</a></li><li><a href="everoute.universe.SolarSystemExtensionData.html">SolarSystemExtensionData</a></li><li><a href="everoute.universe.Universe.html">Universe</a></li><li><a href="everoute.universe.UniverseBuilder.html">UniverseBuilder</a></li></ul><h3>Namespaces</h3><ul><li><a href="everoute.html">everoute</a></li><li><a href="everoute.travel.html">travel</a></li><li><a href="everoute.travel.capabilities.html">capabilities</a></li><li><a href="everoute.travel.capabilities.jumpGate.html">jumpGate</a></li><li><a href="everoute.travel.rules.html">rules</a></li><li><a href="everoute.travel.rules.security.html">security</a></li><li><a href="everoute.travel.rules.transitCount.html">transitCount</a></li><li><a href="everoute.travel.search.html">search</a></li><li><a href="everoute.universe.html">universe</a></li><li><a href="everoute.util.html">util</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="everoute.travel.AddingTravelCost.html">AddingTravelCost</a></li><li><a href="everoute.travel.AnyLocation.html">AnyLocation</a></li><li><a href="everoute.travel.capabilities.CombiningTravelCapability.html">CombiningTravelCapability</a></li><li><a href="everoute.travel.capabilities.jumpGate.JumpGateTravelCapability.html">JumpGateTravelCapability</a></li><li><a href="everoute.travel.capabilities.OptimizingTravelCapability.html">OptimizingTravelCapability</a></li><li><a href="everoute.travel.capabilities.TravelCapability.html">TravelCapability</a></li><li><a href="everoute.travel.Jump.html">Jump</a></li><li><a href="everoute.travel.JumpBuilder.html">JumpBuilder</a></li><li><a href="everoute.travel.Location.html">Location</a></li><li><a href="everoute.travel.ManufacturingPathContestProvider.html">ManufacturingPathContestProvider</a></li><li><a href="everoute.travel.Path.html">Path</a></li><li><a href="everoute.travel.PathContest.html">PathContest</a></li><li><a href="everoute.travel.PathContestProvider.html">PathContestProvider</a></li><li><a href="everoute.travel.rules.MaxSecurityTravelRule.html">MaxSecurityTravelRule</a></li><li><a href="everoute.travel.rules.MinSecurityTravelRule.html">MinSecurityTravelRule</a></li><li><a href="everoute.travel.rules.NaturalOrderTravelRule.html">NaturalOrderTravelRule</a></li><li><a href="everoute.travel.rules.TravelRule.html">TravelRule</a></li><li><a href="everoute.travel.rules.TravelRuleset.html">TravelRuleset</a></li><li><a href="everoute.travel.search.DestinationSystemSearchCriterion.html">DestinationSystemSearchCriterion</a></li><li><a href="everoute.travel.search.PathFinder.html">PathFinder</a></li><li><a href="everoute.travel.search.SearchCriterion.html">SearchCriterion</a></li><li><a href="everoute.travel.search.SearchResultCollector.html">SearchResultCollector</a></li><li><a href="everoute.travel.SpecificLocation.html">SpecificLocation</a></li><li><a href="everoute.travel.StaticPathContestProvider.html">StaticPathContestProvider</a></li><li><a href="everoute.travel.Step.html">Step</a></li><li><a href="everoute.travel.StepBuilder.html">StepBuilder</a></li><li><a href="everoute.travel.TravelCost.html">TravelCost</a></li><li><a href="everoute.travel.TravelCostSum.html">TravelCostSum</a></li><li><a href="everoute.universe.EmptySolarSystem.html">EmptySolarSystem</a></li><li><a href="everoute.universe.EmptyUniverse.html">EmptyUniverse</a></li><li><a href="everoute.universe.ExtendedSolarSystem.html">ExtendedSolarSystem</a></li><li><a href="everoute.universe.ExtendedUniverse.html">ExtendedUniverse</a></li><li><a href="everoute.universe.SolarSystem.html">SolarSystem</a></li><li><a href="everoute.universe.SolarSystemExtension.html">SolarSystemExtension</a></li><li><a href="everoute.universe.SolarSystemExtensionData.html">SolarSystemExtensionData</a></li><li><a href="everoute.universe.Universe.html">Universe</a></li><li><a href="everoute.universe.UniverseBuilder.html">UniverseBuilder</a></li></ul><h3>Namespaces</h3><ul><li><a href="everoute.html">everoute</a></li><li><a href="everoute.travel.html">travel</a></li><li><a href="everoute.travel.capabilities.html">capabilities</a></li><li><a href="everoute.travel.capabilities.jumpGate.html">jumpGate</a></li><li><a href="everoute.travel.rules.html">rules</a></li><li><a href="everoute.travel.rules.security.html">security</a></li><li><a href="everoute.travel.rules.transitCount.html">transitCount</a></li><li><a href="everoute.travel.search.html">search</a></li><li><a href="everoute.universe.html">universe</a></li><li><a href="everoute.util.html">util</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Jan 19 2014 08:37:12 GMT-0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Jan 19 2014 21:07:20 GMT-0000 (GMT)
 </footer>
 
 <script> prettyPrint(); </script>

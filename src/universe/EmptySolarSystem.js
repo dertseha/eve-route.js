@@ -41,7 +41,7 @@ function EmptySolarSystem(id, contextIds, location, trueSecurity) {
   if (this.trueSecurity < 0.0) {
     this.security = 0.0;
   } else {
-    this.security = parseFloat((Math.floor(trueSecurity * 10) / 10.0).toFixed(1));
+    this.security = parseFloat((Math.floor((trueSecurity + 0.05) * 10) / 10.0).toFixed(1));
   }
 }
 

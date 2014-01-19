@@ -7,9 +7,17 @@ var JumpBuilder = require("../travel/JumpBuilder");
  *
  * @class
  * @constructor
+ * @param {everoute.universe.SolarSystemExtensionData} data the extension data.
  * @memberof everoute.universe
  */
 function SolarSystemExtension(data) {
+
+  /**
+   * @return {Number} The security value of the solar system.
+   */
+  this.getSecurityValue = function() {
+    return data.base.getSecurityValue();
+  };
 
   /**
    * Requests to add a jump from this solar system to another. The returned

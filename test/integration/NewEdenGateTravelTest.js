@@ -3,13 +3,9 @@
 
 describe("New Eden Gate Travel", function() {
   var SpecificLocation = everoute.travel.SpecificLocation;
-  var AddingTravelCost = everoute.travel.AddingTravelCost;
   var PathFinder = everoute.travel.search.PathFinder;
-  var AnyLocation = everoute.travel.AnyLocation;
-  var Path = everoute.travel.Path;
   var PathContest = everoute.travel.PathContest;
   var StaticPathContestProvider = everoute.travel.StaticPathContestProvider;
-  var StepBuilder = everoute.travel.StepBuilder;
   var OptimizingTravelCapability = everoute.travel.capabilities.OptimizingTravelCapability;
   var DestinationSystemSearchCriterion = everoute.travel.search.DestinationSystemSearchCriterion;
   var TravelRuleset = everoute.travel.rules.TravelRuleset;
@@ -20,20 +16,50 @@ describe("New Eden Gate Travel", function() {
   var solarSystemIdsByName = {};
   var universe;
 
+  describe("shortest rule", function() {
+    var rules = [everoute.travel.rules.transitCount.getRule()];
 
-  it("should find a route from Rens to Pator", function() {
-    verifyRoute("Rens", "Pator", ["Rens", "Frarn", "Gyng", "Onga", "Pator"]);
+    it("should find a route from Rens to Pator", function() {
+      verifyRoute("Rens", "Pator", rules, ["Rens", "Frarn", "Gyng", "Onga", "Pator"]);
+    });
+
+    it("should find a route from Rens to Ivar", function() {
+      // second route exists, this one is found with test-data; is order dependent.
+      verifyRoute("Rens", "Ivar", rules, ["Rens", "Frarn", "Meirakulf", "Ivar"]);
+    });
   });
 
-  it("should find a route from Rens to Ivar", function() {
-    // second route exists, this one is found with test-data; is order dependent.
-    verifyRoute("Rens", "Ivar", ["Rens", "Frarn", "Meirakulf", "Ivar"]);
+  describe("shortest highsec rules", function() {
+    var rules = [everoute.travel.rules.security.getMinRule(0.5), everoute.travel.rules.transitCount.getRule()];
+
+    it("should find a route from Emolgranlan to Eddar via highsec", function() {
+      verifyRoute("Emolgranlan", "Eddar", rules, [
+        "Emolgranlan", "Ammold", "Pator", "Onga", "Gyng",
+        "Frarn", "Meirakulf", "Ivar", "Ameinaka", "Hulm",
+        "Edmalbrurdus", "Kronsur", "Dumkirinur", "Obrolber", "Austraka",
+        "Gerek", "Gerbold", "Offugen", "Eddar"
+      ]);
+    });
+
+    it("should still allow to take a lowsec route if none other possible from Emolgranlan to Atgur", function() {
+      verifyRoute("Emolgranlan", "Atgur", rules, ["Emolgranlan", "Eifer", "Atgur"]);
+    });
   });
 
-  function verifyRoute(from, to, expected) {
+  describe("shortest lowsec rules", function() {
+    var rules = [everoute.travel.rules.security.getMaxRule(0.5), everoute.travel.rules.transitCount.getRule()];
+
+    it("should find a route from Aralgrund to Hrondedir via lowsec", function() {
+      verifyRoute("Aralgrund", "Hrondedir", rules, [
+        "Aralgrund", "Bogelek", "Katugumur", "Sotrenzur", "Hrondedir"
+      ]);
+    });
+
+  });
+
+  function verifyRoute(from, to, rules, expected) {
     var result;
     var start = universe.getSolarSystem(getIdByName(from)).startPath();
-    var rules = [everoute.travel.rules.transitCount.getRule()];
     var contest = new PathContest(new TravelRuleset(rules));
     var gateCapability = new JumpGateTravelCapability(universe);
     var capability = new OptimizingTravelCapability(gateCapability, new StaticPathContestProvider(contest));
@@ -286,6 +312,7 @@ describe("New Eden Gate Travel", function() {
     });
 
     everoute.travel.rules.transitCount.extendUniverse(builder);
+    everoute.travel.rules.security.extendUniverse(builder);
 
     function addGateJump(fromId, toId) {
       var extension = builder.extendSolarSystem(fromId);

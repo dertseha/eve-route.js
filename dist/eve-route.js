@@ -26,7 +26,7 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":18,"./universe":34,"./util":35}],2:[function(require,module,exports){
+},{"./travel":18,"./universe":38,"./util":39}],2:[function(require,module,exports){
 "use strict";
 
 /**
@@ -724,7 +724,8 @@ function JumpGateTravelCapability(universe) {
     var result = [];
 
     jumps.forEach(function(jump) {
-      var builder = new StepBuilder(jump.getDestinationId()).withEnterCosts(jump.getCosts()).withContinueCosts(solarSystem.getCosts());
+      var destination = universe.getSolarSystem(jump.getDestinationId());
+      var builder = new StepBuilder(destination.getId()).withEnterCosts(jump.getCosts()).withContinueCosts(destination.getCosts());
 
       result.push(path.extend(builder.build()));
     });
@@ -789,7 +790,7 @@ module.exports = {
   TravelCostSum: require("./TravelCostSum")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":25}],19:[function(require,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":29}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -851,13 +852,206 @@ module.exports = TravelRuleset;
  * @memberof everoute.travel
  */
 module.exports = {
+  security: require("./security"),
   transitCount: require("./transitCount"),
 
   NaturalOrderTravelRule: require("./NaturalOrderTravelRule"),
   TravelRuleset: require("./TravelRuleset")
 };
 
-},{"./NaturalOrderTravelRule":19,"./TravelRuleset":20,"./transitCount":22}],22:[function(require,module,exports){
+},{"./NaturalOrderTravelRule":19,"./TravelRuleset":20,"./security":24,"./transitCount":26}],22:[function(require,module,exports){
+"use strict";
+
+var statics = require("./statics");
+
+/**
+ * The rule considers all security value costs that are from a security value
+ * below the limit to be equal. The sum of all costs above or equal the limit
+ * value is compared.
+ *
+ * @constructor
+ * @implements {everoute.travel.rules.TravelRule}
+ * @extends {everoute.travel.rules.TravelRule}
+ * @param {Number} limit the inclusive limit
+ * @memberof everoute.travel.rules
+ */
+function MaxSecurityTravelRule(limit) {
+
+  this.compare = function(sumA, sumB) {
+    var valueA = statics.sumSecurityCosts(sumA, limit, 1.0);
+    var valueB = statics.sumSecurityCosts(sumB, limit, 1.0);
+
+    return valueA - valueB;
+  };
+}
+
+module.exports = MaxSecurityTravelRule;
+
+},{"./statics":25}],23:[function(require,module,exports){
+"use strict";
+
+var statics = require("./statics");
+
+/**
+ * The rule considers all security value costs that are from a security value
+ * equal or above the limit to be equal. The sum of all costs below the limit
+ * value is compared.
+ *
+ * @constructor
+ * @implements {everoute.travel.rules.TravelRule}
+ * @extends {everoute.travel.rules.TravelRule}
+ * @param {Number} limit the inclusive limit
+ * @memberof everoute.travel.rules
+ */
+function MinSecurityTravelRule(limit) {
+
+  this.compare = function(sumA, sumB) {
+    var valueA = statics.sumSecurityCosts(sumA, 0.0, limit - 0.1);
+    var valueB = statics.sumSecurityCosts(sumB, 0.0, limit - 0.1);
+
+    return valueA - valueB;
+  };
+}
+
+module.exports = MinSecurityTravelRule;
+
+},{"./statics":25}],24:[function(require,module,exports){
+"use strict";
+
+var statics = require("./statics");
+var MaxSecurityTravelRule = require("./MaxSecurityTravelRule");
+var MinSecurityTravelRule = require("./MinSecurityTravelRule");
+
+/**
+ * This namespace contains helper regarding the rules about security.
+ *
+ * @namespace security
+ * @memberof everoute.travel.rules
+ */
+
+/**
+ * Extends the universe by adding security cost to all solar systems.
+ * This method should be called only once per universe as it would add the same
+ * cost another time to existing ones.
+ *
+ * @param {everoute.universe.UniverseBuilder} builder The builder for extension.
+ * @memberof everoute.travel.rules.security
+ */
+var extendUniverse = function(builder) {
+  var solarSystemIds = builder.getSolarSystemIds();
+
+  solarSystemIds.forEach(function(id) {
+    var extension = builder.extendSolarSystem(id);
+    var security = extension.getSecurityValue();
+
+    extension.addCost(statics.getTravelCost(security, 1));
+  });
+};
+
+/**
+ * Returns a rule that prefers a path that has at least the given limit as the
+ * minimum security value. Reasonable values for limit are [0.1 .. 0.5]
+ *
+ * @param {Number} limit the inclusive minimum value a path should have.
+ * @return {everoute.travel.rules.TravelRule} The rule intance.
+ * @memberof everoute.travel.rules.security
+ */
+var getMinRule = function(limit) {
+  return new MinSecurityTravelRule(limit);
+};
+
+/**
+ * Returns a rule that prefers a path that has a maximum security value below
+ * the given limit. Reasonable values for limit are [0.5 .. 1.0]
+ *
+ * @param {Number} limit the exclusive maximum value a path should have.
+ * @return {everoute.travel.rules.TravelRule} The rule intance.
+ * @memberof everoute.travel.rules.security
+ */
+var getMaxRule = function(limit) {
+  return new MaxSecurityTravelRule(limit);
+};
+
+module.exports = {
+  extendUniverse: extendUniverse,
+  getMaxRule: getMaxRule,
+  getMinRule: getMinRule,
+  getTravelCost: statics.getTravelCost,
+  getTravelCostType: statics.getTravelCostType
+};
+
+},{"./MaxSecurityTravelRule":22,"./MinSecurityTravelRule":23,"./statics":25}],25:[function(require,module,exports){
+"use strict";
+
+var AddingTravelCost = require("../../AddingTravelCost");
+
+/**
+ * Returns the travel cost type identifier for given security value. This
+ * method is meant for the 'visible' security value in the range of 0.0 .. 1.0
+ * with 0.1 increments. For example, a value of 0.3 will return "security03".
+ *
+ * @param {Number} security the security value
+ * @return {String} the travel cost type identifier for given security value.
+ * @memberof! everoute.travel.rules.security
+ */
+var getTravelCostType = function(security) {
+  return "security" + security.toFixed(1).replace(".", "");
+};
+
+/**
+ * Returns a travel cost representing given security, having the given value.
+ *
+ * @param {Number} security The security value.
+ * @param {Number} value The initial value.
+ * @return {everoute.travel.TravelCost} The travel cost representing the security value.
+ * @memberof! everoute.travel.rules.security
+ */
+var getTravelCost = function(security, value) {
+  return new AddingTravelCost(getTravelCostType(security), value);
+};
+
+var nullCosts = {};
+
+(function initNullCosts() {
+  var security;
+  var cost;
+
+  for (security = 0.0; security <= 1.0; security += 0.1) {
+    cost = getTravelCost(security, 0);
+    nullCosts[cost.getType()] = cost;
+  }
+})();
+
+/**
+ * Returns the sum of all security costs between the two given security limits.
+ *
+ * @param {everoute.travel.TravelCostSum} costSum The cost sum from which to extract costs.
+ * @param {Number} from Security value, from which to check (inclusive).
+ * @param {Number} to Security value, to which to check (inclusive).
+ * @return {Number} Amount of all costs in the range.
+ * @private
+ */
+var sumSecurityCosts = function(costSum, from, to) {
+  var result = 0;
+  var security;
+  var nullCost;
+
+  for (security = from; security <= to; security += 0.1) {
+    nullCost = nullCosts[getTravelCostType(security)];
+    result += costSum.getCost(nullCost).getValue();
+  }
+
+  return result;
+};
+
+module.exports = {
+  getTravelCost: getTravelCost,
+  getTravelCostType: getTravelCostType,
+
+  sumSecurityCosts: sumSecurityCosts
+};
+
+},{"../../AddingTravelCost":2}],26:[function(require,module,exports){
 "use strict";
 
 var AddingTravelCost = require("../../AddingTravelCost");
@@ -920,7 +1114,7 @@ module.exports = {
   getRule: getRule
 };
 
-},{"../../AddingTravelCost":2,"../NaturalOrderTravelRule":19}],23:[function(require,module,exports){
+},{"../../AddingTravelCost":2,"../NaturalOrderTravelRule":19}],27:[function(require,module,exports){
 "use strict";
 
 /**
@@ -946,7 +1140,7 @@ function DestinationSystemSearchCriterion(systemId) {
 
 module.exports = DestinationSystemSearchCriterion;
 
-},{}],24:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1007,7 +1201,7 @@ function PathFinder(start, capability, criterion, collector) {
 
 module.exports = PathFinder;
 
-},{}],25:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * This namespace contains logic for searching paths.
  *
@@ -1019,7 +1213,7 @@ module.exports = {
   PathFinder: require("./PathFinder")
 };
 
-},{"./DestinationSystemSearchCriterion":23,"./PathFinder":24}],26:[function(require,module,exports){
+},{"./DestinationSystemSearchCriterion":27,"./PathFinder":28}],30:[function(require,module,exports){
 "use strict";
 
 var Path = require("../travel/Path");
@@ -1063,7 +1257,7 @@ function EmptySolarSystem(id, contextIds, location, trueSecurity) {
   if (this.trueSecurity < 0.0) {
     this.security = 0.0;
   } else {
-    this.security = parseFloat((Math.floor(trueSecurity * 10) / 10.0).toFixed(1));
+    this.security = parseFloat((Math.floor((trueSecurity + 0.05) * 10) / 10.0).toFixed(1));
   }
 }
 
@@ -1105,7 +1299,7 @@ EmptySolarSystem.prototype.startPath = function() {
 
 module.exports = EmptySolarSystem;
 
-},{"../travel/Path":6,"../travel/StepBuilder":11}],27:[function(require,module,exports){
+},{"../travel/Path":6,"../travel/StepBuilder":11}],31:[function(require,module,exports){
 "use strict";
 
 var UniverseBuilder = require("./UniverseBuilder");
@@ -1141,7 +1335,7 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":32}],28:[function(require,module,exports){
+},{"./UniverseBuilder":36}],32:[function(require,module,exports){
 "use strict";
 
 var StepBuilder = require("../travel/StepBuilder");
@@ -1184,10 +1378,6 @@ function ExtendedSolarSystem(data) {
 
     jumps[jumpType] = list.concat([jump]);
   });
-
-  this.getId = function() {
-    return base.getId();
-  };
 
   this.getId = function() {
     return base.getId();
@@ -1236,7 +1426,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{"../travel/StepBuilder":11}],29:[function(require,module,exports){
+},{"../travel/StepBuilder":11}],33:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1317,7 +1507,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":32}],30:[function(require,module,exports){
+},{"./UniverseBuilder":36}],34:[function(require,module,exports){
 "use strict";
 
 var JumpBuilder = require("../travel/JumpBuilder");
@@ -1327,9 +1517,17 @@ var JumpBuilder = require("../travel/JumpBuilder");
  *
  * @class
  * @constructor
+ * @param {everoute.universe.SolarSystemExtensionData} data the extension data.
  * @memberof everoute.universe
  */
 function SolarSystemExtension(data) {
+
+  /**
+   * @return {Number} The security value of the solar system.
+   */
+  this.getSecurityValue = function() {
+    return data.base.getSecurityValue();
+  };
 
   /**
    * Requests to add a jump from this solar system to another. The returned
@@ -1358,7 +1556,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],31:[function(require,module,exports){
+},{"../travel/JumpBuilder":5}],35:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1388,7 +1586,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],32:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 
 var EmptySolarSystem = require("./EmptySolarSystem");
@@ -1501,7 +1699,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":26,"./ExtendedSolarSystem":28,"./ExtendedUniverse":29,"./SolarSystemExtension":30,"./SolarSystemExtensionData":31,"./UniverseExtensionData":33}],33:[function(require,module,exports){
+},{"./EmptySolarSystem":30,"./ExtendedSolarSystem":32,"./ExtendedUniverse":33,"./SolarSystemExtension":34,"./SolarSystemExtensionData":35,"./UniverseExtensionData":37}],37:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1527,7 +1725,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],34:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -1547,7 +1745,7 @@ module.exports = {
   SolarSystemExtensionData: require("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":26,"./EmptyUniverse":27,"./ExtendedSolarSystem":28,"./ExtendedUniverse":29,"./SolarSystemExtension":30,"./SolarSystemExtensionData":31,"./UniverseBuilder":32,"./UniverseExtensionData":33}],35:[function(require,module,exports){
+},{"./EmptySolarSystem":30,"./EmptyUniverse":31,"./ExtendedSolarSystem":32,"./ExtendedUniverse":33,"./SolarSystemExtension":34,"./SolarSystemExtensionData":35,"./UniverseBuilder":36,"./UniverseExtensionData":37}],39:[function(require,module,exports){
 "use strict";
 
 /**

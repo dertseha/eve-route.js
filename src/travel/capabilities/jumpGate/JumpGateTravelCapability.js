@@ -19,7 +19,8 @@ function JumpGateTravelCapability(universe) {
     var result = [];
 
     jumps.forEach(function(jump) {
-      var builder = new StepBuilder(jump.getDestinationId()).withEnterCosts(jump.getCosts()).withContinueCosts(solarSystem.getCosts());
+      var destination = universe.getSolarSystem(jump.getDestinationId());
+      var builder = new StepBuilder(destination.getId()).withEnterCosts(jump.getCosts()).withContinueCosts(destination.getCosts());
 
       result.push(path.extend(builder.build()));
     });

@@ -27,30 +27,16 @@
         <article>
             <pre class="prettyprint source"><code>"use strict";
 
+var statics = require("./statics");
+var MaxSecurityTravelRule = require("./MaxSecurityTravelRule");
+var MinSecurityTravelRule = require("./MinSecurityTravelRule");
+
 /**
  * This namespace contains helper regarding the rules about security.
  *
  * @namespace security
  * @memberof everoute.travel.rules
  */
-
-/**
- * The type identification used for minimum security cost: "minSecurity".
- *
- * @type {String}
- * @const
- * @memberof everoute.travel.rules.security
- */
-var COST_TYPE_MIN = "minSecurity";
-
-/**
- * The type identification used for maximum security cost: "maxSecurity".
- *
- * @type {String}
- * @const
- * @memberof everoute.travel.rules.security
- */
-var COST_TYPE_MAX = "maxSecurity";
 
 /**
  * Extends the universe by adding security cost to all solar systems.
@@ -65,41 +51,42 @@ var extendUniverse = function(builder) {
 
   solarSystemIds.forEach(function(id) {
     var extension = builder.extendSolarSystem(id);
+    var security = extension.getSecurityValue();
 
-    // TODO!
+    extension.addCost(statics.getTravelCost(security, 1));
   });
 };
 
 /**
  * Returns a rule that prefers a path that has at least the given limit as the
- * minimum security value.
+ * minimum security value. Reasonable values for limit are [0.1 .. 0.5]
  *
  * @param {Number} limit the inclusive minimum value a path should have.
  * @return {everoute.travel.rules.TravelRule} The rule intance.
  * @memberof everoute.travel.rules.security
  */
 var getMinRule = function(limit) {
-  // TODO!
+  return new MinSecurityTravelRule(limit);
 };
 
 /**
  * Returns a rule that prefers a path that has a maximum security value below
- * the given limit.
+ * the given limit. Reasonable values for limit are [0.5 .. 1.0]
  *
  * @param {Number} limit the exclusive maximum value a path should have.
  * @return {everoute.travel.rules.TravelRule} The rule intance.
  * @memberof everoute.travel.rules.security
  */
 var getMaxRule = function(limit) {
-  // TODO!
+  return new MaxSecurityTravelRule(limit);
 };
 
 module.exports = {
-  COST_TYPE_MAX: COST_TYPE_MAX,
-  COST_TYPE_MIN: COST_TYPE_MIN,
   extendUniverse: extendUniverse,
   getMaxRule: getMaxRule,
-  getMinRule: getMinRule
+  getMinRule: getMinRule,
+  getTravelCost: statics.getTravelCost,
+  getTravelCostType: statics.getTravelCostType
 };
 </code></pre>
         </article>
@@ -111,13 +98,13 @@ module.exports = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="everoute.travel.AddingTravelCost.html">AddingTravelCost</a></li><li><a href="everoute.travel.AnyLocation.html">AnyLocation</a></li><li><a href="everoute.travel.capabilities.CombiningTravelCapability.html">CombiningTravelCapability</a></li><li><a href="everoute.travel.capabilities.jumpGate.JumpGateTravelCapability.html">JumpGateTravelCapability</a></li><li><a href="everoute.travel.capabilities.OptimizingTravelCapability.html">OptimizingTravelCapability</a></li><li><a href="everoute.travel.capabilities.TravelCapability.html">TravelCapability</a></li><li><a href="everoute.travel.Jump.html">Jump</a></li><li><a href="everoute.travel.JumpBuilder.html">JumpBuilder</a></li><li><a href="everoute.travel.Location.html">Location</a></li><li><a href="everoute.travel.ManufacturingPathContestProvider.html">ManufacturingPathContestProvider</a></li><li><a href="everoute.travel.Path.html">Path</a></li><li><a href="everoute.travel.PathContest.html">PathContest</a></li><li><a href="everoute.travel.PathContestProvider.html">PathContestProvider</a></li><li><a href="everoute.travel.rules.NaturalOrderTravelRule.html">NaturalOrderTravelRule</a></li><li><a href="everoute.travel.rules.TravelRule.html">TravelRule</a></li><li><a href="everoute.travel.rules.TravelRuleset.html">TravelRuleset</a></li><li><a href="everoute.travel.search.DestinationSystemSearchCriterion.html">DestinationSystemSearchCriterion</a></li><li><a href="everoute.travel.search.PathFinder.html">PathFinder</a></li><li><a href="everoute.travel.search.SearchCriterion.html">SearchCriterion</a></li><li><a href="everoute.travel.search.SearchResultCollector.html">SearchResultCollector</a></li><li><a href="everoute.travel.SpecificLocation.html">SpecificLocation</a></li><li><a href="everoute.travel.StaticPathContestProvider.html">StaticPathContestProvider</a></li><li><a href="everoute.travel.Step.html">Step</a></li><li><a href="everoute.travel.StepBuilder.html">StepBuilder</a></li><li><a href="everoute.travel.TravelCost.html">TravelCost</a></li><li><a href="everoute.travel.TravelCostSum.html">TravelCostSum</a></li><li><a href="everoute.universe.EmptySolarSystem.html">EmptySolarSystem</a></li><li><a href="everoute.universe.EmptyUniverse.html">EmptyUniverse</a></li><li><a href="everoute.universe.ExtendedSolarSystem.html">ExtendedSolarSystem</a></li><li><a href="everoute.universe.ExtendedUniverse.html">ExtendedUniverse</a></li><li><a href="everoute.universe.SolarSystem.html">SolarSystem</a></li><li><a href="everoute.universe.SolarSystemExtension.html">SolarSystemExtension</a></li><li><a href="everoute.universe.SolarSystemExtensionData.html">SolarSystemExtensionData</a></li><li><a href="everoute.universe.Universe.html">Universe</a></li><li><a href="everoute.universe.UniverseBuilder.html">UniverseBuilder</a></li></ul><h3>Namespaces</h3><ul><li><a href="everoute.html">everoute</a></li><li><a href="everoute.travel.html">travel</a></li><li><a href="everoute.travel.capabilities.html">capabilities</a></li><li><a href="everoute.travel.capabilities.jumpGate.html">jumpGate</a></li><li><a href="everoute.travel.rules.html">rules</a></li><li><a href="everoute.travel.rules.security.html">security</a></li><li><a href="everoute.travel.rules.transitCount.html">transitCount</a></li><li><a href="everoute.travel.search.html">search</a></li><li><a href="everoute.universe.html">universe</a></li><li><a href="everoute.util.html">util</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="everoute.travel.AddingTravelCost.html">AddingTravelCost</a></li><li><a href="everoute.travel.AnyLocation.html">AnyLocation</a></li><li><a href="everoute.travel.capabilities.CombiningTravelCapability.html">CombiningTravelCapability</a></li><li><a href="everoute.travel.capabilities.jumpGate.JumpGateTravelCapability.html">JumpGateTravelCapability</a></li><li><a href="everoute.travel.capabilities.OptimizingTravelCapability.html">OptimizingTravelCapability</a></li><li><a href="everoute.travel.capabilities.TravelCapability.html">TravelCapability</a></li><li><a href="everoute.travel.Jump.html">Jump</a></li><li><a href="everoute.travel.JumpBuilder.html">JumpBuilder</a></li><li><a href="everoute.travel.Location.html">Location</a></li><li><a href="everoute.travel.ManufacturingPathContestProvider.html">ManufacturingPathContestProvider</a></li><li><a href="everoute.travel.Path.html">Path</a></li><li><a href="everoute.travel.PathContest.html">PathContest</a></li><li><a href="everoute.travel.PathContestProvider.html">PathContestProvider</a></li><li><a href="everoute.travel.rules.MaxSecurityTravelRule.html">MaxSecurityTravelRule</a></li><li><a href="everoute.travel.rules.MinSecurityTravelRule.html">MinSecurityTravelRule</a></li><li><a href="everoute.travel.rules.NaturalOrderTravelRule.html">NaturalOrderTravelRule</a></li><li><a href="everoute.travel.rules.TravelRule.html">TravelRule</a></li><li><a href="everoute.travel.rules.TravelRuleset.html">TravelRuleset</a></li><li><a href="everoute.travel.search.DestinationSystemSearchCriterion.html">DestinationSystemSearchCriterion</a></li><li><a href="everoute.travel.search.PathFinder.html">PathFinder</a></li><li><a href="everoute.travel.search.SearchCriterion.html">SearchCriterion</a></li><li><a href="everoute.travel.search.SearchResultCollector.html">SearchResultCollector</a></li><li><a href="everoute.travel.SpecificLocation.html">SpecificLocation</a></li><li><a href="everoute.travel.StaticPathContestProvider.html">StaticPathContestProvider</a></li><li><a href="everoute.travel.Step.html">Step</a></li><li><a href="everoute.travel.StepBuilder.html">StepBuilder</a></li><li><a href="everoute.travel.TravelCost.html">TravelCost</a></li><li><a href="everoute.travel.TravelCostSum.html">TravelCostSum</a></li><li><a href="everoute.universe.EmptySolarSystem.html">EmptySolarSystem</a></li><li><a href="everoute.universe.EmptyUniverse.html">EmptyUniverse</a></li><li><a href="everoute.universe.ExtendedSolarSystem.html">ExtendedSolarSystem</a></li><li><a href="everoute.universe.ExtendedUniverse.html">ExtendedUniverse</a></li><li><a href="everoute.universe.SolarSystem.html">SolarSystem</a></li><li><a href="everoute.universe.SolarSystemExtension.html">SolarSystemExtension</a></li><li><a href="everoute.universe.SolarSystemExtensionData.html">SolarSystemExtensionData</a></li><li><a href="everoute.universe.Universe.html">Universe</a></li><li><a href="everoute.universe.UniverseBuilder.html">UniverseBuilder</a></li></ul><h3>Namespaces</h3><ul><li><a href="everoute.html">everoute</a></li><li><a href="everoute.travel.html">travel</a></li><li><a href="everoute.travel.capabilities.html">capabilities</a></li><li><a href="everoute.travel.capabilities.jumpGate.html">jumpGate</a></li><li><a href="everoute.travel.rules.html">rules</a></li><li><a href="everoute.travel.rules.security.html">security</a></li><li><a href="everoute.travel.rules.transitCount.html">transitCount</a></li><li><a href="everoute.travel.search.html">search</a></li><li><a href="everoute.universe.html">universe</a></li><li><a href="everoute.util.html">util</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Jan 19 2014 08:37:09 GMT-0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Jan 19 2014 21:07:16 GMT-0000 (GMT)
 </footer>
 
 <script> prettyPrint(); </script>

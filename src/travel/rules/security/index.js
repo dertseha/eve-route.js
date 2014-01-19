@@ -1,29 +1,15 @@
 "use strict";
 
+var statics = require("./statics");
+var MaxSecurityTravelRule = require("./MaxSecurityTravelRule");
+var MinSecurityTravelRule = require("./MinSecurityTravelRule");
+
 /**
  * This namespace contains helper regarding the rules about security.
  *
  * @namespace security
  * @memberof everoute.travel.rules
  */
-
-/**
- * The type identification used for minimum security cost: "minSecurity".
- *
- * @type {String}
- * @const
- * @memberof everoute.travel.rules.security
- */
-var COST_TYPE_MIN = "minSecurity";
-
-/**
- * The type identification used for maximum security cost: "maxSecurity".
- *
- * @type {String}
- * @const
- * @memberof everoute.travel.rules.security
- */
-var COST_TYPE_MAX = "maxSecurity";
 
 /**
  * Extends the universe by adding security cost to all solar systems.
@@ -38,39 +24,40 @@ var extendUniverse = function(builder) {
 
   solarSystemIds.forEach(function(id) {
     var extension = builder.extendSolarSystem(id);
+    var security = extension.getSecurityValue();
 
-    // TODO!
+    extension.addCost(statics.getTravelCost(security, 1));
   });
 };
 
 /**
  * Returns a rule that prefers a path that has at least the given limit as the
- * minimum security value.
+ * minimum security value. Reasonable values for limit are [0.1 .. 0.5]
  *
  * @param {Number} limit the inclusive minimum value a path should have.
  * @return {everoute.travel.rules.TravelRule} The rule intance.
  * @memberof everoute.travel.rules.security
  */
 var getMinRule = function(limit) {
-  // TODO!
+  return new MinSecurityTravelRule(limit);
 };
 
 /**
  * Returns a rule that prefers a path that has a maximum security value below
- * the given limit.
+ * the given limit. Reasonable values for limit are [0.5 .. 1.0]
  *
  * @param {Number} limit the exclusive maximum value a path should have.
  * @return {everoute.travel.rules.TravelRule} The rule intance.
  * @memberof everoute.travel.rules.security
  */
 var getMaxRule = function(limit) {
-  // TODO!
+  return new MaxSecurityTravelRule(limit);
 };
 
 module.exports = {
-  COST_TYPE_MAX: COST_TYPE_MAX,
-  COST_TYPE_MIN: COST_TYPE_MIN,
   extendUniverse: extendUniverse,
   getMaxRule: getMaxRule,
-  getMinRule: getMinRule
+  getMinRule: getMinRule,
+  getTravelCost: statics.getTravelCost,
+  getTravelCostType: statics.getTravelCostType
 };
