@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: travel/StepBuilder.js</title>
+    <title>JSDoc: Source: util/index.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: travel/StepBuilder.js</h1>
+    <h1 class="page-title">Source: util/index.js</h1>
     
     
 
@@ -27,69 +27,24 @@
         <article>
             <pre class="prettyprint source"><code>"use strict";
 
-var AnyLocation = require("./AnyLocation");
-var Step = require("./Step");
+/**
+ * This namespace contains utility helper for the library.
+ *
+ * @namespace util
+ * @memberof everoute
+ */
 
 /**
- * This builder helps creating steps, using common defaults where possible.
- *
- * @constructor
- * @param {Number} solarSystemId The ID of the solar system in which this step ends
- * @memberof everoute.travel
+ * A null function (no operation)
+ * @memberof everoute.util
  */
-function StepBuilder(solarSystemId) {
+var noop = function() {
 
-  var to = new AnyLocation();
-  var enterCosts = [];
-  var continueCosts = [];
+};
 
-  /**
-   * Builds a step instance with the current contained data.
-   * @return {everoute.travel.Step} The built step instance.
-   */
-  this.build = function() {
-    return new Step(solarSystemId, to, enterCosts, continueCosts);
-  };
-
-  /**
-   * The location in the solar system where the step is completing.
-   * Defaults to AnyLocation.
-   *
-   * @param  {everoute.travel.Location} location the destination location
-   * @return {everoute.travel.StepBuilder} this instance
-   */
-  this.to = function(location) {
-    to = location;
-
-    return this;
-  };
-
-  /**
-   * Sets the enter costs for this step. Defaults to empty array.
-   *
-   * @param {Array.&lt;everoute.travel.TravelCost>} costs the enter costs.
-   * @return {everoute.travel.StepBuilder} this instance
-   */
-  this.withEnterCosts = function(costs) {
-    enterCosts = costs.slice(0);
-
-    return this;
-  };
-
-  /**
-   * Sets the continue costs for this step. Defaults to empty array.
-   *
-   * @param {Array.&lt;everoute.travel.TravelCost>} costs the continue costs.
-   * @return {everoute.travel.StepBuilder} this instance
-   */
-  this.withContinueCosts = function(costs) {
-    continueCosts = costs.slice(0);
-
-    return this;
-  };
-}
-
-module.exports = StepBuilder;
+module.exports = {
+  noop: noop
+};
 </code></pre>
         </article>
     </section>

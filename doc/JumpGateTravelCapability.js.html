@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: travel/StepBuilder.js</title>
+    <title>JSDoc: Source: travel/capabilities/jumpGate/JumpGateTravelCapability.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: travel/StepBuilder.js</h1>
+    <h1 class="page-title">Source: travel/capabilities/jumpGate/JumpGateTravelCapability.js</h1>
     
     
 
@@ -27,69 +27,37 @@
         <article>
             <pre class="prettyprint source"><code>"use strict";
 
-var AnyLocation = require("./AnyLocation");
-var Step = require("./Step");
+var StepBuilder = require("../../StepBuilder");
 
 /**
- * This builder helps creating steps, using common defaults where possible.
+ * This capability uses jump gates to get out of a system
  *
  * @constructor
- * @param {Number} solarSystemId The ID of the solar system in which this step ends
- * @memberof everoute.travel
+ * @implements {everoute.travel.capabilities.TravelCapability}
+ * @extends {everoute.travel.capabilities.TravelCapability}
+ * @param {everoute.universe.Universe} universe the universe to query
+ * @memberof everoute.travel.capabilities.jumpGate
  */
-function StepBuilder(solarSystemId) {
+function JumpGateTravelCapability(universe) {
 
-  var to = new AnyLocation();
-  var enterCosts = [];
-  var continueCosts = [];
+  this.getNextPaths = function(path) {
+    var solarSystem = universe.getSolarSystem(path.getStep().getSolarSystemId());
+    var jumps = solarSystem.getJumps(JumpGateTravelCapability.JUMP_TYPE);
+    var result = [];
 
-  /**
-   * Builds a step instance with the current contained data.
-   * @return {everoute.travel.Step} The built step instance.
-   */
-  this.build = function() {
-    return new Step(solarSystemId, to, enterCosts, continueCosts);
-  };
+    jumps.forEach(function(jump) {
+      var builder = new StepBuilder(jump.getDestinationId()).withEnterCosts(jump.getCosts()).withContinueCosts(solarSystem.getCosts());
 
-  /**
-   * The location in the solar system where the step is completing.
-   * Defaults to AnyLocation.
-   *
-   * @param  {everoute.travel.Location} location the destination location
-   * @return {everoute.travel.StepBuilder} this instance
-   */
-  this.to = function(location) {
-    to = location;
+      result.push(path.extend(builder.build()));
+    });
 
-    return this;
-  };
-
-  /**
-   * Sets the enter costs for this step. Defaults to empty array.
-   *
-   * @param {Array.&lt;everoute.travel.TravelCost>} costs the enter costs.
-   * @return {everoute.travel.StepBuilder} this instance
-   */
-  this.withEnterCosts = function(costs) {
-    enterCosts = costs.slice(0);
-
-    return this;
-  };
-
-  /**
-   * Sets the continue costs for this step. Defaults to empty array.
-   *
-   * @param {Array.&lt;everoute.travel.TravelCost>} costs the continue costs.
-   * @return {everoute.travel.StepBuilder} this instance
-   */
-  this.withContinueCosts = function(costs) {
-    continueCosts = costs.slice(0);
-
-    return this;
+    return result;
   };
 }
 
-module.exports = StepBuilder;
+JumpGateTravelCapability.JUMP_TYPE = "jumpGate";
+
+module.exports = JumpGateTravelCapability;
 </code></pre>
         </article>
     </section>

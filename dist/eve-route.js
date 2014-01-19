@@ -26,7 +26,7 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":16,"./universe":32,"./util":33}],2:[function(require,module,exports){
+},{"./travel":18,"./universe":34,"./util":35}],2:[function(require,module,exports){
 "use strict";
 
 /**
@@ -696,11 +696,75 @@ module.exports = OptimizingTravelCapability;
  * @memberof everoute.travel
  */
 module.exports = {
+  jumpGate: require("./jumpGate"),
+
   CombiningTravelCapability: require("./CombiningTravelCapability"),
   OptimizingTravelCapability: require("./OptimizingTravelCapability")
 };
 
-},{"./CombiningTravelCapability":13,"./OptimizingTravelCapability":14}],16:[function(require,module,exports){
+},{"./CombiningTravelCapability":13,"./OptimizingTravelCapability":14,"./jumpGate":17}],16:[function(require,module,exports){
+"use strict";
+
+var StepBuilder = require("../../StepBuilder");
+
+/**
+ * This capability uses jump gates to get out of a system
+ *
+ * @constructor
+ * @implements {everoute.travel.capabilities.TravelCapability}
+ * @extends {everoute.travel.capabilities.TravelCapability}
+ * @param {everoute.universe.Universe} universe the universe to query
+ * @memberof everoute.travel.capabilities.jumpGate
+ */
+function JumpGateTravelCapability(universe) {
+
+  this.getNextPaths = function(path) {
+    var solarSystem = universe.getSolarSystem(path.getStep().getSolarSystemId());
+    var jumps = solarSystem.getJumps(JumpGateTravelCapability.JUMP_TYPE);
+    var result = [];
+
+    jumps.forEach(function(jump) {
+      var builder = new StepBuilder(jump.getDestinationId()).withEnterCosts(jump.getCosts()).withContinueCosts(solarSystem.getCosts());
+
+      result.push(path.extend(builder.build()));
+    });
+
+    return result;
+  };
+}
+
+JumpGateTravelCapability.JUMP_TYPE = "jumpGate";
+
+module.exports = JumpGateTravelCapability;
+
+},{"../../StepBuilder":11}],17:[function(require,module,exports){
+"use strict";
+
+var JumpGateTravelCapability = require("./JumpGateTravelCapability");
+
+/**
+ * This namespace contains helper regarding the jump gate travel capability.
+ *
+ * @namespace jumpGate
+ * @memberof everoute.travel.capabilities
+ */
+
+/**
+ * The type identification for the jumps: "jumpGate".
+ *
+ * @type {String}
+ * @const
+ * @memberof everoute.travel.capabilities.jumpGate
+ */
+var JUMP_TYPE = JumpGateTravelCapability.JUMP_TYPE;
+
+module.exports = {
+  JUMP_TYPE: JUMP_TYPE,
+
+  JumpGateTravelCapability: JumpGateTravelCapability
+};
+
+},{"./JumpGateTravelCapability":16}],18:[function(require,module,exports){
 /**
  * This namespace contains entries regarding travel.
  *
@@ -725,7 +789,7 @@ module.exports = {
   TravelCostSum: require("./TravelCostSum")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":19,"./search":23}],17:[function(require,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":25}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -747,7 +811,7 @@ function NaturalOrderTravelRule(nullCost) {
 
 module.exports = NaturalOrderTravelRule;
 
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 /**
@@ -779,7 +843,7 @@ TravelRuleset.prototype.compare = function(sumA, sumB) {
 
 module.exports = TravelRuleset;
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /**
  * This namespace contains rules for travelling.
  *
@@ -793,7 +857,7 @@ module.exports = {
   TravelRuleset: require("./TravelRuleset")
 };
 
-},{"./NaturalOrderTravelRule":17,"./TravelRuleset":18,"./transitCount":20}],20:[function(require,module,exports){
+},{"./NaturalOrderTravelRule":19,"./TravelRuleset":20,"./transitCount":22}],22:[function(require,module,exports){
 "use strict";
 
 var AddingTravelCost = require("../../AddingTravelCost");
@@ -801,7 +865,7 @@ var NaturalOrderTravelRule = require("../NaturalOrderTravelRule");
 
 /**
  * This namespace contains helper regarding the transit count rule. This
- * rule is used to determine the "length" of a path.
+ * rule is used to determine the length of a path.
  * The term "transit count" is technically more correct as the corresponding
  * cost is only added for systems that are neither source nor destination
  * systems.
@@ -811,7 +875,7 @@ var NaturalOrderTravelRule = require("../NaturalOrderTravelRule");
  */
 
 /**
- * The type identification used for cost.
+ * The type identification used for cost: "transitCount".
  *
  * @type {String}
  * @const
@@ -856,7 +920,7 @@ module.exports = {
   getRule: getRule
 };
 
-},{"../../AddingTravelCost":2,"../NaturalOrderTravelRule":17}],21:[function(require,module,exports){
+},{"../../AddingTravelCost":2,"../NaturalOrderTravelRule":19}],23:[function(require,module,exports){
 "use strict";
 
 /**
@@ -882,7 +946,7 @@ function DestinationSystemSearchCriterion(systemId) {
 
 module.exports = DestinationSystemSearchCriterion;
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 /**
@@ -943,7 +1007,7 @@ function PathFinder(start, capability, criterion, collector) {
 
 module.exports = PathFinder;
 
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /**
  * This namespace contains logic for searching paths.
  *
@@ -955,7 +1019,7 @@ module.exports = {
   PathFinder: require("./PathFinder")
 };
 
-},{"./DestinationSystemSearchCriterion":21,"./PathFinder":22}],24:[function(require,module,exports){
+},{"./DestinationSystemSearchCriterion":23,"./PathFinder":24}],26:[function(require,module,exports){
 "use strict";
 
 var Path = require("../travel/Path");
@@ -1041,7 +1105,7 @@ EmptySolarSystem.prototype.startPath = function() {
 
 module.exports = EmptySolarSystem;
 
-},{"../travel/Path":6,"../travel/StepBuilder":11}],25:[function(require,module,exports){
+},{"../travel/Path":6,"../travel/StepBuilder":11}],27:[function(require,module,exports){
 "use strict";
 
 var UniverseBuilder = require("./UniverseBuilder");
@@ -1077,7 +1141,7 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":30}],26:[function(require,module,exports){
+},{"./UniverseBuilder":32}],28:[function(require,module,exports){
 "use strict";
 
 var StepBuilder = require("../travel/StepBuilder");
@@ -1172,7 +1236,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{"../travel/StepBuilder":11}],27:[function(require,module,exports){
+},{"../travel/StepBuilder":11}],29:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1253,7 +1317,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":30}],28:[function(require,module,exports){
+},{"./UniverseBuilder":32}],30:[function(require,module,exports){
 "use strict";
 
 var JumpBuilder = require("../travel/JumpBuilder");
@@ -1294,7 +1358,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],29:[function(require,module,exports){
+},{"../travel/JumpBuilder":5}],31:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1324,7 +1388,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 var EmptySolarSystem = require("./EmptySolarSystem");
@@ -1437,7 +1501,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":24,"./ExtendedSolarSystem":26,"./ExtendedUniverse":27,"./SolarSystemExtension":28,"./SolarSystemExtensionData":29,"./UniverseExtensionData":31}],31:[function(require,module,exports){
+},{"./EmptySolarSystem":26,"./ExtendedSolarSystem":28,"./ExtendedUniverse":29,"./SolarSystemExtension":30,"./SolarSystemExtensionData":31,"./UniverseExtensionData":33}],33:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1463,7 +1527,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -1483,7 +1547,7 @@ module.exports = {
   SolarSystemExtensionData: require("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":24,"./EmptyUniverse":25,"./ExtendedSolarSystem":26,"./ExtendedUniverse":27,"./SolarSystemExtension":28,"./SolarSystemExtensionData":29,"./UniverseBuilder":30,"./UniverseExtensionData":31}],33:[function(require,module,exports){
+},{"./EmptySolarSystem":26,"./EmptyUniverse":27,"./ExtendedSolarSystem":28,"./ExtendedUniverse":29,"./SolarSystemExtension":30,"./SolarSystemExtensionData":31,"./UniverseBuilder":32,"./UniverseExtensionData":33}],35:[function(require,module,exports){
 "use strict";
 
 /**

@@ -14,27 +14,12 @@ describe("New Eden Gate Travel", function() {
   var DestinationSystemSearchCriterion = everoute.travel.search.DestinationSystemSearchCriterion;
   var TravelRuleset = everoute.travel.rules.TravelRuleset;
   var NaturalOrderTravelRule = everoute.travel.rules.NaturalOrderTravelRule;
+  var JumpGateTravelCapability = everoute.travel.capabilities.jumpGate.JumpGateTravelCapability;
 
   var solarSystemNamesById = {};
   var solarSystemIdsByName = {};
   var universe;
 
-  var gateCapability = {
-    getNextPaths: function(path) {
-      var result = [];
-
-      var solarSystem = universe.getSolarSystem(path.getStep().getSolarSystemId());
-      solarSystem.getJumps("jumpGate").forEach(function(jump) {
-        var step = new StepBuilder(jump.getDestinationId()).withEnterCosts(jump.getCosts()).withContinueCosts(solarSystem.getCosts()).build();
-
-        result.push(path.extend(step));
-      });
-
-      return result;
-    }
-  };
-
-  var rules = [everoute.travel.rules.transitCount.getRule()];
 
   it("should find a route from Rens to Pator", function() {
     verifyRoute("Rens", "Pator", ["Rens", "Frarn", "Gyng", "Onga", "Pator"]);
@@ -48,7 +33,9 @@ describe("New Eden Gate Travel", function() {
   function verifyRoute(from, to, expected) {
     var result;
     var start = universe.getSolarSystem(getIdByName(from)).startPath();
+    var rules = [everoute.travel.rules.transitCount.getRule()];
     var contest = new PathContest(new TravelRuleset(rules));
+    var gateCapability = new JumpGateTravelCapability(universe);
     var capability = new OptimizingTravelCapability(gateCapability, new StaticPathContestProvider(contest));
     var criterion = new DestinationSystemSearchCriterion(getIdByName(to));
     var collector = {
@@ -303,7 +290,7 @@ describe("New Eden Gate Travel", function() {
     function addGateJump(fromId, toId) {
       var extension = builder.extendSolarSystem(fromId);
 
-      extension.addJump("jumpGate", toId);
+      extension.addJump(everoute.travel.capabilities.jumpGate.JUMP_TYPE, toId);
     }
 
     jumpData.forEach(function(entry) {
