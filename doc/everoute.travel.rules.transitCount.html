@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: SolarSystemExtension</title>
+    <title>JSDoc: Namespace: transitCount</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Class: SolarSystemExtension</h1>
+    <h1 class="page-title">Namespace: transitCount</h1>
     
     
 
@@ -27,9 +27,9 @@
     
 <header>
     <h2>
-        <span class="ancestors"><a href="everoute.html">everoute</a><a href="everoute.universe.html">.universe</a>.</span>
+        <span class="ancestors"><a href="everoute.html">everoute</a><a href="everoute.travel.html">.travel</a><a href="everoute.travel.rules.html">.rules</a>.</span>
     
-    SolarSystemExtension
+    transitCount
     </h2>
     
 </header>  
@@ -40,17 +40,19 @@
     
     
         
-<dt>
-    <h4 class="name" id="SolarSystemExtension"><span class="type-signature"></span>new SolarSystemExtension<span class="signature">()</span><span class="type-signature"></span></h4>
+            <div class="description">This namespace contains helper regarding the transit count rule. This
+rule is used to determine the "length" of a path.
+The term "transit count" is technically more correct as the corresponding
+cost is only added for systems that are neither source nor destination
+systems.</div>
+        
+        
+        
+<dl class="details">
+    
+        
     
     
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        An extension helper for solar systems.
-    </div>
     
 
     
@@ -59,6 +61,70 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js____.html">travel/rules/transitCount/index.js</a>, <a href="index.js____.html#line6">line 6</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+        
+        
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Members</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="COST_TYPE"><span class="type-signature">&lt;static, constant> </span>COST_TYPE<span class="type-signature"> :String</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        The type identification used for cost.
+    </div>
+    
+    
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">String</span>
+
+
+            </li>
+        </ul>
+    
+
     
 <dl class="details">
     
@@ -82,7 +148,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="SolarSystemExtension.js.html">universe/SolarSystemExtension.js</a>, <a href="SolarSystemExtension.js.html#line12">line 12</a>
+        <a href="index.js____.html">travel/rules/transitCount/index.js</a>, <a href="index.js____.html#line24">line 24</a>
     </li></ul></dd>
     
     
@@ -95,31 +161,9 @@
 
     
     
-
-    
-
-    
-    
-    
-    
-    
-    
-    
 </dd>
 
-    
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        </dl>
     
     
     
@@ -128,7 +172,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="addCost"><span class="type-signature"></span>addCost<span class="signature">(cost)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="extendUniverse"><span class="type-signature">&lt;static> </span>extendUniverse<span class="signature">(builder)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -136,7 +180,9 @@
     
     
     <div class="description">
-        Adds a cost to the solar system.
+        Extends the universe by adding a transit count cost to all solar systems.
+This method should be called only once per universe as it would add the same
+cost another time to existing ones.
     </div>
     
 
@@ -170,13 +216,13 @@
 	
         <tr>
             
-                <td class="name"><code>cost</code></td>
+                <td class="name"><code>builder</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type"><a href="everoute.travel.TravelCost.html">everoute.travel.TravelCost</a></span>
+<span class="param-type"><a href="everoute.universe.UniverseBuilder.html">everoute.universe.UniverseBuilder</a></span>
 
 
             
@@ -186,7 +232,7 @@
             
             
             
-            <td class="description last">The extra cost to add.</td>
+            <td class="description last">The builder for extension.</td>
         </tr>
 	
 	
@@ -217,7 +263,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="SolarSystemExtension.js.html">universe/SolarSystemExtension.js</a>, <a href="SolarSystemExtension.js.html#line34">line 34</a>
+        <a href="index.js____.html">travel/rules/transitCount/index.js</a>, <a href="index.js____.html#line34">line 34</a>
     </li></ul></dd>
     
     
@@ -245,7 +291,7 @@
         
             
 <dt>
-    <h4 class="name" id="addJump"><span class="type-signature"></span>addJump<span class="signature">(jumpType, destinationId)</span><span class="type-signature"> &rarr; {<a href="everoute.travel.JumpBuilder.html">everoute.travel.JumpBuilder</a>}</span></h4>
+    <h4 class="name" id="getRule"><span class="type-signature">&lt;static> </span>getRule<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="everoute.travel.rules.TravelRule.html">everoute.travel.rules.TravelRule</a>}</span></h4>
     
     
 </dt>
@@ -253,8 +299,8 @@
     
     
     <div class="description">
-        Requests to add a jump from this solar system to another. The returned
-builder can be used to refine the jump properties.
+        Returns a rule that will search for the lowest transit count - in effect,
+the shortest path between a source and a destination.
     </div>
     
 
@@ -262,77 +308,6 @@ builder can be used to refine the jump properties.
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>jumpType</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">Type of jump</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>destinationId</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">ID of the destination solar system</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
     
     
     
@@ -358,7 +333,7 @@ builder can be used to refine the jump properties.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="SolarSystemExtension.js.html">universe/SolarSystemExtension.js</a>, <a href="SolarSystemExtension.js.html#line22">line 22</a>
+        <a href="index.js____.html">travel/rules/transitCount/index.js</a>, <a href="index.js____.html#line51">line 51</a>
     </li></ul></dd>
     
     
@@ -383,7 +358,7 @@ builder can be used to refine the jump properties.
     
             
 <div class="param-desc">
-    a builder instance for details
+    The rule intance.
 </div>
 
 
@@ -394,7 +369,7 @@ builder can be used to refine the jump properties.
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="everoute.travel.JumpBuilder.html">everoute.travel.JumpBuilder</a></span>
+<span class="param-type"><a href="everoute.travel.rules.TravelRule.html">everoute.travel.rules.TravelRule</a></span>
 
 
 	</dd>
@@ -427,7 +402,7 @@ builder can be used to refine the jump properties.
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Jan 19 2014 08:07:34 GMT-0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Jan 19 2014 08:07:31 GMT-0000 (GMT)
 </footer>
 
 <script> prettyPrint(); </script>

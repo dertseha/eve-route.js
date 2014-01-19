@@ -5,6 +5,8 @@
  * @memberof everoute.travel
  */
 module.exports = {
+  transitCount: require("./transitCount"),
+
   NaturalOrderTravelRule: require("./NaturalOrderTravelRule"),
   TravelRuleset: require("./TravelRuleset")
 };

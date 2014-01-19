@@ -34,9 +34,7 @@ describe("New Eden Gate Travel", function() {
     }
   };
 
-  var nullCost = new AddingTravelCost("jumps", 0);
-  var jumpCountRule = new NaturalOrderTravelRule(nullCost);
-  var rules = [jumpCountRule];
+  var rules = [everoute.travel.rules.transitCount.getRule()];
 
   it("should find a route from Rens to Pator", function() {
     verifyRoute("Rens", "Pator", ["Rens", "Frarn", "Gyng", "Onga", "Pator"]);
@@ -298,11 +296,9 @@ describe("New Eden Gate Travel", function() {
 
       solarSystemNamesById[id] = name;
       solarSystemIdsByName[name] = id;
-
-      var extension = builder.extendSolarSystem(id);
-
-      extension.addCost(new AddingTravelCost("jumps", 1));
     });
+
+    everoute.travel.rules.transitCount.extendUniverse(builder);
 
     function addGateJump(fromId, toId) {
       var extension = builder.extendSolarSystem(fromId);

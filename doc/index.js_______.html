@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: travel/search/SearchResultCollector.js</title>
+    <title>JSDoc: Source: util/index.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: travel/search/SearchResultCollector.js</h1>
+    <h1 class="page-title">Source: util/index.js</h1>
     
     
 
@@ -28,26 +28,22 @@
             <pre class="prettyprint source"><code>"use strict";
 
 /**
- * This interface is for collectors of search results.
+ * This namespace contains utility helper for the library.
  *
- * @class
- * @interface
- * @memberof everoute.travel.search
+ * @namespace util
+ * @memberof everoute
  */
-function SearchResultCollector() {
-
-}
 
 /**
- * Called by the PathFinder about a path that was was determined to be the
- * best so far. The path is the best for its current destination key as per
- * search critera.
- *
- * @param {everoute.travel.Path} path a path that has been found.
- * @memberof! everoute.travel.search.SearchResultCollector.prototype
+ * A null function (no operation)
+ * @memberof everoute.util
  */
-SearchResultCollector.prototype.collect = function(path) {
-  throw new Error("Interface Implementation");
+var noop = function() {
+
+};
+
+module.exports = {
+  noop: noop
 };
 </code></pre>
         </article>
