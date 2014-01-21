@@ -100,6 +100,18 @@ describe("PathFinder", function() {
     verifyContinueSearchCount(2);
   });
 
+  it("should notify the start as well", function() {
+    givenNextStepsAre(0, [createStep(1), createStep(2)]);
+
+    criterion.isDesired = function(path) {
+      return path.getStep().getSolarSystemId() === 0;
+    };
+
+    runSearchSomeTime();
+
+    expect(collected[0].getStep().getSolarSystemId()).to.be.equal(0);
+  });
+
   function verifyContinueSearchCount(expected) {
     var count = runSearchSomeTime();
 

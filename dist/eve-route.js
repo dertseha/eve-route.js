@@ -1158,6 +1158,9 @@ module.exports = DestinationSystemSearchCriterion;
  * only governs whether a specific path is worth continuing.
  * The finder is used best in combination with the OptimizingTravelCapability.
  *
+ * The start will also be notified to the criterion and the collector, to enable
+ * 'blind' searches that also match the start system.
+ *
  * @constructor
  * @param {everoute.travel.Path} start The start for the search.
  * @param {everoute.travel.capabilities.TravelCapability} capability the capability to use for advancing.
@@ -1167,7 +1170,15 @@ module.exports = DestinationSystemSearchCriterion;
  */
 function PathFinder(start, capability, criterion, collector) {
 
-  var candidates = [start];
+  var candidates = [];
+
+  function continueWithStart() {
+    continueFunction = continueWithCandidate;
+    processNewCandidate(start);
+    continueFunction();
+  }
+
+  var continueFunction = continueWithStart;
 
   /**
    * Continues the search. This method should be called until it returned false.
@@ -1175,27 +1186,27 @@ function PathFinder(start, capability, criterion, collector) {
    * @return {Boolean} false if the search has completed and no more possibilities exist.
    */
   this.continueSearch = function() {
-    if (candidates.length > 0) {
-      candidates = candidates.concat(findNextCandidates(candidates.pop()));
-    }
+    continueFunction();
 
     return candidates.length !== 0;
   };
 
-  function findNextCandidates(startCandidate) {
-    var nextPaths = capability.getNextPaths(startCandidate);
-    var result = [];
+  function continueWithCandidate() {
+    var nextPaths;
 
-    nextPaths.forEach(function(path) {
-      if (criterion.isDesired(path)) {
-        collector.collect(path);
-      }
-      if (criterion.shouldSearchContinueWith(path)) {
-        result.push(path);
-      }
-    });
+    if (candidates.length > 0) {
+      nextPaths = capability.getNextPaths(candidates.pop());
+      nextPaths.forEach(processNewCandidate);
+    }
+  }
 
-    return result;
+  function processNewCandidate(path) {
+    if (criterion.isDesired(path)) {
+      collector.collect(path);
+    }
+    if (criterion.shouldSearchContinueWith(path)) {
+      candidates.push(path);
+    }
   }
 }
 
