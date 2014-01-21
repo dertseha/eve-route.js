@@ -22,8 +22,10 @@ function OptimizingTravelCapability(capability, contestProvider) {
     if (contest.enter(origin)) {
       temp = capability.getNextPaths(origin);
       temp.forEach(function(path) {
-        if (contest.enter(path)) {
-          best[path.getDestinationKey()] = path;
+        var destinationKey = path.getDestinationKey();
+
+        if ((origin.isStart() || (origin.getPrevious().getDestinationKey() !== destinationKey)) && contest.enter(path)) {
+          best[destinationKey] = path;
         }
       });
     }
