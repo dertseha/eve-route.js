@@ -26,7 +26,7 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":18,"./universe":38,"./util":39}],2:[function(require,module,exports){
+},{"./travel":18,"./universe":39,"./util":41}],2:[function(require,module,exports){
 "use strict";
 
 /**
@@ -792,7 +792,7 @@ module.exports = {
   TravelCostSum: require("./TravelCostSum")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":29}],19:[function(require,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":30}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1215,6 +1215,128 @@ function PathFinder(start, capability, criterion, collector) {
 module.exports = PathFinder;
 
 },{}],29:[function(require,module,exports){
+"use strict";
+
+/**
+ * A splicer to create new route chromosomes.
+ *
+ * @param {everoute.util.Randomizer} rand A randomizer for creating new things.
+ * @memberof everoute.travel.search
+ */
+function RouteChromosomeSplicer(rand) {
+  this.rand = rand;
+}
+
+/**
+ * Creates a random route chromosome.
+ *
+ * @param {Array.<Number>} startIds Available IDs for the start system.
+ * @param {Number} waypointCount Amount of waypoints to consider.
+ * @return {{}} An initial chromosome with random start and waypoints.
+ */
+RouteChromosomeSplicer.prototype.createRandom = function(startIds, waypointCount) {
+  var result = {
+    startSystemId: startIds[this.rand.getIndex(startIds.length)],
+    waypoints: [],
+    destination: null
+  };
+  var waypoint;
+  var i;
+
+  for (i = 0; i < waypointCount; i++) {
+    result.waypoints.push({
+      index: this.findUnusedWaypointIndex(result.waypoints, waypointCount),
+      path: null
+    });
+  }
+
+  return result;
+};
+
+/**
+ * Creates an offspring from given parents. The start is taken from parent1, the
+ * destination from parent2. waypoints up to crossoverIndex are taken from
+ * parent1, the rest from parent2.
+ * If parent2's waypoints are already included in the previous list of
+ * waypoints, a random index is searched.
+ *
+ * @param {{}} parent1 first parent chromosome
+ * @param {{}} parent2 second parent chromosome
+ * @param {Number} crossoverIndex [description]
+ * @return {{}} a created chromosome offspring
+ */
+RouteChromosomeSplicer.prototype.createOffspring = function(parent1, parent2, crossoverIndex) {
+  var result = {
+    startSystemId: parent1.startSystemId,
+    waypoints: [],
+    destination: parent2.destination
+  };
+  var temp;
+  var index = 0;
+
+  while ((index < crossoverIndex) && (index < parent1.waypoints.length)) {
+    temp = parent1.waypoints[index];
+    result.waypoints.push(temp);
+    index++;
+  }
+  while (index < parent2.waypoints.length) {
+    temp = parent2.waypoints[index];
+    if (this.isWaypointIndexUsed(result.waypoints, temp.index)) {
+      result.waypoints.push({
+        index: this.findUnusedWaypointIndex(result.waypoints, parent2.waypoints.length),
+        path: null
+      });
+    } else {
+      result.waypoints.push(temp);
+    }
+    index++;
+  }
+
+  return result;
+};
+
+/**
+ * Finds an index that hasn't been used in the list of given waypoints.
+ *
+ * @param {{index:Number}} waypoints existing waypoints
+ * @param {Number} limit upper limit for index
+ * @return {Number} An available index
+ */
+RouteChromosomeSplicer.prototype.findUnusedWaypointIndex = function(waypoints, limit) {
+  var result = this.rand.getIndex(limit);
+  var isUnique;
+
+  while (this.isWaypointIndexUsed(waypoints, result)) {
+    result = this.rand.getIndex(limit);
+  }
+
+  return result;
+};
+
+/**
+ * Checks whether a waypoint index is used already in a list of waypoints.
+ *
+ * @param {Array.<{}>} waypoints The waypoints to check.
+ * @param {Number} index The index to check.
+ * @return {Boolean} True if the given index has already been used.
+ */
+RouteChromosomeSplicer.prototype.isWaypointIndexUsed = function(waypoints, index) {
+  var result = false;
+
+  function check(entry) {
+    if (entry.index === index) {
+      result = true;
+    }
+  }
+
+  waypoints.forEach(check);
+
+  return result;
+};
+
+module.exports = RouteChromosomeSplicer;
+
+},{}],30:[function(require,module,exports){
 /**
  * This namespace contains logic for searching paths.
  *
@@ -1223,10 +1345,12 @@ module.exports = PathFinder;
  */
 module.exports = {
   DestinationSystemSearchCriterion: require("./DestinationSystemSearchCriterion"),
-  PathFinder: require("./PathFinder")
+  PathFinder: require("./PathFinder"),
+
+  RouteChromosomeSplicer: require("./RouteChromosomeSplicer")
 };
 
-},{"./DestinationSystemSearchCriterion":27,"./PathFinder":28}],30:[function(require,module,exports){
+},{"./DestinationSystemSearchCriterion":27,"./PathFinder":28,"./RouteChromosomeSplicer":29}],31:[function(require,module,exports){
 "use strict";
 
 var Path = require("../travel/Path");
@@ -1312,7 +1436,7 @@ EmptySolarSystem.prototype.startPath = function() {
 
 module.exports = EmptySolarSystem;
 
-},{"../travel/Path":6,"../travel/StepBuilder":11}],31:[function(require,module,exports){
+},{"../travel/Path":6,"../travel/StepBuilder":11}],32:[function(require,module,exports){
 "use strict";
 
 var UniverseBuilder = require("./UniverseBuilder");
@@ -1348,7 +1472,7 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":36}],32:[function(require,module,exports){
+},{"./UniverseBuilder":37}],33:[function(require,module,exports){
 "use strict";
 
 var StepBuilder = require("../travel/StepBuilder");
@@ -1439,7 +1563,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{"../travel/StepBuilder":11}],33:[function(require,module,exports){
+},{"../travel/StepBuilder":11}],34:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1520,7 +1644,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":36}],34:[function(require,module,exports){
+},{"./UniverseBuilder":37}],35:[function(require,module,exports){
 "use strict";
 
 var JumpBuilder = require("../travel/JumpBuilder");
@@ -1569,7 +1693,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],35:[function(require,module,exports){
+},{"../travel/JumpBuilder":5}],36:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1599,7 +1723,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 var EmptySolarSystem = require("./EmptySolarSystem");
@@ -1712,7 +1836,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":30,"./ExtendedSolarSystem":32,"./ExtendedUniverse":33,"./SolarSystemExtension":34,"./SolarSystemExtensionData":35,"./UniverseExtensionData":37}],37:[function(require,module,exports){
+},{"./EmptySolarSystem":31,"./ExtendedSolarSystem":33,"./ExtendedUniverse":34,"./SolarSystemExtension":35,"./SolarSystemExtensionData":36,"./UniverseExtensionData":38}],38:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1738,7 +1862,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -1758,7 +1882,38 @@ module.exports = {
   SolarSystemExtensionData: require("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":30,"./EmptyUniverse":31,"./ExtendedSolarSystem":32,"./ExtendedUniverse":33,"./SolarSystemExtension":34,"./SolarSystemExtensionData":35,"./UniverseBuilder":36,"./UniverseExtensionData":37}],39:[function(require,module,exports){
+},{"./EmptySolarSystem":31,"./EmptyUniverse":32,"./ExtendedSolarSystem":33,"./ExtendedUniverse":34,"./SolarSystemExtension":35,"./SolarSystemExtensionData":36,"./UniverseBuilder":37,"./UniverseExtensionData":38}],40:[function(require,module,exports){
+"use strict";
+
+/**
+ * This randomizer uses Math.rand()
+ *
+ * @constructor
+ * @implements everoute.util.Randomizer
+ * @extends everoute.util.Randomizer
+ * @memberof everoute.util
+ */
+function DefaultRandomizer() {
+
+}
+
+DefaultRandomizer.prototype.getIndex = function(limit) {
+  var result = Math.floor(Math.random() * limit);
+
+  /*
+   * As per documentation on https://developer.mozilla.org , there is a rare
+   * case where Math.random() returns 1.0 .
+   */
+  if ((result >= limit) && (limit > 0)) {
+    result = limit - 1;
+  }
+
+  return result;
+};
+
+module.exports = DefaultRandomizer;
+
+},{}],41:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1777,10 +1932,12 @@ var noop = function() {
 };
 
 module.exports = {
+  DefaultRandomizer: require("./DefaultRandomizer"),
+
   noop: noop
 };
 
-},{}]},{},[1])
+},{"./DefaultRandomizer":40}]},{},[1])
 (1)
 });
 ;

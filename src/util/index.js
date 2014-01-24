@@ -16,5 +16,7 @@ var noop = function() {
 };
 
 module.exports = {
+  DefaultRandomizer: require("./DefaultRandomizer"),
+
   noop: noop
 };

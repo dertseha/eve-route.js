@@ -6,5 +6,7 @@
  */
 module.exports = {
   DestinationSystemSearchCriterion: require("./DestinationSystemSearchCriterion"),
-  PathFinder: require("./PathFinder")
+  PathFinder: require("./PathFinder"),
+
+  RouteChromosomeSplicer: require("./RouteChromosomeSplicer")
 };

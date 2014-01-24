@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: travel/search/RouteChromosomeSplicer.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: travel/search/RouteChromosomeSplicer.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>"use strict";
+
+/**
+ * A splicer to create new route chromosomes.
+ *
+ * @param {everoute.util.Randomizer} rand A randomizer for creating new things.
+ * @memberof everoute.travel.search
+ */
+function RouteChromosomeSplicer(rand) {
+  this.rand = rand;
+}
+
+/**
+ * Creates a random route chromosome.
+ *
+ * @param {Array.&lt;Number>} startIds Available IDs for the start system.
+ * @param {Number} waypointCount Amount of waypoints to consider.
+ * @return {{}} An initial chromosome with random start and waypoints.
+ */
+RouteChromosomeSplicer.prototype.createRandom = function(startIds, waypointCount) {
+  var result = {
+    startSystemId: startIds[this.rand.getIndex(startIds.length)],
+    waypoints: [],
+    destination: null
+  };
+  var waypoint;
+  var i;
+
+  for (i = 0; i &lt; waypointCount; i++) {
+    result.waypoints.push({
+      index: this.findUnusedWaypointIndex(result.waypoints, waypointCount),
+      path: null
+    });
+  }
+
+  return result;
+};
+
+/**
+ * Creates an offspring from given parents. The start is taken from parent1, the
+ * destination from parent2. waypoints up to crossoverIndex are taken from
+ * parent1, the rest from parent2.
+ * If parent2's waypoints are already included in the previous list of
+ * waypoints, a random index is searched.
+ *
+ * @param {{}} parent1 first parent chromosome
+ * @param {{}} parent2 second parent chromosome
+ * @param {Number} crossoverIndex [description]
+ * @return {{}} a created chromosome offspring
+ */
+RouteChromosomeSplicer.prototype.createOffspring = function(parent1, parent2, crossoverIndex) {
+  var result = {
+    startSystemId: parent1.startSystemId,
+    waypoints: [],
+    destination: parent2.destination
+  };
+  var temp;
+  var index = 0;
+
+  while ((index &lt; crossoverIndex) && (index &lt; parent1.waypoints.length)) {
+    temp = parent1.waypoints[index];
+    result.waypoints.push(temp);
+    index++;
+  }
+  while (index &lt; parent2.waypoints.length) {
+    temp = parent2.waypoints[index];
+    if (this.isWaypointIndexUsed(result.waypoints, temp.index)) {
+      result.waypoints.push({
+        index: this.findUnusedWaypointIndex(result.waypoints, parent2.waypoints.length),
+        path: null
+      });
+    } else {
+      result.waypoints.push(temp);
+    }
+    index++;
+  }
+
+  return result;
+};
+
+/**
+ * Finds an index that hasn't been used in the list of given waypoints.
+ *
+ * @param {{index:Number}} waypoints existing waypoints
+ * @param {Number} limit upper limit for index
+ * @return {Number} An available index
+ */
+RouteChromosomeSplicer.prototype.findUnusedWaypointIndex = function(waypoints, limit) {
+  var result = this.rand.getIndex(limit);
+  var isUnique;
+
+  while (this.isWaypointIndexUsed(waypoints, result)) {
+    result = this.rand.getIndex(limit);
+  }
+
+  return result;
+};
+
+/**
+ * Checks whether a waypoint index is used already in a list of waypoints.
+ *
+ * @param {Array.&lt;{}>} waypoints The waypoints to check.
+ * @param {Number} index The index to check.
+ * @return {Boolean} True if the given index has already been used.
+ */
+RouteChromosomeSplicer.prototype.isWaypointIndexUsed = function(waypoints, index) {
+  var result = false;
+
+  function check(entry) {
+    if (entry.index === index) {
+      result = true;
+    }
+  }
+
+  waypoints.forEach(check);
+
+  return result;
+};
+
+module.exports = RouteChromosomeSplicer;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="everoute.travel.AddingTravelCost.html">AddingTravelCost</a></li><li><a href="everoute.travel.AnyLocation.html">AnyLocation</a></li><li><a href="everoute.travel.capabilities.CombiningTravelCapability.html">CombiningTravelCapability</a></li><li><a href="everoute.travel.capabilities.jumpGate.JumpGateTravelCapability.html">JumpGateTravelCapability</a></li><li><a href="everoute.travel.capabilities.OptimizingTravelCapability.html">OptimizingTravelCapability</a></li><li><a href="everoute.travel.capabilities.TravelCapability.html">TravelCapability</a></li><li><a href="everoute.travel.Jump.html">Jump</a></li><li><a href="everoute.travel.JumpBuilder.html">JumpBuilder</a></li><li><a href="everoute.travel.Location.html">Location</a></li><li><a href="everoute.travel.ManufacturingPathContestProvider.html">ManufacturingPathContestProvider</a></li><li><a href="everoute.travel.Path.html">Path</a></li><li><a href="everoute.travel.PathContest.html">PathContest</a></li><li><a href="everoute.travel.PathContestProvider.html">PathContestProvider</a></li><li><a href="everoute.travel.rules.MaxSecurityTravelRule.html">MaxSecurityTravelRule</a></li><li><a href="everoute.travel.rules.MinSecurityTravelRule.html">MinSecurityTravelRule</a></li><li><a href="everoute.travel.rules.NaturalOrderTravelRule.html">NaturalOrderTravelRule</a></li><li><a href="everoute.travel.rules.TravelRule.html">TravelRule</a></li><li><a href="everoute.travel.rules.TravelRuleset.html">TravelRuleset</a></li><li><a href="everoute.travel.search.DestinationSystemSearchCriterion.html">DestinationSystemSearchCriterion</a></li><li><a href="everoute.travel.search.PathFinder.html">PathFinder</a></li><li><a href="everoute.travel.search.SearchCriterion.html">SearchCriterion</a></li><li><a href="everoute.travel.search.SearchResultCollector.html">SearchResultCollector</a></li><li><a href="everoute.travel.SpecificLocation.html">SpecificLocation</a></li><li><a href="everoute.travel.StaticPathContestProvider.html">StaticPathContestProvider</a></li><li><a href="everoute.travel.Step.html">Step</a></li><li><a href="everoute.travel.StepBuilder.html">StepBuilder</a></li><li><a href="everoute.travel.TravelCost.html">TravelCost</a></li><li><a href="everoute.travel.TravelCostSum.html">TravelCostSum</a></li><li><a href="everoute.universe.EmptySolarSystem.html">EmptySolarSystem</a></li><li><a href="everoute.universe.EmptyUniverse.html">EmptyUniverse</a></li><li><a href="everoute.universe.ExtendedSolarSystem.html">ExtendedSolarSystem</a></li><li><a href="everoute.universe.ExtendedUniverse.html">ExtendedUniverse</a></li><li><a href="everoute.universe.SolarSystem.html">SolarSystem</a></li><li><a href="everoute.universe.SolarSystemExtension.html">SolarSystemExtension</a></li><li><a href="everoute.universe.SolarSystemExtensionData.html">SolarSystemExtensionData</a></li><li><a href="everoute.universe.Universe.html">Universe</a></li><li><a href="everoute.universe.UniverseBuilder.html">UniverseBuilder</a></li><li><a href="everoute.util.DefaultRandomizer.html">DefaultRandomizer</a></li><li><a href="everoute.util.Randomizer.html">Randomizer</a></li></ul><h3>Namespaces</h3><ul><li><a href="everoute.html">everoute</a></li><li><a href="everoute.travel.html">travel</a></li><li><a href="everoute.travel.capabilities.html">capabilities</a></li><li><a href="everoute.travel.capabilities.jumpGate.html">jumpGate</a></li><li><a href="everoute.travel.rules.html">rules</a></li><li><a href="everoute.travel.rules.security.html">security</a></li><li><a href="everoute.travel.rules.transitCount.html">transitCount</a></li><li><a href="everoute.travel.search.html">search</a></li><li><a href="everoute.universe.html">universe</a></li><li><a href="everoute.util.html">util</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Fri Jan 24 2014 19:30:57 GMT-0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
