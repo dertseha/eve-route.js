@@ -84,15 +84,10 @@ PathSearchAgent.prototype.getRandomPath = function(rand) {
  * @memberof! everoute.travel.search.PathSearchAgent.prototype
  */
 PathSearchAgent.prototype.request = function(listener, destinationKey) {
-  var query = {
-    listener: listener,
-    destinationKey: destinationKey
-  };
-
   if (this.finder) {
-    this.queries.push(query);
+    this.queueQuery(listener, destinationKey);
   } else {
-    this.completeQuery(query);
+    this.completeQuery(listener, destinationKey);
   }
 };
 
@@ -118,26 +113,41 @@ PathSearchAgent.prototype.onFinderCompleted = function() {
   var self = this;
 
   this.queries.forEach(function(query) {
-    self.completeQuery(query);
+    self.completeQuery(query.listener, query.destinationKey);
   });
   delete this.queries;
 };
 
 /**
- * Analyzes the available results and notifies the listener of given query.
+ * Queues a pending request for later completion.
  *
- * @param {{}} query A pending query
+ * @param {everoute.travel.search.PathSearchAgentListener} listener Listener to call.
+ * @param {String} destinationKey The destination key to look for.
  * @memberof! everoute.travel.search.PathSearchAgent.prototype
  */
-PathSearchAgent.prototype.completeQuery = function(query) {
-  var hasResults = !! this.shortest;
+PathSearchAgent.prototype.queueQuery = function(listener, destinationKey) {
+  var query = {
+    listener: listener,
+    destinationKey: destinationKey
+  };
 
-  if (!hasResults) {
-    query.listener.searchFailed();
-  } else if (!query.destinationKey || !this.results.hasOwnProperty(query.destinationKey)) {
-    query.listener.searchCompleted();
+  this.queries.push(query);
+};
+
+/**
+ * Analyzes the available results and notifies the listener of given query.
+ *
+ * @param {everoute.travel.search.PathSearchAgentListener} listener Listener to call.
+ * @param {String} destinationKey The destination key to look for.
+ * @memberof! everoute.travel.search.PathSearchAgent.prototype
+ */
+PathSearchAgent.prototype.completeQuery = function(listener, destinationKey) {
+  if (!this.shortest) {
+    listener.searchFailed();
+  } else if (!destinationKey || !this.results.hasOwnProperty(destinationKey)) {
+    listener.searchCompleted();
   } else {
-    query.listener.pathFound(this.results[query.destinationKey]);
+    listener.pathFound(this.results[destinationKey]);
   }
 };
 

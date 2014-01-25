@@ -26,29 +26,6 @@ RouteIncubatorCulture.prototype.getChromosome = function() {
 };
 
 /**
- * @return {everoute.travel.Path} The currently last known path of the route.
- * @memberof! everoute.travel.search.RouteIncubatorCulture.prototype
- */
-RouteIncubatorCulture.prototype.getLastPath = function() {
-  var result = this.chromosome.startPath;
-  var waypoints = this.waypoints.length;
-
-  if (waypoints > 0) {
-    result = this.waypoints[waypoints - 1].path;
-  }
-
-  return this.destinationPath || result;
-};
-
-/**
- * @return {Number} Amount of waypoints currently known
- * @memberof! everoute.travel.search.RouteIncubatorCulture.prototype
- */
-RouteIncubatorCulture.prototype.getWaypointAmount = function() {
-  return this.waypoints.length;
-};
-
-/**
  * Adds given path as a waypoint
  * @param {Number} index The index of the originating waypoint.
  * @param {everoute.travel.Path} path the found path.

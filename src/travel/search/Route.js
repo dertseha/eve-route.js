@@ -19,8 +19,38 @@ function Route(startPath, waypoints, destinationPath) {
     costSum = costSum.add(destinationPath.getCostSum().getTotal());
   }
 
+  /**
+   * @return {Array.<everoute.travel.Step>} The list of steps of this route
+   */
+  this.getSteps = function() {
+    var result = startPath.getSteps();
+
+    waypoints.forEach(function(entry) {
+      result = result.concat(entry.path.getSteps().slice(1));
+    });
+    if (destinationPath) {
+      result = result.concat(destinationPath.getSteps().slice(1));
+    }
+
+    return result;
+  };
+
+  /**
+   * @return {{}} The chromosome that describes this route
+   */
   this.getChromosome = function() {
-    var result = {};
+    var result = {
+      startPath: startPath,
+      waypoints: waypoints.map(function(entry) {
+        var info = {
+          index: entry.index,
+          destinationKey: entry.path.getDestinationKey()
+        };
+
+        return info;
+      }),
+      destinationKey: destinationPath && destinationPath.getDestinationKey()
+    };
 
     return result;
   };

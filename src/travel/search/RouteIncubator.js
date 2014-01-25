@@ -10,6 +10,7 @@ var PathSearchAgent = require("./PathSearchAgent");
  * This incubator receives route chromosomes to create the corresponding routes.
  *
  * @constructor
+ * @private
  * @param {Function} callback the function that receives new Route instances
  * @param {everoute.travel.capabilities.TravelCapability} capability The travelling capability for searches
  * @param {everoute.travel.rules.TravelRule} rule The rule for searching shortest paths
@@ -42,11 +43,17 @@ function RouteIncubator(callback, capability, rule, waypoints, destination, rand
  * @memberof! everoute.travel.search.RouteIncubator.prototype
  */
 RouteIncubator.prototype.continueGrowth = function() {
+  var result = true;
+
   this.agents.forEach(function(agent) {
     agent.run();
   });
+  if (this.cultures.length === 0) {
+    this.agents = [];
+    result = false;
+  }
 
-  return this.cultures.length > 0;
+  return result;
 };
 
 /**
@@ -58,42 +65,47 @@ RouteIncubator.prototype.request = function(chromosome) {
   var culture = new RouteIncubatorCulture(chromosome);
 
   this.cultures.push(culture);
-  this.continueCulture(culture);
+  this.continueCulture(culture, 0, chromosome.startPath);
 };
 
 /**
  * Continues processing a culture; Will cause the callback to be called if a
  * complete route could be created.
  *
- * @param {everoute.travel.search.RouteIncubatorCulture} culture The culture to process
+ * @param {everoute.travel.search.RouteIncubatorCulture} culture The culture to process.
+ * @param {Number} finishedWaypoints how many waypoints have been calculated.
+ * @param {everoute.travel.Path} lastPath the previous path.
  * @memberof! everoute.travel.search.RouteIncubator.prototype
  */
-RouteIncubator.prototype.continueCulture = function(culture) {
-  var nextWaypoint = culture.getWaypointAmount();
-  var lastPath = new Path(culture.getLastPath().getStep().asFirstStep());
+RouteIncubator.prototype.continueCulture = function(culture, finishedWaypoints, lastPath) {
+  var startPath = new Path(lastPath.getStep().asFirstStep());
   var chromosome = culture.getChromosome();
   var self = this;
+  var nextWaypoint;
   var agent;
 
   function onSearchFailed() {
     self.onCultureFailed(culture);
   }
 
-  if (nextWaypoint < this.waypoints.length) {
-    agent = this.getPathSearchAgent(this.waypointsAgentsBySource[nextWaypoint], lastPath, this.waypoints[nextWaypoint]);
+  if (finishedWaypoints < this.waypoints.length) {
+    nextWaypoint = chromosome.waypoints[finishedWaypoints].index;
+    agent = this.getPathSearchAgent(this.waypointsAgentsBySource[nextWaypoint], startPath, this.waypoints[nextWaypoint]);
     agent.request({
       searchFailed: onSearchFailed,
       searchCompleted: function() {
-        culture.addWaypointPath(nextWaypoint, agent.getRandomPath(self.rand));
-        self.continueCulture(culture);
+        var path = agent.getRandomPath(self.rand);
+
+        culture.addWaypointPath(nextWaypoint, path);
+        self.continueCulture(culture, finishedWaypoints + 1, path);
       },
       pathFound: function(path) {
         culture.addWaypointPath(nextWaypoint, path);
-        self.continueCulture(culture);
+        self.continueCulture(culture, finishedWaypoints + 1, path);
       }
     }, chromosome.waypoints[nextWaypoint].destinationKey);
   } else if (this.destination) {
-    agent = this.getPathSearchAgent(this.destinationAgentsBySource, lastPath, this.destination);
+    agent = this.getPathSearchAgent(this.destinationAgentsBySource, startPath, this.destination);
     agent.request({
       searchFailed: onSearchFailed,
       searchCompleted: function() {
@@ -125,7 +137,8 @@ RouteIncubator.prototype.getPathSearchAgent = function(agentsByKey, startPath, c
   var agent = agentsByKey[startKey];
 
   if (!agent) {
-    agentsByKey[startKey] = agent = new PathSearchAgent(startPath, this.capability, this.rule, criterion);
+    agent = new PathSearchAgent(startPath, this.capability, this.rule, criterion);
+    agentsByKey[startKey] = agent;
     this.agents.push(agent);
   }
 

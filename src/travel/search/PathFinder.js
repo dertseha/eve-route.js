@@ -22,7 +22,7 @@
  * @param {everoute.travel.Path} start The start for the search.
  * @param {everoute.travel.capabilities.TravelCapability} capability the capability to use for advancing.
  * @param {everoute.travel.search.SearchCriterion} criterion The criterion by which to determine results.
- * @param {everoute.travel.search.SearchResultCollector} collector The collector for any found paths.
+ * @param {everoute.travel.search.SearchResultCollector.<everoute.travel.Path>} collector The collector for any found paths.
  * @memberof everoute.travel.search
  */
 function PathFinder(start, capability, criterion, collector) {

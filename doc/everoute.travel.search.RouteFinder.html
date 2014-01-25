@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: travel</title>
+    <title>JSDoc: Class: RouteFinder</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Namespace: travel</h1>
+    <h1 class="page-title">Class: RouteFinder</h1>
     
     
 
@@ -27,9 +27,9 @@
     
 <header>
     <h2>
-        <span class="ancestors"><a href="everoute.html">everoute</a>.</span>
+        <span class="ancestors"><a href="everoute.html">everoute</a><a href="everoute.travel.html">.travel</a><a href="everoute.travel.search.html">.search</a>.</span>
     
-    travel
+    RouteFinder
     </h2>
     
 </header>  
@@ -40,10 +40,76 @@
     
     
         
-            <div class="description">This namespace contains entries regarding travel.</div>
+<dt>
+    <h4 class="name" id="RouteFinder"><span class="type-signature"></span>new RouteFinder<span class="signature">(builder)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        A finder of a route, consisting of a start path, a list of waypoints and an
+optional destination. The order of the waypoints will be optimized during
+the search.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
         
-        
-        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>builder</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="everoute.travel.search.RouteFinderBuilder.html">everoute.travel.search.RouteFinderBuilder</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">the builder with all parameters</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
 <dl class="details">
     
         
@@ -66,7 +132,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js_.html">travel/index.js</a>, <a href="index.js_.html#line1">line 1</a>
+        <a href="RouteFinder.js.html">travel/search/RouteFinder.js</a>, <a href="RouteFinder.js.html#line16">line 16</a>
     </li></ul></dd>
     
     
@@ -77,8 +143,20 @@
     
 </dl>
 
-        
-        
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
     
     </div>
     
@@ -89,73 +167,106 @@
     
     
     
-        <h3 class="subsection-title">Classes</h3>
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
         
         <dl>
-            <dt><a href="everoute.travel.AddingTravelCost.html">AddingTravelCost</a></dt>
-            <dd></dd>
+            
+<dt>
+    <h4 class="name" id="continueSearch"><span class="type-signature"></span>RouteFinder#continueSearch<span class="signature">()</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Continues the search. This method should be called until it returned false.
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
         
-            <dt><a href="everoute.travel.AnyLocation.html">AnyLocation</a></dt>
-            <dd></dd>
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="RouteFinder.js.html">travel/search/RouteFinder.js</a>, <a href="RouteFinder.js.html#line52">line 52</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    false if the search is completed
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Boolean</span>
+
+
+	</dd>
+</dl>
+
         
-            <dt><a href="everoute.travel.Jump.html">Jump</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.JumpBuilder.html">JumpBuilder</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.Location.html">Location</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.ManufacturingPathContestProvider.html">ManufacturingPathContestProvider</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.Path.html">Path</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.PathContest.html">PathContest</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.PathContestProvider.html">PathContestProvider</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.SpecificLocation.html">SpecificLocation</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.StaticPathContestProvider.html">StaticPathContestProvider</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.Step.html">Step</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.StepBuilder.html">StepBuilder</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.TravelCost.html">TravelCost</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.TravelCostSum.html">TravelCostSum</a></dt>
-            <dd></dd>
+    
+    
+</dd>
+
         </dl>
-    
-    
-    
-        <h3 class="subsection-title">Namespaces</h3>
-        
-        <dl>
-            <dt><a href="namespaces.html#everoute.travel.capabilities"><a href="everoute.travel.capabilities.html">capabilities</a></a></dt>
-            <dd></dd>
-        
-            <dt><a href="namespaces.html#everoute.travel.rules"><a href="everoute.travel.rules.html">rules</a></a></dt>
-            <dd></dd>
-        
-            <dt><a href="namespaces.html#everoute.travel.search"><a href="everoute.travel.search.html">search</a></a></dt>
-            <dd></dd>
-        </dl>
-    
-    
-    
-    
     
     
     
@@ -177,7 +288,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 25 2014 20:36:05 GMT-0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 25 2014 20:36:07 GMT-0000 (GMT)
 </footer>
 
 <script> prettyPrint(); </script>

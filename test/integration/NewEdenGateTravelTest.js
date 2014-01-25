@@ -4,6 +4,7 @@
 describe("New Eden Gate Travel", function() {
   var SpecificLocation = everoute.travel.SpecificLocation;
   var PathFinder = everoute.travel.search.PathFinder;
+  var RouteFinderBuilder = everoute.travel.search.RouteFinderBuilder;
   var PathContest = everoute.travel.PathContest;
   var StaticPathContestProvider = everoute.travel.StaticPathContestProvider;
   var OptimizingTravelCapability = everoute.travel.capabilities.OptimizingTravelCapability;
@@ -11,81 +12,169 @@ describe("New Eden Gate Travel", function() {
   var TravelRuleset = everoute.travel.rules.TravelRuleset;
   var NaturalOrderTravelRule = everoute.travel.rules.NaturalOrderTravelRule;
   var JumpGateTravelCapability = everoute.travel.capabilities.jumpGate.JumpGateTravelCapability;
+  var CombiningTravelCapability = everoute.travel.capabilities.CombiningTravelCapability;
 
   var solarSystemNamesById = {};
   var solarSystemIdsByName = {};
   var universe;
 
-  describe("shortest rule", function() {
-    var rules = [everoute.travel.rules.transitCount.getRule()];
+  describe("PathFinder", function() {
+    describe("shortest rule", function() {
+      var rules = [everoute.travel.rules.transitCount.getRule()];
 
-    it("should find a route from Rens to Pator", function() {
-      verifyRoute("Rens", "Pator", rules, ["Rens", "Frarn", "Gyng", "Onga", "Pator"]);
+      it("should find a path from Rens to Pator", function() {
+        verifyPath("Rens", "Pator", rules, ["Rens", "Frarn", "Gyng", "Onga", "Pator"]);
+      });
+
+      it("should find a path from Rens to Ivar", function() {
+        // second path exists, this one is found with test-data; is order dependent.
+        verifyPath("Rens", "Ivar", rules, ["Rens", "Frarn", "Meirakulf", "Ivar"]);
+      });
     });
 
-    it("should find a route from Rens to Ivar", function() {
-      // second route exists, this one is found with test-data; is order dependent.
-      verifyRoute("Rens", "Ivar", rules, ["Rens", "Frarn", "Meirakulf", "Ivar"]);
-    });
-  });
+    describe("shortest highsec rules", function() {
+      var rules = [everoute.travel.rules.security.getMinRule(0.5), everoute.travel.rules.transitCount.getRule()];
 
-  describe("shortest highsec rules", function() {
-    var rules = [everoute.travel.rules.security.getMinRule(0.5), everoute.travel.rules.transitCount.getRule()];
+      it("should find a path from Emolgranlan to Eddar via highsec", function() {
+        verifyPath("Emolgranlan", "Eddar", rules, [
+          "Emolgranlan", "Ammold", "Pator", "Onga", "Gyng",
+          "Frarn", "Meirakulf", "Ivar", "Ameinaka", "Hulm",
+          "Edmalbrurdus", "Kronsur", "Dumkirinur", "Obrolber", "Austraka",
+          "Gerek", "Gerbold", "Offugen", "Eddar"
+        ]);
+      });
 
-    it("should find a route from Emolgranlan to Eddar via highsec", function() {
-      verifyRoute("Emolgranlan", "Eddar", rules, [
-        "Emolgranlan", "Ammold", "Pator", "Onga", "Gyng",
-        "Frarn", "Meirakulf", "Ivar", "Ameinaka", "Hulm",
-        "Edmalbrurdus", "Kronsur", "Dumkirinur", "Obrolber", "Austraka",
-        "Gerek", "Gerbold", "Offugen", "Eddar"
-      ]);
-    });
-
-    it("should still allow to take a lowsec route if none other possible from Emolgranlan to Atgur", function() {
-      verifyRoute("Emolgranlan", "Atgur", rules, ["Emolgranlan", "Eifer", "Atgur"]);
-    });
-  });
-
-  describe("shortest lowsec rules", function() {
-    var rules = [everoute.travel.rules.security.getMaxRule(0.5), everoute.travel.rules.transitCount.getRule()];
-
-    it("should find a route from Aralgrund to Hrondedir via lowsec", function() {
-      verifyRoute("Aralgrund", "Hrondedir", rules, [
-        "Aralgrund", "Bogelek", "Katugumur", "Sotrenzur", "Hrondedir"
-      ]);
+      it("should still allow to take a lowsec path if none other possible from Emolgranlan to Atgur", function() {
+        verifyPath("Emolgranlan", "Atgur", rules, ["Emolgranlan", "Eifer", "Atgur"]);
+      });
     });
 
-  });
+    describe("shortest lowsec rules", function() {
+      var rules = [everoute.travel.rules.security.getMaxRule(0.5), everoute.travel.rules.transitCount.getRule()];
 
-  function verifyRoute(from, to, rules, expected) {
-    var result;
-    var start = universe.getSolarSystem(getIdByName(from)).startPath();
-    var contest = new PathContest(new TravelRuleset(rules));
-    var gateCapability = new JumpGateTravelCapability(universe);
-    var capability = new OptimizingTravelCapability(gateCapability, new StaticPathContestProvider(contest));
-    var criterion = new DestinationSystemSearchCriterion(getIdByName(to));
-    var collector = {
-      collect: function(path) {
-        var steps = path.getSteps();
+      it("should find a path from Aralgrund to Hrondedir via lowsec", function() {
+        verifyPath("Aralgrund", "Hrondedir", rules, [
+          "Aralgrund", "Bogelek", "Katugumur", "Sotrenzur", "Hrondedir"
+        ]);
+      });
 
-        result = [];
-        steps.forEach(function(step) {
-          result.push(solarSystemNamesById[step.getSolarSystemId()]);
-        });
+    });
+
+    function verifyPath(from, to, rules, expected) {
+      var result;
+      var start = universe.getSolarSystem(getIdByName(from)).startPath();
+      var contest = new PathContest(new TravelRuleset(rules));
+      var gateCapability = new JumpGateTravelCapability(universe);
+      var combiningCapability = new CombiningTravelCapability([gateCapability]);
+      var capability = new OptimizingTravelCapability(combiningCapability, new StaticPathContestProvider(contest));
+      var criterion = new DestinationSystemSearchCriterion(getIdByName(to));
+      var collector = {
+        collect: function(path) {
+          var steps = path.getSteps();
+
+          result = [];
+          steps.forEach(function(step) {
+            result.push(solarSystemNamesById[step.getSolarSystemId()]);
+          });
+        }
+      };
+      var finder = new PathFinder(start, capability, criterion, collector);
+
+      var count = 0;
+      var shouldContinue = true;
+
+      while (shouldContinue && count < 1000) {
+        count++;
+        shouldContinue = finder.continueSearch();
       }
-    };
-    var finder = new PathFinder(start, capability, criterion, collector);
 
-    var count = 0;
-    var shouldContinue = true;
-
-    while (shouldContinue && count < 1000) {
-      count++;
-      shouldContinue = finder.continueSearch();
+      expect(result).to.be.eql(expected);
     }
+  });
 
-    expect(result).to.be.eql(expected);
-  }
+  describe("RouteFinder", function() {
+    this.timeout(30000);
+
+    it("should find a route with just a start system", function() {
+      verifyRoute(["Rens"], [], null, ["Rens"]);
+    });
+
+    it("should find a route with just a start and a destination system", function() {
+      verifyRoute(["Rens"], [], "Balginia", ["Rens", "Frarn", "Illinfrik", "Balginia"]);
+    });
+
+    it("should find a route with a waypoint", function() {
+      verifyRoute(["Rens"], ["Gyng"], "Balginia", ["Rens", "Frarn", "Gyng", "Frarn", "Illinfrik", "Balginia"]);
+    });
+
+    it("should find a route with two waypoints", function() {
+      verifyRoute(["Rens"], ["Onga", "Gyng"], "Balginia", ["Rens", "Frarn", "Gyng", "Onga", "Osaumuni", "Illinfrik", "Balginia"]);
+    });
+
+    it("should find a route with three waypoints", function() {
+      verifyRoute(["Rens"], ["Onga", "Hurjafren", "Gyng"], "Balginia", [
+        "Rens", "Frarn", "Gyng", "Onga", "Osaumuni", "Oremmulf", "Hurjafren", "Balginia"
+      ]);
+    });
+
+    // The following is brittle. Too many waypoints and the test passes only rarely (although, most of the time the
+    // proposed route has a length between 30-40; That's close to the listed ideal of 28.
+    it.skip("should find a route with ten waypoints", function() {
+      verifyRoute(["Lantorn"], [
+        "Dumkirinur", "Gerek", "Odatrik", "Offugen", "Hulm",
+        "Amamake", "Eifer", "Abudban", "Isendeldik", "Meirakulf"
+      ], "Lustrevik", [
+        "Lantorn", "Dal", "Amamake", "Osoggur", "Abudban",
+        "Odatrik", "Rens", "Frarn", "Meirakulf", "Ivar",
+        "Ameinaka", "Hulm", "Edmalbrurdus", "Kronsur", "Dumkirinur",
+        "Obrolber", "Austraka", "Gerek", "Gerbold", "Offugen",
+        "Eddar", "Auren", "Gusandall", "Eifer", "Emolgranlan",
+        "Ammold", "Isendeldik", "Lustrevik"
+      ]);
+    });
+
+
+    function verifyRoute(from, via, to, expected) {
+      var result = [];
+      var startPaths = from.map(function(start) {
+        return universe.getSolarSystem(getIdByName(start)).startPath();
+      });
+      var capability = new JumpGateTravelCapability(universe);
+      var rule = everoute.travel.rules.transitCount.getRule();
+      var waypoints = via.map(function(waypoint) {
+        return new DestinationSystemSearchCriterion(getIdByName(waypoint));
+      });
+      var destination = to && new DestinationSystemSearchCriterion(getIdByName(to));
+      var collector = {
+        collect: function(route) {
+          var steps = route.getSteps();
+
+          result = [];
+          steps.forEach(function(step) {
+            result.push(solarSystemNamesById[step.getSolarSystemId()]);
+          });
+          // console.log("new result: " + result.length);
+        }
+      };
+      var builder = new RouteFinderBuilder(capability, rule, startPaths, collector);
+
+      builder.setWaypoints(waypoints);
+      builder.setDestination(destination);
+
+      var finder = builder.build();
+
+      var count = 0;
+      var limit = 1000000;
+      var shouldContinue = true;
+
+      while (shouldContinue && count < limit) {
+        count++;
+        shouldContinue = finder.continueSearch();
+      }
+
+      expect(result).to.be.eql(expected);
+    }
+  });
 
   function getIdByName(name) {
     return solarSystemIdsByName[name];

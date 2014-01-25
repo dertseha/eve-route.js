@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: travel</title>
+    <title>JSDoc: Source: travel/search/RouteFinderBuilder.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,153 +17,111 @@
 
 <div id="main">
     
-    <h1 class="page-title">Namespace: travel</h1>
+    <h1 class="page-title">Source: travel/search/RouteFinderBuilder.js</h1>
     
     
 
 
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>"use strict";
 
-<section>
-    
-<header>
-    <h2>
-        <span class="ancestors"><a href="everoute.html">everoute</a>.</span>
-    
-    travel
-    </h2>
-    
-</header>  
+var DefaultRandomizer = require("../../util/DefaultRandomizer");
+var RouteFinder = require("./RouteFinder");
 
-<article>
-    <div class="container-overview">
-    
-    
-    
-        
-            <div class="description">This namespace contains entries regarding travel.</div>
-        
-        
-        
-<dl class="details">
-    
-        
-    
-    
-    
+/**
+ * A builder for a route finder.
+ *
+ * @constructor
+ * @param {everoute.travel.capabilities.TravelCapability} capability The capability for travel.
+ * @param {everoute.travel.rules.TravelRule} rule The rule for searches.
+ * @param {Array.&lt;everoute.travel.Path>} startPaths An array of possible start paths.
+ * @param {everoute.travel.search.SearchResultCollector.&lt;everoute.travel.search.Route>} collector The collector for results.
+ * @memberof everoute.travel.search
+ */
+function RouteFinderBuilder(capability, rule, startPaths, collector) {
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js_.html">travel/index.js</a>, <a href="index.js_.html#line1">line 1</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
+  var waypoints = [];
+  var destination = null;
+  var randomizer = null;
 
-        
-        
-    
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-        <h3 class="subsection-title">Classes</h3>
-        
-        <dl>
-            <dt><a href="everoute.travel.AddingTravelCost.html">AddingTravelCost</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.AnyLocation.html">AnyLocation</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.Jump.html">Jump</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.JumpBuilder.html">JumpBuilder</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.Location.html">Location</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.ManufacturingPathContestProvider.html">ManufacturingPathContestProvider</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.Path.html">Path</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.PathContest.html">PathContest</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.PathContestProvider.html">PathContestProvider</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.SpecificLocation.html">SpecificLocation</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.StaticPathContestProvider.html">StaticPathContestProvider</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.Step.html">Step</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.StepBuilder.html">StepBuilder</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.TravelCost.html">TravelCost</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.TravelCostSum.html">TravelCostSum</a></dt>
-            <dd></dd>
-        </dl>
-    
-    
-    
-        <h3 class="subsection-title">Namespaces</h3>
-        
-        <dl>
-            <dt><a href="namespaces.html#everoute.travel.capabilities"><a href="everoute.travel.capabilities.html">capabilities</a></a></dt>
-            <dd></dd>
-        
-            <dt><a href="namespaces.html#everoute.travel.rules"><a href="everoute.travel.rules.html">rules</a></a></dt>
-            <dd></dd>
-        
-            <dt><a href="namespaces.html#everoute.travel.search"><a href="everoute.travel.search.html">search</a></a></dt>
-            <dd></dd>
-        </dl>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</article>
+  var populationLimit = 25;
+  var generationLimit = 40000;
+  var mutationPercentage = 10;
 
-</section>  
+
+  this.getCapability = function() {
+    return capability;
+  };
+
+  this.getRule = function() {
+    return rule;
+  };
+
+  this.getStartPaths = function() {
+    return startPaths;
+  };
+
+  /**
+   * Sets the criteria for the waypoints. Each waypoint has one criterion.
+   *
+   * @param {Array.&lt;everoute.travel.search.SearchCriterion>} criteria The criteria for the waypoints.
+   */
+  this.setWaypoints = function(criteria) {
+    waypoints = criteria;
+  };
+
+  this.getWaypoints = function() {
+    return waypoints;
+  };
+
+  /**
+   * Sets the destination criterion. If none specified, no fixed destination is
+   * used.
+   *
+   * @param {everoute.travel.search.SearchCriterion} criterion The criterion for the destination.
+   */
+  this.setDestination = function(criterion) {
+    destination = criterion;
+  };
+
+  this.getDestination = function() {
+    return destination;
+  };
+
+  this.getCollector = function() {
+    return collector;
+  };
+
+  this.getRandomizer = function() {
+    return randomizer || new DefaultRandomizer();
+  };
+
+  this.getPopulationLimit = function() {
+    return populationLimit;
+  };
+
+  this.getGenerationLimit = function() {
+    return generationLimit;
+  };
+
+  this.getMutationPercentage = function() {
+    return mutationPercentage;
+  };
+
+  /**
+   * @return {everoute.travel.search.RouteFinder} The resulting route finder
+   */
+  this.build = function() {
+    return new RouteFinder(this);
+  };
+}
+
+module.exports = RouteFinderBuilder;
+</code></pre>
+        </article>
+    </section>
 
 
 
@@ -177,7 +135,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 25 2014 20:36:05 GMT-0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 25 2014 20:36:04 GMT-0000 (GMT)
 </footer>
 
 <script> prettyPrint(); </script>

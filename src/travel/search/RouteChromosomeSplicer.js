@@ -4,6 +4,7 @@
  * A splicer to create new route chromosomes.
  *
  * @constructor
+ * @private
  * @param {everoute.util.Randomizer} rand A randomizer for creating new things.
  * @memberof everoute.travel.search
  */
@@ -60,7 +61,7 @@ RouteChromosomeSplicer.prototype.createOffspring = function(parent1, parent2, cr
   var temp;
   var index = 0;
 
-  while ((index < crossoverIndex) && (index < parent1.waypoints.length)) {
+  while (index < crossoverIndex) {
     temp = parent1.waypoints[index];
     result.waypoints.push(temp);
     index++;
@@ -110,14 +111,14 @@ RouteChromosomeSplicer.prototype.findUnusedWaypointIndex = function(waypoints, l
  */
 RouteChromosomeSplicer.prototype.isWaypointIndexUsed = function(waypoints, index) {
   var result = false;
+  var amount = waypoints.length;
+  var i;
 
-  function check(entry) {
-    if (entry.index === index) {
+  for (i = 0; !result && (i < amount); i++) {
+    if (waypoints[i].index === index) {
       result = true;
     }
   }
-
-  waypoints.forEach(check);
 
   return result;
 };

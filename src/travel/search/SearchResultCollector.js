@@ -12,13 +12,14 @@ function SearchResultCollector() {
 }
 
 /**
- * Called by the PathFinder about a path that was was determined to be the
- * best so far. The path is the best for its current destination key as per
+ * Called by the PathFinder or the RouteFinder about a result that was was
+ * determined to be the best so far. The result is the best for its current
  * search critera.
  *
- * @param {everoute.travel.Path} path a path that has been found.
+ * @param {ResultType} result The result.
+ * @template ResultType
  * @memberof! everoute.travel.search.SearchResultCollector.prototype
  */
-SearchResultCollector.prototype.collect = function(path) {
+SearchResultCollector.prototype.collect = function(result) {
   throw new Error("Interface Implementation");
 };

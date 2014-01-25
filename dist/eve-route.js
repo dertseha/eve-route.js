@@ -26,7 +26,7 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":18,"./universe":43,"./util":45}],2:[function(require,module,exports){
+},{"./travel":18,"./universe":46,"./util":48}],2:[function(require,module,exports){
 "use strict";
 
 /**
@@ -808,7 +808,7 @@ module.exports = {
   TravelCostSum: require("./TravelCostSum")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":34}],19:[function(require,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":37}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1183,7 +1183,7 @@ module.exports = DestinationSystemSearchCriterion;
  * @param {everoute.travel.Path} start The start for the search.
  * @param {everoute.travel.capabilities.TravelCapability} capability the capability to use for advancing.
  * @param {everoute.travel.search.SearchCriterion} criterion The criterion by which to determine results.
- * @param {everoute.travel.search.SearchResultCollector} collector The collector for any found paths.
+ * @param {everoute.travel.search.SearchResultCollector.<everoute.travel.Path>} collector The collector for any found paths.
  * @memberof everoute.travel.search
  */
 function PathFinder(start, capability, criterion, collector) {
@@ -1317,15 +1317,10 @@ PathSearchAgent.prototype.getRandomPath = function(rand) {
  * @memberof! everoute.travel.search.PathSearchAgent.prototype
  */
 PathSearchAgent.prototype.request = function(listener, destinationKey) {
-  var query = {
-    listener: listener,
-    destinationKey: destinationKey
-  };
-
   if (this.finder) {
-    this.queries.push(query);
+    this.queueQuery(listener, destinationKey);
   } else {
-    this.completeQuery(query);
+    this.completeQuery(listener, destinationKey);
   }
 };
 
@@ -1351,26 +1346,41 @@ PathSearchAgent.prototype.onFinderCompleted = function() {
   var self = this;
 
   this.queries.forEach(function(query) {
-    self.completeQuery(query);
+    self.completeQuery(query.listener, query.destinationKey);
   });
   delete this.queries;
 };
 
 /**
- * Analyzes the available results and notifies the listener of given query.
+ * Queues a pending request for later completion.
  *
- * @param {{}} query A pending query
+ * @param {everoute.travel.search.PathSearchAgentListener} listener Listener to call.
+ * @param {String} destinationKey The destination key to look for.
  * @memberof! everoute.travel.search.PathSearchAgent.prototype
  */
-PathSearchAgent.prototype.completeQuery = function(query) {
-  var hasResults = !! this.shortest;
+PathSearchAgent.prototype.queueQuery = function(listener, destinationKey) {
+  var query = {
+    listener: listener,
+    destinationKey: destinationKey
+  };
 
-  if (!hasResults) {
-    query.listener.searchFailed();
-  } else if (!query.destinationKey || !this.results.hasOwnProperty(query.destinationKey)) {
-    query.listener.searchCompleted();
+  this.queries.push(query);
+};
+
+/**
+ * Analyzes the available results and notifies the listener of given query.
+ *
+ * @param {everoute.travel.search.PathSearchAgentListener} listener Listener to call.
+ * @param {String} destinationKey The destination key to look for.
+ * @memberof! everoute.travel.search.PathSearchAgent.prototype
+ */
+PathSearchAgent.prototype.completeQuery = function(listener, destinationKey) {
+  if (!this.shortest) {
+    listener.searchFailed();
+  } else if (!destinationKey || !this.results.hasOwnProperty(destinationKey)) {
+    listener.searchCompleted();
   } else {
-    query.listener.pathFound(this.results[query.destinationKey]);
+    listener.pathFound(this.results[destinationKey]);
   }
 };
 
@@ -1398,8 +1408,38 @@ function Route(startPath, waypoints, destinationPath) {
     costSum = costSum.add(destinationPath.getCostSum().getTotal());
   }
 
+  /**
+   * @return {Array.<everoute.travel.Step>} The list of steps of this route
+   */
+  this.getSteps = function() {
+    var result = startPath.getSteps();
+
+    waypoints.forEach(function(entry) {
+      result = result.concat(entry.path.getSteps().slice(1));
+    });
+    if (destinationPath) {
+      result = result.concat(destinationPath.getSteps().slice(1));
+    }
+
+    return result;
+  };
+
+  /**
+   * @return {{}} The chromosome that describes this route
+   */
   this.getChromosome = function() {
-    var result = {};
+    var result = {
+      startPath: startPath,
+      waypoints: waypoints.map(function(entry) {
+        var info = {
+          index: entry.index,
+          destinationKey: entry.path.getDestinationKey()
+        };
+
+        return info;
+      }),
+      destinationKey: destinationPath && destinationPath.getDestinationKey()
+    };
 
     return result;
   };
@@ -1438,6 +1478,7 @@ module.exports = Route;
  * A splicer to create new route chromosomes.
  *
  * @constructor
+ * @private
  * @param {everoute.util.Randomizer} rand A randomizer for creating new things.
  * @memberof everoute.travel.search
  */
@@ -1494,7 +1535,7 @@ RouteChromosomeSplicer.prototype.createOffspring = function(parent1, parent2, cr
   var temp;
   var index = 0;
 
-  while ((index < crossoverIndex) && (index < parent1.waypoints.length)) {
+  while (index < crossoverIndex) {
     temp = parent1.waypoints[index];
     result.waypoints.push(temp);
     index++;
@@ -1544,14 +1585,14 @@ RouteChromosomeSplicer.prototype.findUnusedWaypointIndex = function(waypoints, l
  */
 RouteChromosomeSplicer.prototype.isWaypointIndexUsed = function(waypoints, index) {
   var result = false;
+  var amount = waypoints.length;
+  var i;
 
-  function check(entry) {
-    if (entry.index === index) {
+  for (i = 0; !result && (i < amount); i++) {
+    if (waypoints[i].index === index) {
       result = true;
     }
   }
-
-  waypoints.forEach(check);
 
   return result;
 };
@@ -1559,6 +1600,261 @@ RouteChromosomeSplicer.prototype.isWaypointIndexUsed = function(waypoints, index
 module.exports = RouteChromosomeSplicer;
 
 },{}],32:[function(require,module,exports){
+"use strict";
+
+var RouteChromosomeSplicer = require("./RouteChromosomeSplicer");
+var RouteIncubator = require("./RouteIncubator");
+var RouteList = require("./RouteList");
+
+/**
+ * A finder of a route, consisting of a start path, a list of waypoints and an
+ * optional destination. The order of the waypoints will be optimized during
+ * the search.
+ *
+ * @constructor
+ * @param {everoute.travel.search.RouteFinderBuilder} builder the builder with all parameters
+ * @memberof everoute.travel.search
+ */
+function RouteFinder(builder) {
+  var self = this;
+
+  function onRouteFound(route) {
+    self.onRouteFound(route);
+  }
+
+  this.rand = builder.getRandomizer();
+  this.rule = builder.getRule();
+
+  this.splicer = new RouteChromosomeSplicer(this.rand);
+  this.population = new RouteList(this.rule);
+  this.incubator = new RouteIncubator(onRouteFound, builder.getCapability(), this.rule,
+    builder.getWaypoints(), builder.getDestination(), this.rand);
+
+  this.startPaths = builder.getStartPaths().slice(0);
+  this.waypoints = builder.getWaypoints().slice(0);
+  this.collector = builder.getCollector();
+
+  this.populationLimit = builder.getPopulationLimit();
+  this.generationLimit = builder.getGenerationLimit();
+  this.mutationPercentage = builder.getMutationPercentage();
+  this.uncontestedLimit = this.generationLimit / 4;
+
+  this.generationCount = 0;
+  this.uncontestedCount = 0;
+
+  this.bestRoute = null;
+}
+
+/**
+ * Continues the search. This method should be called until it returned false.
+ *
+ * @return {Boolean} false if the search is completed
+ * @memberof! everoute.travel.search.RouteFinder.prototype
+ */
+RouteFinder.prototype.continueSearch = function() {
+  var result = false;
+
+  if ((this.generationCount < this.generationLimit) && (this.uncontestedCount < this.uncontestedLimit)) {
+    result = true;
+    if (!this.incubator.continueGrowth()) {
+      this.generationCount++;
+      this.uncontestedCount++;
+
+      this.ensurePopulationSize();
+      this.createOffsprings();
+    }
+  }
+
+  return result;
+};
+
+/**
+ * Called when a route was found.
+ *
+ * @private
+ * @param {everoute.travel.search.Route} route The found route
+ * @memberof! everoute.travel.search.RouteFinder.prototype
+ */
+RouteFinder.prototype.onRouteFound = function(route) {
+  var isBest = this.population.add(route);
+
+  if (isBest) {
+    this.uncontestedCount = 0;
+    this.collector.collect(route);
+  }
+};
+
+/**
+ * Ensures a properly sized population.
+ *
+ * @private
+ * @memberof! everoute.travel.search.RouteFinder.prototype
+ */
+RouteFinder.prototype.ensurePopulationSize = function() {
+  var missing;
+
+  this.population.limit(this.populationLimit);
+
+  missing = this.populationLimit - this.population.getSize();
+  while (missing > 0) {
+    this.incubator.request(this.createRandomChromosome());
+    missing--;
+  }
+};
+
+/**
+ * @private
+ * @return {{}} A new, random chromosome
+ * @memberof! everoute.travel.search.RouteFinder.prototype
+ */
+RouteFinder.prototype.createRandomChromosome = function() {
+  return this.splicer.createRandom(this.startPaths, this.waypoints.length);
+};
+
+/**
+ * Creates offsprings from the current population.
+ *
+ * @private
+ * @memberof! everoute.travel.search.RouteFinder.prototype
+ */
+RouteFinder.prototype.createOffsprings = function() {
+  var size = this.population.getSize();
+  var crossoverIndex = this.rand.getIndex(this.waypoints.length + 1);
+  var shouldMutate = this.rand.getIndex(100) < this.mutationPercentage;
+  var parent1;
+  var parent2;
+
+  if (size >= 2) {
+    parent1 = this.population.get(this.rand.getIndex(size)).getChromosome();
+    parent2 = this.population.get(this.rand.getIndex(size)).getChromosome();
+
+    if (shouldMutate) {
+      this.createMutatedOffsprings(parent1, parent2, crossoverIndex);
+    } else {
+      this.incubator.request(this.splicer.createOffspring(parent1, parent2, crossoverIndex));
+      this.incubator.request(this.splicer.createOffspring(parent2, parent1, crossoverIndex));
+    }
+  }
+};
+
+/**
+ * Creates mutated offsprings using given parameters. The parents are spliced with
+ * a new, random chromosome at the given crossover index.
+ *
+ * @private
+ * @param {{}} parent1 The first chromosome
+ * @param {{}} parent2 The second chromosome
+ * @param {Number} crossoverIndex The waypoint index at which to splice
+ * @memberof! everoute.travel.search.RouteFinder.prototype
+ */
+RouteFinder.prototype.createMutatedOffsprings = function(parent1, parent2, crossoverIndex) {
+  var randomChromosome = this.createRandomChromosome();
+
+  this.incubator.request(this.splicer.createOffspring(parent1, randomChromosome, crossoverIndex));
+  this.incubator.request(this.splicer.createOffspring(randomChromosome, parent1, crossoverIndex));
+  this.incubator.request(this.splicer.createOffspring(parent2, randomChromosome, crossoverIndex));
+  this.incubator.request(this.splicer.createOffspring(randomChromosome, parent2, crossoverIndex));
+};
+
+module.exports = RouteFinder;
+
+},{"./RouteChromosomeSplicer":31,"./RouteIncubator":34,"./RouteList":36}],33:[function(require,module,exports){
+"use strict";
+
+var DefaultRandomizer = require("../../util/DefaultRandomizer");
+var RouteFinder = require("./RouteFinder");
+
+/**
+ * A builder for a route finder.
+ *
+ * @constructor
+ * @param {everoute.travel.capabilities.TravelCapability} capability The capability for travel.
+ * @param {everoute.travel.rules.TravelRule} rule The rule for searches.
+ * @param {Array.<everoute.travel.Path>} startPaths An array of possible start paths.
+ * @param {everoute.travel.search.SearchResultCollector.<everoute.travel.search.Route>} collector The collector for results.
+ * @memberof everoute.travel.search
+ */
+function RouteFinderBuilder(capability, rule, startPaths, collector) {
+
+  var waypoints = [];
+  var destination = null;
+  var randomizer = null;
+
+  var populationLimit = 25;
+  var generationLimit = 40000;
+  var mutationPercentage = 10;
+
+
+  this.getCapability = function() {
+    return capability;
+  };
+
+  this.getRule = function() {
+    return rule;
+  };
+
+  this.getStartPaths = function() {
+    return startPaths;
+  };
+
+  /**
+   * Sets the criteria for the waypoints. Each waypoint has one criterion.
+   *
+   * @param {Array.<everoute.travel.search.SearchCriterion>} criteria The criteria for the waypoints.
+   */
+  this.setWaypoints = function(criteria) {
+    waypoints = criteria;
+  };
+
+  this.getWaypoints = function() {
+    return waypoints;
+  };
+
+  /**
+   * Sets the destination criterion. If none specified, no fixed destination is
+   * used.
+   *
+   * @param {everoute.travel.search.SearchCriterion} criterion The criterion for the destination.
+   */
+  this.setDestination = function(criterion) {
+    destination = criterion;
+  };
+
+  this.getDestination = function() {
+    return destination;
+  };
+
+  this.getCollector = function() {
+    return collector;
+  };
+
+  this.getRandomizer = function() {
+    return randomizer || new DefaultRandomizer();
+  };
+
+  this.getPopulationLimit = function() {
+    return populationLimit;
+  };
+
+  this.getGenerationLimit = function() {
+    return generationLimit;
+  };
+
+  this.getMutationPercentage = function() {
+    return mutationPercentage;
+  };
+
+  /**
+   * @return {everoute.travel.search.RouteFinder} The resulting route finder
+   */
+  this.build = function() {
+    return new RouteFinder(this);
+  };
+}
+
+module.exports = RouteFinderBuilder;
+
+},{"../../util/DefaultRandomizer":47,"./RouteFinder":32}],34:[function(require,module,exports){
 /* jshint maxparams:6 */
 "use strict";
 
@@ -1571,6 +1867,7 @@ var PathSearchAgent = require("./PathSearchAgent");
  * This incubator receives route chromosomes to create the corresponding routes.
  *
  * @constructor
+ * @private
  * @param {Function} callback the function that receives new Route instances
  * @param {everoute.travel.capabilities.TravelCapability} capability The travelling capability for searches
  * @param {everoute.travel.rules.TravelRule} rule The rule for searching shortest paths
@@ -1603,11 +1900,17 @@ function RouteIncubator(callback, capability, rule, waypoints, destination, rand
  * @memberof! everoute.travel.search.RouteIncubator.prototype
  */
 RouteIncubator.prototype.continueGrowth = function() {
+  var result = true;
+
   this.agents.forEach(function(agent) {
     agent.run();
   });
+  if (this.cultures.length === 0) {
+    this.agents = [];
+    result = false;
+  }
 
-  return this.cultures.length > 0;
+  return result;
 };
 
 /**
@@ -1619,42 +1922,47 @@ RouteIncubator.prototype.request = function(chromosome) {
   var culture = new RouteIncubatorCulture(chromosome);
 
   this.cultures.push(culture);
-  this.continueCulture(culture);
+  this.continueCulture(culture, 0, chromosome.startPath);
 };
 
 /**
  * Continues processing a culture; Will cause the callback to be called if a
  * complete route could be created.
  *
- * @param {everoute.travel.search.RouteIncubatorCulture} culture The culture to process
+ * @param {everoute.travel.search.RouteIncubatorCulture} culture The culture to process.
+ * @param {Number} finishedWaypoints how many waypoints have been calculated.
+ * @param {everoute.travel.Path} lastPath the previous path.
  * @memberof! everoute.travel.search.RouteIncubator.prototype
  */
-RouteIncubator.prototype.continueCulture = function(culture) {
-  var nextWaypoint = culture.getWaypointAmount();
-  var lastPath = new Path(culture.getLastPath().getStep().asFirstStep());
+RouteIncubator.prototype.continueCulture = function(culture, finishedWaypoints, lastPath) {
+  var startPath = new Path(lastPath.getStep().asFirstStep());
   var chromosome = culture.getChromosome();
   var self = this;
+  var nextWaypoint;
   var agent;
 
   function onSearchFailed() {
     self.onCultureFailed(culture);
   }
 
-  if (nextWaypoint < this.waypoints.length) {
-    agent = this.getPathSearchAgent(this.waypointsAgentsBySource[nextWaypoint], lastPath, this.waypoints[nextWaypoint]);
+  if (finishedWaypoints < this.waypoints.length) {
+    nextWaypoint = chromosome.waypoints[finishedWaypoints].index;
+    agent = this.getPathSearchAgent(this.waypointsAgentsBySource[nextWaypoint], startPath, this.waypoints[nextWaypoint]);
     agent.request({
       searchFailed: onSearchFailed,
       searchCompleted: function() {
-        culture.addWaypointPath(nextWaypoint, agent.getRandomPath(self.rand));
-        self.continueCulture(culture);
+        var path = agent.getRandomPath(self.rand);
+
+        culture.addWaypointPath(nextWaypoint, path);
+        self.continueCulture(culture, finishedWaypoints + 1, path);
       },
       pathFound: function(path) {
         culture.addWaypointPath(nextWaypoint, path);
-        self.continueCulture(culture);
+        self.continueCulture(culture, finishedWaypoints + 1, path);
       }
     }, chromosome.waypoints[nextWaypoint].destinationKey);
   } else if (this.destination) {
-    agent = this.getPathSearchAgent(this.destinationAgentsBySource, lastPath, this.destination);
+    agent = this.getPathSearchAgent(this.destinationAgentsBySource, startPath, this.destination);
     agent.request({
       searchFailed: onSearchFailed,
       searchCompleted: function() {
@@ -1686,7 +1994,8 @@ RouteIncubator.prototype.getPathSearchAgent = function(agentsByKey, startPath, c
   var agent = agentsByKey[startKey];
 
   if (!agent) {
-    agentsByKey[startKey] = agent = new PathSearchAgent(startPath, this.capability, this.rule, criterion);
+    agent = new PathSearchAgent(startPath, this.capability, this.rule, criterion);
+    agentsByKey[startKey] = agent;
     this.agents.push(agent);
   }
 
@@ -1728,7 +2037,7 @@ RouteIncubator.prototype.dropCulture = function(culture) {
 
 module.exports = RouteIncubator;
 
-},{"../Path":6,"./PathFinder":28,"./PathSearchAgent":29,"./RouteIncubatorCulture":33}],33:[function(require,module,exports){
+},{"../Path":6,"./PathFinder":28,"./PathSearchAgent":29,"./RouteIncubatorCulture":35}],35:[function(require,module,exports){
 "use strict";
 
 var Route = require("./Route");
@@ -1754,29 +2063,6 @@ function RouteIncubatorCulture(chromosome) {
  */
 RouteIncubatorCulture.prototype.getChromosome = function() {
   return this.chromosome;
-};
-
-/**
- * @return {everoute.travel.Path} The currently last known path of the route.
- * @memberof! everoute.travel.search.RouteIncubatorCulture.prototype
- */
-RouteIncubatorCulture.prototype.getLastPath = function() {
-  var result = this.chromosome.startPath;
-  var waypoints = this.waypoints.length;
-
-  if (waypoints > 0) {
-    result = this.waypoints[waypoints - 1].path;
-  }
-
-  return this.destinationPath || result;
-};
-
-/**
- * @return {Number} Amount of waypoints currently known
- * @memberof! everoute.travel.search.RouteIncubatorCulture.prototype
- */
-RouteIncubatorCulture.prototype.getWaypointAmount = function() {
-  return this.waypoints.length;
 };
 
 /**
@@ -1812,7 +2098,86 @@ RouteIncubatorCulture.prototype.toRoute = function() {
 
 module.exports = RouteIncubatorCulture;
 
-},{"./Route":30}],34:[function(require,module,exports){
+},{"./Route":30}],36:[function(require,module,exports){
+"use strict";
+
+/**
+ * An ordered list of routes. The order is determined by a travel rule that
+ * compares the total cost of a route.
+ *
+ * @constructor
+ * @private
+ * @param {everoute.travel.rules.TravelRule} rule The rule to determine optimal routes.
+ * @memberof everoute.travel.search
+ */
+function RouteList(rule) {
+
+  this.rule = rule;
+  this.routes = [];
+}
+
+/**
+ * @return {Number} Size of the list
+ * @memberof! everoute.travel.search.RouteList.prototype
+ */
+RouteList.prototype.getSize = function() {
+  return this.routes.length;
+};
+
+/**
+ * @param {Number} index The index to retrieve.
+ * @return {everoute.travel.search.Route} The route at given position.
+ * @memberof! everoute.travel.search.RouteList.prototype
+ */
+RouteList.prototype.get = function(index) {
+  return this.routes[index];
+};
+
+/**
+ * Adds given route to the list. The given route is inserted at its sorted
+ * position.
+ *
+ * @param {everoute.travel.search.Route} route The route that shall be added.
+ * @return {Boolean} true if the new route was inserted at the first position.
+ * @memberof! everoute.travel.search.RouteList.prototype
+ */
+RouteList.prototype.add = function(route) {
+  var size = this.getSize();
+  var costSum = route.getCostSum();
+  var position = size - 1;
+  var isBetter = true;
+
+  // This loop assumes that the new route will most likely be worse than
+  // the rest, so it starts at the end.
+  while (isBetter && (position >= 0)) {
+    isBetter = this.rule.compare(costSum, this.routes[position].getCostSum()) < 0;
+    if (isBetter) {
+      position--;
+    }
+  }
+
+  this.routes.splice(position + 1, 0, route);
+
+  return position === -1;
+};
+
+/**
+ * Limits the list to the given amount.
+ *
+ * @param {Number} limit The size limit. Routes beyond this limit will be dropped.
+ * @memberof! everoute.travel.search.RouteList.prototype
+ */
+RouteList.prototype.limit = function(limit) {
+  var size = this.getSize();
+
+  if (size > limit) {
+    this.routes.splice(limit, size - limit);
+  }
+};
+
+module.exports = RouteList;
+
+},{}],37:[function(require,module,exports){
 /**
  * This namespace contains logic for searching paths.
  *
@@ -1825,10 +2190,11 @@ module.exports = {
 
   Route: require("./Route"),
   RouteChromosomeSplicer: require("./RouteChromosomeSplicer"),
-  RouteIncubator: require("./RouteIncubator")
+  RouteIncubator: require("./RouteIncubator"),
+  RouteFinderBuilder: require("./RouteFinderBuilder")
 };
 
-},{"./DestinationSystemSearchCriterion":27,"./PathFinder":28,"./Route":30,"./RouteChromosomeSplicer":31,"./RouteIncubator":32}],35:[function(require,module,exports){
+},{"./DestinationSystemSearchCriterion":27,"./PathFinder":28,"./Route":30,"./RouteChromosomeSplicer":31,"./RouteFinderBuilder":33,"./RouteIncubator":34}],38:[function(require,module,exports){
 "use strict";
 
 var Path = require("../travel/Path");
@@ -1914,7 +2280,7 @@ EmptySolarSystem.prototype.startPath = function() {
 
 module.exports = EmptySolarSystem;
 
-},{"../travel/Path":6,"../travel/StepBuilder":11}],36:[function(require,module,exports){
+},{"../travel/Path":6,"../travel/StepBuilder":11}],39:[function(require,module,exports){
 "use strict";
 
 var UniverseBuilder = require("./UniverseBuilder");
@@ -1950,7 +2316,7 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":41}],37:[function(require,module,exports){
+},{"./UniverseBuilder":44}],40:[function(require,module,exports){
 "use strict";
 
 var StepBuilder = require("../travel/StepBuilder");
@@ -2041,7 +2407,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{"../travel/StepBuilder":11}],38:[function(require,module,exports){
+},{"../travel/StepBuilder":11}],41:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2122,7 +2488,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":41}],39:[function(require,module,exports){
+},{"./UniverseBuilder":44}],42:[function(require,module,exports){
 "use strict";
 
 var JumpBuilder = require("../travel/JumpBuilder");
@@ -2171,7 +2537,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],40:[function(require,module,exports){
+},{"../travel/JumpBuilder":5}],43:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2201,7 +2567,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],41:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 "use strict";
 
 var EmptySolarSystem = require("./EmptySolarSystem");
@@ -2314,7 +2680,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":35,"./ExtendedSolarSystem":37,"./ExtendedUniverse":38,"./SolarSystemExtension":39,"./SolarSystemExtensionData":40,"./UniverseExtensionData":42}],42:[function(require,module,exports){
+},{"./EmptySolarSystem":38,"./ExtendedSolarSystem":40,"./ExtendedUniverse":41,"./SolarSystemExtension":42,"./SolarSystemExtensionData":43,"./UniverseExtensionData":45}],45:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2340,7 +2706,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],43:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -2360,7 +2726,7 @@ module.exports = {
   SolarSystemExtensionData: require("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":35,"./EmptyUniverse":36,"./ExtendedSolarSystem":37,"./ExtendedUniverse":38,"./SolarSystemExtension":39,"./SolarSystemExtensionData":40,"./UniverseBuilder":41,"./UniverseExtensionData":42}],44:[function(require,module,exports){
+},{"./EmptySolarSystem":38,"./EmptyUniverse":39,"./ExtendedSolarSystem":40,"./ExtendedUniverse":41,"./SolarSystemExtension":42,"./SolarSystemExtensionData":43,"./UniverseBuilder":44,"./UniverseExtensionData":45}],47:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2391,7 +2757,7 @@ DefaultRandomizer.prototype.getIndex = function(limit) {
 
 module.exports = DefaultRandomizer;
 
-},{}],45:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2415,7 +2781,7 @@ module.exports = {
   noop: noop
 };
 
-},{"./DefaultRandomizer":44}]},{},[1])
+},{"./DefaultRandomizer":47}]},{},[1])
 (1)
 });
 ;

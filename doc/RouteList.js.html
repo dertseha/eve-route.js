@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: travel</title>
+    <title>JSDoc: Source: travel/search/RouteList.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,153 +17,94 @@
 
 <div id="main">
     
-    <h1 class="page-title">Namespace: travel</h1>
+    <h1 class="page-title">Source: travel/search/RouteList.js</h1>
     
     
 
 
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>"use strict";
 
-<section>
-    
-<header>
-    <h2>
-        <span class="ancestors"><a href="everoute.html">everoute</a>.</span>
-    
-    travel
-    </h2>
-    
-</header>  
+/**
+ * An ordered list of routes. The order is determined by a travel rule that
+ * compares the total cost of a route.
+ *
+ * @constructor
+ * @private
+ * @param {everoute.travel.rules.TravelRule} rule The rule to determine optimal routes.
+ * @memberof everoute.travel.search
+ */
+function RouteList(rule) {
 
-<article>
-    <div class="container-overview">
-    
-    
-    
-        
-            <div class="description">This namespace contains entries regarding travel.</div>
-        
-        
-        
-<dl class="details">
-    
-        
-    
-    
-    
+  this.rule = rule;
+  this.routes = [];
+}
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js_.html">travel/index.js</a>, <a href="index.js_.html#line1">line 1</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
+/**
+ * @return {Number} Size of the list
+ * @memberof! everoute.travel.search.RouteList.prototype
+ */
+RouteList.prototype.getSize = function() {
+  return this.routes.length;
+};
 
-        
-        
-    
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-        <h3 class="subsection-title">Classes</h3>
-        
-        <dl>
-            <dt><a href="everoute.travel.AddingTravelCost.html">AddingTravelCost</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.AnyLocation.html">AnyLocation</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.Jump.html">Jump</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.JumpBuilder.html">JumpBuilder</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.Location.html">Location</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.ManufacturingPathContestProvider.html">ManufacturingPathContestProvider</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.Path.html">Path</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.PathContest.html">PathContest</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.PathContestProvider.html">PathContestProvider</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.SpecificLocation.html">SpecificLocation</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.StaticPathContestProvider.html">StaticPathContestProvider</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.Step.html">Step</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.StepBuilder.html">StepBuilder</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.TravelCost.html">TravelCost</a></dt>
-            <dd></dd>
-        
-            <dt><a href="everoute.travel.TravelCostSum.html">TravelCostSum</a></dt>
-            <dd></dd>
-        </dl>
-    
-    
-    
-        <h3 class="subsection-title">Namespaces</h3>
-        
-        <dl>
-            <dt><a href="namespaces.html#everoute.travel.capabilities"><a href="everoute.travel.capabilities.html">capabilities</a></a></dt>
-            <dd></dd>
-        
-            <dt><a href="namespaces.html#everoute.travel.rules"><a href="everoute.travel.rules.html">rules</a></a></dt>
-            <dd></dd>
-        
-            <dt><a href="namespaces.html#everoute.travel.search"><a href="everoute.travel.search.html">search</a></a></dt>
-            <dd></dd>
-        </dl>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</article>
+/**
+ * @param {Number} index The index to retrieve.
+ * @return {everoute.travel.search.Route} The route at given position.
+ * @memberof! everoute.travel.search.RouteList.prototype
+ */
+RouteList.prototype.get = function(index) {
+  return this.routes[index];
+};
 
-</section>  
+/**
+ * Adds given route to the list. The given route is inserted at its sorted
+ * position.
+ *
+ * @param {everoute.travel.search.Route} route The route that shall be added.
+ * @return {Boolean} true if the new route was inserted at the first position.
+ * @memberof! everoute.travel.search.RouteList.prototype
+ */
+RouteList.prototype.add = function(route) {
+  var size = this.getSize();
+  var costSum = route.getCostSum();
+  var position = size - 1;
+  var isBetter = true;
+
+  // This loop assumes that the new route will most likely be worse than
+  // the rest, so it starts at the end.
+  while (isBetter && (position >= 0)) {
+    isBetter = this.rule.compare(costSum, this.routes[position].getCostSum()) &lt; 0;
+    if (isBetter) {
+      position--;
+    }
+  }
+
+  this.routes.splice(position + 1, 0, route);
+
+  return position === -1;
+};
+
+/**
+ * Limits the list to the given amount.
+ *
+ * @param {Number} limit The size limit. Routes beyond this limit will be dropped.
+ * @memberof! everoute.travel.search.RouteList.prototype
+ */
+RouteList.prototype.limit = function(limit) {
+  var size = this.getSize();
+
+  if (size > limit) {
+    this.routes.splice(limit, size - limit);
+  }
+};
+
+module.exports = RouteList;
+</code></pre>
+        </article>
+    </section>
 
 
 
@@ -177,7 +118,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 25 2014 20:36:05 GMT-0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Jan 25 2014 20:36:04 GMT-0000 (GMT)
 </footer>
 
 <script> prettyPrint(); </script>

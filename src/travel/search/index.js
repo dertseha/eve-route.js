@@ -10,5 +10,6 @@ module.exports = {
 
   Route: require("./Route"),
   RouteChromosomeSplicer: require("./RouteChromosomeSplicer"),
-  RouteIncubator: require("./RouteIncubator")
+  RouteIncubator: require("./RouteIncubator"),
+  RouteFinderBuilder: require("./RouteFinderBuilder")
 };
