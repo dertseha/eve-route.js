@@ -15,6 +15,10 @@
 function SpecificLocation(x, y, z) {
   var position = [x, y, z];
 
+  this.toString = function() {
+    return "[" + x + ", " + y + ", " + z + "]";
+  };
+
   this.getPositionRelativeTo = function(origin) {
     return [position[0] - origin[0], position[1] - origin[1], position[2] - origin[2]];
   };

@@ -13,6 +13,10 @@ function AnyLocation() {
 
 }
 
+AnyLocation.prototype.toString = function() {
+  return "*";
+};
+
 AnyLocation.prototype.getPositionRelativeTo = function(origin) {
   return [0, 0, 0];
 };

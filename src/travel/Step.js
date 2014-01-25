@@ -27,11 +27,19 @@ function Step(solarSystemId, location, enterCosts, continueCosts) {
 }
 
 /**
+ * @return {everoute.travel.Step} A step that is a copy of this, without costs
+ * @memberof! everoute.travel.Step.prototype
+ */
+Step.prototype.asFirstStep = function() {
+  return new Step(this.solarSystemId, this.location, [], []);
+};
+
+/**
  * @return {String} A key that identifies this destination location
  * @memberof! everoute.travel.Step.prototype
  */
 Step.prototype.getKey = function() {
-  return this.solarSystemId.toString();
+  return this.solarSystemId.toString() + "@" + this.location.toString();
 };
 
 /**

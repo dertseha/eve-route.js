@@ -8,5 +8,7 @@ module.exports = {
   DestinationSystemSearchCriterion: require("./DestinationSystemSearchCriterion"),
   PathFinder: require("./PathFinder"),
 
-  RouteChromosomeSplicer: require("./RouteChromosomeSplicer")
+  Route: require("./Route"),
+  RouteChromosomeSplicer: require("./RouteChromosomeSplicer"),
+  RouteIncubator: require("./RouteIncubator")
 };

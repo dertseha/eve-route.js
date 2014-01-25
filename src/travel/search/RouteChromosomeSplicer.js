@@ -3,6 +3,7 @@
 /**
  * A splicer to create new route chromosomes.
  *
+ * @constructor
  * @param {everoute.util.Randomizer} rand A randomizer for creating new things.
  * @memberof everoute.travel.search
  */
@@ -13,15 +14,16 @@ function RouteChromosomeSplicer(rand) {
 /**
  * Creates a random route chromosome.
  *
- * @param {Array.<Number>} startIds Available IDs for the start system.
+ * @param {Array.<everoute.travel.Path>} startPaths Available paths for the start system.
  * @param {Number} waypointCount Amount of waypoints to consider.
  * @return {{}} An initial chromosome with random start and waypoints.
+ * @memberof! everoute.travel.search.RouteChromosomeSplicer.prototype
  */
-RouteChromosomeSplicer.prototype.createRandom = function(startIds, waypointCount) {
+RouteChromosomeSplicer.prototype.createRandom = function(startPaths, waypointCount) {
   var result = {
-    startSystemId: startIds[this.rand.getIndex(startIds.length)],
+    startPath: startPaths[this.rand.getIndex(startPaths.length)],
     waypoints: [],
-    destination: null
+    destinationKey: null
   };
   var waypoint;
   var i;
@@ -29,7 +31,7 @@ RouteChromosomeSplicer.prototype.createRandom = function(startIds, waypointCount
   for (i = 0; i < waypointCount; i++) {
     result.waypoints.push({
       index: this.findUnusedWaypointIndex(result.waypoints, waypointCount),
-      path: null
+      destinationKey: null
     });
   }
 
@@ -47,12 +49,13 @@ RouteChromosomeSplicer.prototype.createRandom = function(startIds, waypointCount
  * @param {{}} parent2 second parent chromosome
  * @param {Number} crossoverIndex [description]
  * @return {{}} a created chromosome offspring
+ * @memberof! everoute.travel.search.RouteChromosomeSplicer.prototype
  */
 RouteChromosomeSplicer.prototype.createOffspring = function(parent1, parent2, crossoverIndex) {
   var result = {
-    startSystemId: parent1.startSystemId,
+    startPath: parent1.startPath,
     waypoints: [],
-    destination: parent2.destination
+    destinationKey: parent2.destinationKey
   };
   var temp;
   var index = 0;
@@ -67,7 +70,7 @@ RouteChromosomeSplicer.prototype.createOffspring = function(parent1, parent2, cr
     if (this.isWaypointIndexUsed(result.waypoints, temp.index)) {
       result.waypoints.push({
         index: this.findUnusedWaypointIndex(result.waypoints, parent2.waypoints.length),
-        path: null
+        destinationKey: null
       });
     } else {
       result.waypoints.push(temp);
@@ -84,6 +87,7 @@ RouteChromosomeSplicer.prototype.createOffspring = function(parent1, parent2, cr
  * @param {{index:Number}} waypoints existing waypoints
  * @param {Number} limit upper limit for index
  * @return {Number} An available index
+ * @memberof! everoute.travel.search.RouteChromosomeSplicer.prototype
  */
 RouteChromosomeSplicer.prototype.findUnusedWaypointIndex = function(waypoints, limit) {
   var result = this.rand.getIndex(limit);
@@ -102,6 +106,7 @@ RouteChromosomeSplicer.prototype.findUnusedWaypointIndex = function(waypoints, l
  * @param {Array.<{}>} waypoints The waypoints to check.
  * @param {Number} index The index to check.
  * @return {Boolean} True if the given index has already been used.
+ * @memberof! everoute.travel.search.RouteChromosomeSplicer.prototype
  */
 RouteChromosomeSplicer.prototype.isWaypointIndexUsed = function(waypoints, index) {
   var result = false;

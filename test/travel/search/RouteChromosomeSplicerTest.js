@@ -28,18 +28,18 @@ describe("RouteChromosomeSplicer", function() {
       var result = splicer.createRandom([10, 20], 3);
 
       expect(result).to.be.eql({
-        startSystemId: 10,
+        startPath: 10,
         waypoints: [{
           index: 1,
-          path: null
+          destinationKey: null
         }, {
           index: 2,
-          path: null
+          destinationKey: null
         }, {
           index: 0,
-          path: null
+          destinationKey: null
         }],
-        destination: null
+        destinationKey: null
       });
     });
   });
@@ -93,20 +93,20 @@ describe("RouteChromosomeSplicer", function() {
     });
   });
 
-  function createWaypoint(index, path) {
+  function createWaypoint(index, destinationKey) {
     var result = {
       index: index,
-      path: path
+      destinationKey: destinationKey || null
     };
 
     return result;
   }
 
-  function createChromosome(startSystemId, waypoints, destination) {
+  function createChromosome(startPath, waypoints, destinationKey) {
     var result = {
-      startSystemId: startSystemId,
+      startPath: startPath,
       waypoints: waypoints,
-      destination: destination
+      destinationKey: destinationKey || null
     };
 
     return result;
