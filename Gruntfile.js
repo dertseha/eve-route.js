@@ -8,8 +8,9 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON("package.json"),
 
     clean: {
-      build: ["build"],
-      package: ["doc", "dist"]
+      jsdoc: ["build/doc"],
+      coverage: ["build/instrumented", "build/reports/coverage"],
+      package: ["dist"]
     },
 
     // Run JSHint on all sources
@@ -106,7 +107,7 @@ module.exports = function(grunt) {
       lib: {
         src: ["src/**/*.js"],
         options: {
-          destination: "doc",
+          destination: "build/doc",
           private: false
         }
       }
@@ -127,9 +128,10 @@ module.exports = function(grunt) {
   grunt.registerTask("test", ["mochaTest:libRaw"]);
   grunt.registerTask("test-min", ["mochaTest:libMinified"]);
   grunt.registerTask("compile", ["browserify", "uglify"]);
-  grunt.registerTask("document", ["jsdoc:lib"]);
 
-  grunt.registerTask("coverage", ["clean:build", "instrument", "mochaTest:coverage", "storeCoverage", "makeReport"]);
+  grunt.registerTask("document", ["clean:jsdoc", "jsdoc:lib"]);
+  grunt.registerTask("coverage", ["clean:coverage", "instrument", "mochaTest:coverage", "storeCoverage", "makeReport"]);
+
   grunt.registerTask("package", ["clean:package", "lint", "format", "compile", "test-min", "document"]);
 
   grunt.registerTask("default", ["lint", "test"]);

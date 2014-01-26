@@ -1,5 +1,5 @@
 {
-  "name": "eve-route.js",
+  "name": "eve-route",
   "version": "0.1.0",
   "description": "Route calculator for EVE Online that considers any form of travel anywhere.",
   "private": true,
