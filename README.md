@@ -41,8 +41,8 @@ Keep the JSDoc annotations up to date. Note that the used annotations are a mixt
 
 The project is available under the terms of the **New BSD License** (see LICENSE file).
 
-[npm-url]: https://npmjs.org/package/eve-route.js
-[npm-image]: https://badge.fury.io/js/eve-route.js.png
+[npm-url]: https://npmjs.org/package/eve-route
+[npm-image]: https://badge.fury.io/js/eve-route.png
 [travis-url]: https://travis-ci.org/dertseha/eve-route.js
 [travis-image]: https://travis-ci.org/dertseha/eve-route.js.png?branch=master
 [coveralls-url]: https://coveralls.io/r/dertseha/eve-route.js
