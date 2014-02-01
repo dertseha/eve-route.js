@@ -1,4 +1,4 @@
-!function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.everoute=e():"undefined"!=typeof global?global.everoute=e():"undefined"!=typeof self&&(self.everoute=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.everoute=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -7,7 +7,7 @@
  * @namespace everoute
  */
 
-var universe = require("./universe");
+var universe = _dereq_("./universe");
 
 
 /**
@@ -19,14 +19,14 @@ var newUniverseBuilder = function() {
 };
 
 module.exports = {
-  travel: require("./travel"),
+  travel: _dereq_("./travel"),
   universe: universe,
-  util: require("./util"),
+  util: _dereq_("./util"),
 
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":18,"./universe":48,"./util":50}],2:[function(require,module,exports){
+},{"./travel":18,"./universe":48,"./util":50}],2:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -55,7 +55,7 @@ function AddingTravelCost(type, value) {
 
 module.exports = AddingTravelCost;
 
-},{}],3:[function(require,module,exports){
+},{}],3:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -85,7 +85,7 @@ AnyLocation.prototype.distanceTo = function(other) {
 
 module.exports = AnyLocation;
 
-},{}],4:[function(require,module,exports){
+},{}],4:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -141,11 +141,11 @@ function Jump(ofType, fromLocation, toSystemId, toLocation, costs) {
 
 module.exports = Jump;
 
-},{}],5:[function(require,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 "use strict";
 
-var AnyLocation = require("./AnyLocation");
-var Jump = require("./Jump");
+var AnyLocation = _dereq_("./AnyLocation");
+var Jump = _dereq_("./Jump");
 
 /**
  * This builder is for creating a jump description.
@@ -211,10 +211,10 @@ function JumpBuilder(jumpType, destinationId) {
 
 module.exports = JumpBuilder;
 
-},{"./AnyLocation":3,"./Jump":4}],6:[function(require,module,exports){
+},{"./AnyLocation":3,"./Jump":4}],6:[function(_dereq_,module,exports){
 "use strict";
 
-var TravelCostSum = require("./TravelCostSum");
+var TravelCostSum = _dereq_("./TravelCostSum");
 
 /**
  * A path is a sequence of steps and a running total of costs.
@@ -302,7 +302,7 @@ Path.prototype.getCostSum = function() {
 
 module.exports = Path;
 
-},{"./TravelCostSum":12}],7:[function(require,module,exports){
+},{"./TravelCostSum":12}],7:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -365,7 +365,7 @@ function PathContest(rule) {
 
 module.exports = PathContest;
 
-},{}],8:[function(require,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -400,7 +400,7 @@ function SpecificLocation(x, y, z) {
 
 module.exports = SpecificLocation;
 
-},{}],9:[function(require,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -421,7 +421,7 @@ function StaticPathContestProvider(contest) {
 
 module.exports = StaticPathContestProvider;
 
-},{}],10:[function(require,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -500,11 +500,11 @@ Step.prototype.getContinueCosts = function() {
 
 module.exports = Step;
 
-},{}],11:[function(require,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 "use strict";
 
-var AnyLocation = require("./AnyLocation");
-var Step = require("./Step");
+var AnyLocation = _dereq_("./AnyLocation");
+var Step = _dereq_("./Step");
 
 /**
  * This builder helps creating steps, using common defaults where possible.
@@ -567,7 +567,7 @@ function StepBuilder(solarSystemId) {
 
 module.exports = StepBuilder;
 
-},{"./AnyLocation":3,"./Step":10}],12:[function(require,module,exports){
+},{"./AnyLocation":3,"./Step":10}],12:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -634,7 +634,7 @@ TravelCostSum.prototype.add = function(costs) {
 
 module.exports = TravelCostSum;
 
-},{}],13:[function(require,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -662,7 +662,7 @@ function CombiningTravelCapability(capabilities) {
 
 module.exports = CombiningTravelCapability;
 
-},{}],14:[function(require,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -706,7 +706,7 @@ function OptimizingTravelCapability(capability, contestProvider) {
 
 module.exports = OptimizingTravelCapability;
 
-},{}],15:[function(require,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 /**
  * This namespace contains everything about travel capabilities.
  *
@@ -714,16 +714,16 @@ module.exports = OptimizingTravelCapability;
  * @memberof everoute.travel
  */
 module.exports = {
-  jumpGate: require("./jumpGate"),
+  jumpGate: _dereq_("./jumpGate"),
 
-  CombiningTravelCapability: require("./CombiningTravelCapability"),
-  OptimizingTravelCapability: require("./OptimizingTravelCapability")
+  CombiningTravelCapability: _dereq_("./CombiningTravelCapability"),
+  OptimizingTravelCapability: _dereq_("./OptimizingTravelCapability")
 };
 
-},{"./CombiningTravelCapability":13,"./OptimizingTravelCapability":14,"./jumpGate":17}],16:[function(require,module,exports){
+},{"./CombiningTravelCapability":13,"./OptimizingTravelCapability":14,"./jumpGate":17}],16:[function(_dereq_,module,exports){
 "use strict";
 
-var StepBuilder = require("../../StepBuilder");
+var StepBuilder = _dereq_("../../StepBuilder");
 
 /**
  * This capability uses jump gates to get out of a system
@@ -756,10 +756,10 @@ JumpGateTravelCapability.JUMP_TYPE = "jumpGate";
 
 module.exports = JumpGateTravelCapability;
 
-},{"../../StepBuilder":11}],17:[function(require,module,exports){
+},{"../../StepBuilder":11}],17:[function(_dereq_,module,exports){
 "use strict";
 
-var JumpGateTravelCapability = require("./JumpGateTravelCapability");
+var JumpGateTravelCapability = _dereq_("./JumpGateTravelCapability");
 
 /**
  * This namespace contains helper regarding the jump gate travel capability.
@@ -783,7 +783,7 @@ module.exports = {
   JumpGateTravelCapability: JumpGateTravelCapability
 };
 
-},{"./JumpGateTravelCapability":16}],18:[function(require,module,exports){
+},{"./JumpGateTravelCapability":16}],18:[function(_dereq_,module,exports){
 /**
  * This namespace contains entries regarding travel.
  *
@@ -791,24 +791,24 @@ module.exports = {
  * @memberof everoute
  */
 module.exports = {
-  capabilities: require("./capabilities"),
-  rules: require("./rules"),
-  search: require("./search"),
+  capabilities: _dereq_("./capabilities"),
+  rules: _dereq_("./rules"),
+  search: _dereq_("./search"),
 
-  AddingTravelCost: require("./AddingTravelCost"),
-  AnyLocation: require("./AnyLocation"),
-  Jump: require("./Jump"),
-  JumpBuilder: require("./JumpBuilder"),
-  Path: require("./Path"),
-  PathContest: require("./PathContest"),
-  SpecificLocation: require("./SpecificLocation"),
-  StaticPathContestProvider: require("./StaticPathContestProvider"),
-  Step: require("./Step"),
-  StepBuilder: require("./StepBuilder"),
-  TravelCostSum: require("./TravelCostSum")
+  AddingTravelCost: _dereq_("./AddingTravelCost"),
+  AnyLocation: _dereq_("./AnyLocation"),
+  Jump: _dereq_("./Jump"),
+  JumpBuilder: _dereq_("./JumpBuilder"),
+  Path: _dereq_("./Path"),
+  PathContest: _dereq_("./PathContest"),
+  SpecificLocation: _dereq_("./SpecificLocation"),
+  StaticPathContestProvider: _dereq_("./StaticPathContestProvider"),
+  Step: _dereq_("./Step"),
+  StepBuilder: _dereq_("./StepBuilder"),
+  TravelCostSum: _dereq_("./TravelCostSum")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":39}],19:[function(require,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":39}],19:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -830,7 +830,7 @@ function NaturalOrderTravelRule(nullCost) {
 
 module.exports = NaturalOrderTravelRule;
 
-},{}],20:[function(require,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -862,7 +862,7 @@ TravelRuleset.prototype.compare = function(sumA, sumB) {
 
 module.exports = TravelRuleset;
 
-},{}],21:[function(require,module,exports){
+},{}],21:[function(_dereq_,module,exports){
 /**
  * This namespace contains rules for travelling.
  *
@@ -870,17 +870,17 @@ module.exports = TravelRuleset;
  * @memberof everoute.travel
  */
 module.exports = {
-  security: require("./security"),
-  transitCount: require("./transitCount"),
+  security: _dereq_("./security"),
+  transitCount: _dereq_("./transitCount"),
 
-  NaturalOrderTravelRule: require("./NaturalOrderTravelRule"),
-  TravelRuleset: require("./TravelRuleset")
+  NaturalOrderTravelRule: _dereq_("./NaturalOrderTravelRule"),
+  TravelRuleset: _dereq_("./TravelRuleset")
 };
 
-},{"./NaturalOrderTravelRule":19,"./TravelRuleset":20,"./security":24,"./transitCount":26}],22:[function(require,module,exports){
+},{"./NaturalOrderTravelRule":19,"./TravelRuleset":20,"./security":24,"./transitCount":26}],22:[function(_dereq_,module,exports){
 "use strict";
 
-var statics = require("./statics");
+var statics = _dereq_("./statics");
 
 /**
  * The rule considers all security value costs that are from a security value
@@ -906,10 +906,10 @@ function MaxSecurityTravelRule(limit) {
 
 module.exports = MaxSecurityTravelRule;
 
-},{"./statics":25}],23:[function(require,module,exports){
+},{"./statics":25}],23:[function(_dereq_,module,exports){
 "use strict";
 
-var statics = require("./statics");
+var statics = _dereq_("./statics");
 
 /**
  * The rule considers all security value costs that are from a security value
@@ -935,12 +935,12 @@ function MinSecurityTravelRule(limit) {
 
 module.exports = MinSecurityTravelRule;
 
-},{"./statics":25}],24:[function(require,module,exports){
+},{"./statics":25}],24:[function(_dereq_,module,exports){
 "use strict";
 
-var statics = require("./statics");
-var MaxSecurityTravelRule = require("./MaxSecurityTravelRule");
-var MinSecurityTravelRule = require("./MinSecurityTravelRule");
+var statics = _dereq_("./statics");
+var MaxSecurityTravelRule = _dereq_("./MaxSecurityTravelRule");
+var MinSecurityTravelRule = _dereq_("./MinSecurityTravelRule");
 
 /**
  * This namespace contains helper regarding the rules about security.
@@ -1000,10 +1000,10 @@ module.exports = {
   getTravelCostType: statics.getTravelCostType
 };
 
-},{"./MaxSecurityTravelRule":22,"./MinSecurityTravelRule":23,"./statics":25}],25:[function(require,module,exports){
+},{"./MaxSecurityTravelRule":22,"./MinSecurityTravelRule":23,"./statics":25}],25:[function(_dereq_,module,exports){
 "use strict";
 
-var AddingTravelCost = require("../../AddingTravelCost");
+var AddingTravelCost = _dereq_("../../AddingTravelCost");
 
 /**
  * Returns the travel cost type identifier for given security value. This
@@ -1072,11 +1072,11 @@ module.exports = {
   sumSecurityCosts: sumSecurityCosts
 };
 
-},{"../../AddingTravelCost":2}],26:[function(require,module,exports){
+},{"../../AddingTravelCost":2}],26:[function(_dereq_,module,exports){
 "use strict";
 
-var AddingTravelCost = require("../../AddingTravelCost");
-var NaturalOrderTravelRule = require("../NaturalOrderTravelRule");
+var AddingTravelCost = _dereq_("../../AddingTravelCost");
+var NaturalOrderTravelRule = _dereq_("../NaturalOrderTravelRule");
 
 /**
  * This namespace contains helper regarding the transit count rule. This
@@ -1135,7 +1135,7 @@ module.exports = {
   getRule: getRule
 };
 
-},{"../../AddingTravelCost":2,"../NaturalOrderTravelRule":19}],27:[function(require,module,exports){
+},{"../../AddingTravelCost":2,"../NaturalOrderTravelRule":19}],27:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1178,7 +1178,7 @@ function CombiningSearchCriterion(criteria) {
 
 module.exports = CombiningSearchCriterion;
 
-},{}],28:[function(require,module,exports){
+},{}],28:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1208,7 +1208,7 @@ function CostAwareSearchCriterion(rule) {
 
 module.exports = CostAwareSearchCriterion;
 
-},{}],29:[function(require,module,exports){
+},{}],29:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1234,7 +1234,7 @@ function DestinationSystemSearchCriterion(systemId) {
 
 module.exports = DestinationSystemSearchCriterion;
 
-},{}],30:[function(require,module,exports){
+},{}],30:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1306,13 +1306,13 @@ function PathFinder(start, capability, criterion, collector) {
 
 module.exports = PathFinder;
 
-},{}],31:[function(require,module,exports){
+},{}],31:[function(_dereq_,module,exports){
 "use strict";
 
-var PathFinder = require("./PathFinder");
-var PathContest = require("../PathContest");
-var StaticPathContestProvider = require("../StaticPathContestProvider");
-var OptimizingTravelCapability = require("../capabilities/OptimizingTravelCapability");
+var PathFinder = _dereq_("./PathFinder");
+var PathContest = _dereq_("../PathContest");
+var StaticPathContestProvider = _dereq_("../StaticPathContestProvider");
+var OptimizingTravelCapability = _dereq_("../capabilities/OptimizingTravelCapability");
 
 /**
  * An agent that provides paths from a certain start. It first searches for
@@ -1474,7 +1474,7 @@ PathSearchAgent.prototype.completeQuery = function(listener, destinationKey) {
 
 module.exports = PathSearchAgent;
 
-},{"../PathContest":7,"../StaticPathContestProvider":9,"../capabilities/OptimizingTravelCapability":14,"./PathFinder":30}],32:[function(require,module,exports){
+},{"../PathContest":7,"../StaticPathContestProvider":9,"../capabilities/OptimizingTravelCapability":14,"./PathFinder":30}],32:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1559,7 +1559,7 @@ function Route(startPath, waypoints, destinationPath) {
 
 module.exports = Route;
 
-},{}],33:[function(require,module,exports){
+},{}],33:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1687,12 +1687,12 @@ RouteChromosomeSplicer.prototype.isWaypointIndexUsed = function(waypoints, index
 
 module.exports = RouteChromosomeSplicer;
 
-},{}],34:[function(require,module,exports){
+},{}],34:[function(_dereq_,module,exports){
 "use strict";
 
-var RouteChromosomeSplicer = require("./RouteChromosomeSplicer");
-var RouteIncubator = require("./RouteIncubator");
-var RouteList = require("./RouteList");
+var RouteChromosomeSplicer = _dereq_("./RouteChromosomeSplicer");
+var RouteIncubator = _dereq_("./RouteIncubator");
+var RouteList = _dereq_("./RouteList");
 
 /**
  * A finder of a route, consisting of a start path, a list of waypoints and an
@@ -1846,11 +1846,11 @@ RouteFinder.prototype.createMutatedOffsprings = function(parent1, parent2, cross
 
 module.exports = RouteFinder;
 
-},{"./RouteChromosomeSplicer":33,"./RouteIncubator":36,"./RouteList":38}],35:[function(require,module,exports){
+},{"./RouteChromosomeSplicer":33,"./RouteIncubator":36,"./RouteList":38}],35:[function(_dereq_,module,exports){
 "use strict";
 
-var DefaultRandomizer = require("../../util/DefaultRandomizer");
-var RouteFinder = require("./RouteFinder");
+var DefaultRandomizer = _dereq_("../../util/DefaultRandomizer");
+var RouteFinder = _dereq_("./RouteFinder");
 
 /**
  * A builder for a route finder.
@@ -1942,14 +1942,14 @@ function RouteFinderBuilder(capability, rule, startPaths, collector) {
 
 module.exports = RouteFinderBuilder;
 
-},{"../../util/DefaultRandomizer":49,"./RouteFinder":34}],36:[function(require,module,exports){
+},{"../../util/DefaultRandomizer":49,"./RouteFinder":34}],36:[function(_dereq_,module,exports){
 /* jshint maxparams:6 */
 "use strict";
 
-var Path = require("../Path");
-var PathFinder = require("./PathFinder");
-var RouteIncubatorCulture = require("./RouteIncubatorCulture");
-var PathSearchAgent = require("./PathSearchAgent");
+var Path = _dereq_("../Path");
+var PathFinder = _dereq_("./PathFinder");
+var RouteIncubatorCulture = _dereq_("./RouteIncubatorCulture");
+var PathSearchAgent = _dereq_("./PathSearchAgent");
 
 /**
  * This incubator receives route chromosomes to create the corresponding routes.
@@ -2125,10 +2125,10 @@ RouteIncubator.prototype.dropCulture = function(culture) {
 
 module.exports = RouteIncubator;
 
-},{"../Path":6,"./PathFinder":30,"./PathSearchAgent":31,"./RouteIncubatorCulture":37}],37:[function(require,module,exports){
+},{"../Path":6,"./PathFinder":30,"./PathSearchAgent":31,"./RouteIncubatorCulture":37}],37:[function(_dereq_,module,exports){
 "use strict";
 
-var Route = require("./Route");
+var Route = _dereq_("./Route");
 
 /**
  * A route culture, which is grown into a complete route.
@@ -2186,7 +2186,7 @@ RouteIncubatorCulture.prototype.toRoute = function() {
 
 module.exports = RouteIncubatorCulture;
 
-},{"./Route":32}],38:[function(require,module,exports){
+},{"./Route":32}],38:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2265,7 +2265,7 @@ RouteList.prototype.limit = function(limit) {
 
 module.exports = RouteList;
 
-},{}],39:[function(require,module,exports){
+},{}],39:[function(_dereq_,module,exports){
 /**
  * This namespace contains logic for searching paths.
  *
@@ -2273,22 +2273,22 @@ module.exports = RouteList;
  * @memberof everoute.travel
  */
 module.exports = {
-  CombiningSearchCriterion: require("./CombiningSearchCriterion"),
-  CostAwareSearchCriterion: require("./CostAwareSearchCriterion"),
-  DestinationSystemSearchCriterion: require("./DestinationSystemSearchCriterion"),
-  PathFinder: require("./PathFinder"),
+  CombiningSearchCriterion: _dereq_("./CombiningSearchCriterion"),
+  CostAwareSearchCriterion: _dereq_("./CostAwareSearchCriterion"),
+  DestinationSystemSearchCriterion: _dereq_("./DestinationSystemSearchCriterion"),
+  PathFinder: _dereq_("./PathFinder"),
 
-  Route: require("./Route"),
-  RouteChromosomeSplicer: require("./RouteChromosomeSplicer"),
-  RouteIncubator: require("./RouteIncubator"),
-  RouteFinderBuilder: require("./RouteFinderBuilder")
+  Route: _dereq_("./Route"),
+  RouteChromosomeSplicer: _dereq_("./RouteChromosomeSplicer"),
+  RouteIncubator: _dereq_("./RouteIncubator"),
+  RouteFinderBuilder: _dereq_("./RouteFinderBuilder")
 };
 
-},{"./CombiningSearchCriterion":27,"./CostAwareSearchCriterion":28,"./DestinationSystemSearchCriterion":29,"./PathFinder":30,"./Route":32,"./RouteChromosomeSplicer":33,"./RouteFinderBuilder":35,"./RouteIncubator":36}],40:[function(require,module,exports){
+},{"./CombiningSearchCriterion":27,"./CostAwareSearchCriterion":28,"./DestinationSystemSearchCriterion":29,"./PathFinder":30,"./Route":32,"./RouteChromosomeSplicer":33,"./RouteFinderBuilder":35,"./RouteIncubator":36}],40:[function(_dereq_,module,exports){
 "use strict";
 
-var Path = require("../travel/Path");
-var StepBuilder = require("../travel/StepBuilder");
+var Path = _dereq_("../travel/Path");
+var StepBuilder = _dereq_("../travel/StepBuilder");
 
 /**
  * This is an empty solar system. It doesn't contain anything and provides only
@@ -2370,10 +2370,10 @@ EmptySolarSystem.prototype.startPath = function() {
 
 module.exports = EmptySolarSystem;
 
-},{"../travel/Path":6,"../travel/StepBuilder":11}],41:[function(require,module,exports){
+},{"../travel/Path":6,"../travel/StepBuilder":11}],41:[function(_dereq_,module,exports){
 "use strict";
 
-var UniverseBuilder = require("./UniverseBuilder");
+var UniverseBuilder = _dereq_("./UniverseBuilder");
 
 /**
  * This is the simplest Universe implementation that is completely empty.
@@ -2406,10 +2406,10 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":46}],42:[function(require,module,exports){
+},{"./UniverseBuilder":46}],42:[function(_dereq_,module,exports){
 "use strict";
 
-var StepBuilder = require("../travel/StepBuilder");
+var StepBuilder = _dereq_("../travel/StepBuilder");
 
 /**
  * An extended solar system that is based on another, but has its own extensions.
@@ -2497,7 +2497,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{"../travel/StepBuilder":11}],43:[function(require,module,exports){
+},{"../travel/StepBuilder":11}],43:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2571,17 +2571,17 @@ function ExtendedUniverse(data) {
 }
 
 ExtendedUniverse.prototype.extend = function() {
-  var UniverseBuilder = require("./UniverseBuilder");
+  var UniverseBuilder = _dereq_("./UniverseBuilder");
 
   return new UniverseBuilder(this);
 };
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":46}],44:[function(require,module,exports){
+},{"./UniverseBuilder":46}],44:[function(_dereq_,module,exports){
 "use strict";
 
-var JumpBuilder = require("../travel/JumpBuilder");
+var JumpBuilder = _dereq_("../travel/JumpBuilder");
 
 /**
  * An extension helper for solar systems.
@@ -2627,7 +2627,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],45:[function(require,module,exports){
+},{"../travel/JumpBuilder":5}],45:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2657,15 +2657,15 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],46:[function(require,module,exports){
+},{}],46:[function(_dereq_,module,exports){
 "use strict";
 
-var EmptySolarSystem = require("./EmptySolarSystem");
-var ExtendedSolarSystem = require("./ExtendedSolarSystem");
-var ExtendedUniverse = require("./ExtendedUniverse");
-var UniverseExtensionData = require("./UniverseExtensionData");
-var SolarSystemExtension = require("./SolarSystemExtension");
-var SolarSystemExtensionData = require("./SolarSystemExtensionData");
+var EmptySolarSystem = _dereq_("./EmptySolarSystem");
+var ExtendedSolarSystem = _dereq_("./ExtendedSolarSystem");
+var ExtendedUniverse = _dereq_("./ExtendedUniverse");
+var UniverseExtensionData = _dereq_("./UniverseExtensionData");
+var SolarSystemExtension = _dereq_("./SolarSystemExtension");
+var SolarSystemExtensionData = _dereq_("./SolarSystemExtensionData");
 
 /**
  * A builder that is used to create (or extend) a universe.
@@ -2770,7 +2770,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":40,"./ExtendedSolarSystem":42,"./ExtendedUniverse":43,"./SolarSystemExtension":44,"./SolarSystemExtensionData":45,"./UniverseExtensionData":47}],47:[function(require,module,exports){
+},{"./EmptySolarSystem":40,"./ExtendedSolarSystem":42,"./ExtendedUniverse":43,"./SolarSystemExtension":44,"./SolarSystemExtensionData":45,"./UniverseExtensionData":47}],47:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2796,7 +2796,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],48:[function(require,module,exports){
+},{}],48:[function(_dereq_,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -2806,17 +2806,17 @@ module.exports = UniverseExtensionData;
  */
 
 module.exports = {
-  EmptySolarSystem: require("./EmptySolarSystem"),
-  EmptyUniverse: require("./EmptyUniverse"),
-  ExtendedSolarSystem: require("./ExtendedSolarSystem"),
-  ExtendedUniverse: require("./ExtendedUniverse"),
-  UniverseBuilder: require("./UniverseBuilder"),
-  UniverseExtensionData: require("./UniverseExtensionData"),
-  SolarSystemExtension: require("./SolarSystemExtension"),
-  SolarSystemExtensionData: require("./SolarSystemExtensionData")
+  EmptySolarSystem: _dereq_("./EmptySolarSystem"),
+  EmptyUniverse: _dereq_("./EmptyUniverse"),
+  ExtendedSolarSystem: _dereq_("./ExtendedSolarSystem"),
+  ExtendedUniverse: _dereq_("./ExtendedUniverse"),
+  UniverseBuilder: _dereq_("./UniverseBuilder"),
+  UniverseExtensionData: _dereq_("./UniverseExtensionData"),
+  SolarSystemExtension: _dereq_("./SolarSystemExtension"),
+  SolarSystemExtensionData: _dereq_("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":40,"./EmptyUniverse":41,"./ExtendedSolarSystem":42,"./ExtendedUniverse":43,"./SolarSystemExtension":44,"./SolarSystemExtensionData":45,"./UniverseBuilder":46,"./UniverseExtensionData":47}],49:[function(require,module,exports){
+},{"./EmptySolarSystem":40,"./EmptyUniverse":41,"./ExtendedSolarSystem":42,"./ExtendedUniverse":43,"./SolarSystemExtension":44,"./SolarSystemExtensionData":45,"./UniverseBuilder":46,"./UniverseExtensionData":47}],49:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2847,7 +2847,7 @@ DefaultRandomizer.prototype.getIndex = function(limit) {
 
 module.exports = DefaultRandomizer;
 
-},{}],50:[function(require,module,exports){
+},{}],50:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2875,7 +2875,7 @@ var constants = {
 };
 
 module.exports = {
-  DefaultRandomizer: require("./DefaultRandomizer"),
+  DefaultRandomizer: _dereq_("./DefaultRandomizer"),
 
   constants: constants,
 
@@ -2885,4 +2885,3 @@ module.exports = {
 },{"./DefaultRandomizer":49}]},{},[1])
 (1)
 });
-;
