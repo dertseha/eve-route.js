@@ -1,4 +1,4 @@
-
+[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coveralls Status][coveralls-image]][coveralls-url] [![Dependency Status][depstat-image]][depstat-url]
 ## EVE-Route.js
 
 This JavaScript library provides a route calculator and optimizer for ship travel in [EVE Online](https://www.eveonline.com/).
@@ -40,3 +40,12 @@ Keep the JSDoc annotations up to date. Note that the used annotations are a mixt
 ## License
 
 The project is available under the terms of the **New BSD License** (see LICENSE file).
+
+[npm-url]: https://npmjs.org/package/eve-route.js
+[npm-image]: https://badge.fury.io/js/eve-route.js.png
+[travis-url]: https://travis-ci.org/dertseha/eve-route.js
+[travis-image]: https://travis-ci.org/dertseha/eve-route.js.png?branch=master
+[coveralls-url]: https://coveralls.io/r/dertseha/eve-route.js
+[coveralls-image]: https://coveralls.io/repos/dertseha/eve-route.js/badge.png
+[depstat-url]: https://david-dm.org/dertseha/eve-route.js
+[depstat-image]: https://david-dm.org/dertseha/eve-route.js.png?theme=shields.io
