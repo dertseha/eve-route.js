@@ -3,7 +3,6 @@
 
 describe("DestinationSystemSearchCriterion", function() {
   var DestinationSystemSearchCriterion = everoute.travel.search.DestinationSystemSearchCriterion;
-  var AnyLocation = everoute.travel.AnyLocation;
   var Path = everoute.travel.Path;
   var StepBuilder = everoute.travel.StepBuilder;
 

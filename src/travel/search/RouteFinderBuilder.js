@@ -10,7 +10,7 @@ var RouteFinder = require("./RouteFinder");
  * @param {everoute.travel.capabilities.TravelCapability} capability The capability for travel.
  * @param {everoute.travel.rules.TravelRule} rule The rule for searches.
  * @param {Array.<everoute.travel.Path>} startPaths An array of possible start paths.
- * @param {everoute.travel.search.SearchResultCollector.<everoute.travel.search.Route>} collector The collector for results.
+ * @param {everoute.travel.search.PathSearchResultCollector} collector The collector for results.
  * @memberof everoute.travel.search
  */
 function RouteFinderBuilder(capability, rule, startPaths, collector) {

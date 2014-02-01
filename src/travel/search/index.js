@@ -5,6 +5,8 @@
  * @memberof everoute.travel
  */
 module.exports = {
+  CombiningSearchCriterion: require("./CombiningSearchCriterion"),
+  CostAwareSearchCriterion: require("./CostAwareSearchCriterion"),
   DestinationSystemSearchCriterion: require("./DestinationSystemSearchCriterion"),
   PathFinder: require("./PathFinder"),
 

@@ -24,6 +24,7 @@ function PathSearchAgent(start, capability, rule, criterion) {
   this.queries = [];
   this.shortest = null;
   this.results = {};
+  this.resultsAsList = [];
 
   var contest = new PathContest(rule);
   var finderCapability = new OptimizingTravelCapability(capability, new StaticPathContestProvider(contest));
@@ -31,6 +32,9 @@ function PathSearchAgent(start, capability, rule, criterion) {
   this.finder = new PathFinder(start, finderCapability, criterion, {
     collect: function(path) {
       self.onFinderResult(path);
+    },
+    getResults: function() {
+      return self.resultsAsList;
     }
   });
 }
@@ -98,7 +102,15 @@ PathSearchAgent.prototype.request = function(listener, destinationKey) {
  * @memberof! everoute.travel.search.PathSearchAgent.prototype
  */
 PathSearchAgent.prototype.onFinderResult = function(path) {
+  var key;
+
   this.results[path.getDestinationKey()] = path;
+  this.resultsAsList = [];
+  for (key in this.results) {
+    if (this.results.hasOwnProperty(key)) {
+      this.resultsAsList.push(this.results[key]);
+    }
+  }
   if (!this.shortest || this.rule.compare(path.getCostSum(), this.shortest.getCostSum()) < 0) {
     this.shortest = path;
   }

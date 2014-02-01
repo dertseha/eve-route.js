@@ -26,7 +26,7 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":18,"./universe":46,"./util":48}],2:[function(require,module,exports){
+},{"./travel":18,"./universe":48,"./util":50}],2:[function(require,module,exports){
 "use strict";
 
 /**
@@ -808,7 +808,7 @@ module.exports = {
   TravelCostSum: require("./TravelCostSum")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":37}],19:[function(require,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":39}],19:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1136,6 +1136,79 @@ module.exports = {
 "use strict";
 
 /**
+ * A search criterion that combines a list of other criteria.
+ * It desires only paths that all criteria desire and lets the search continue
+ * only with paths on which all criteria agree.
+ *
+ * @constructor
+ * @implements everoute.travel.search.SearchCriterion
+ * @extends everoute.travel.search.SearchCriterion
+ * @param {Array.<everoute.travel.search.SearchCriterion>} criteria A list of criteria to combine
+ * @memberof everoute.travel.search
+ */
+function CombiningSearchCriterion(criteria) {
+
+  this.isDesired = function(path) {
+    var result = false;
+
+    if (criteria.length > 0) {
+      result = criteria.reduce(function(desired, criterion) {
+        return desired && criterion.isDesired(path);
+      }, true);
+    }
+
+    return result;
+  };
+
+  this.shouldSearchContinueWith = function(path, results) {
+    var result = false;
+
+    if (criteria.length > 0) {
+      result = criteria.reduce(function(desired, criterion) {
+        return desired && criterion.shouldSearchContinueWith(path, results);
+      }, true);
+    }
+
+    return result;
+  };
+}
+
+module.exports = CombiningSearchCriterion;
+
+},{}],28:[function(require,module,exports){
+"use strict";
+
+/**
+ * A search criterion that continues searches only if the given path is cheaper
+ * than the current results.
+ *
+ * @constructor
+ * @implements everoute.travel.search.SearchCriterion
+ * @extends everoute.travel.search.SearchCriterion
+ * @param {Function(everoute.travel.rules.TravelRule)} rule the rule by which to compare costs
+ * @memberof everoute.travel.search
+ */
+function CostAwareSearchCriterion(rule) {
+
+  this.isDesired = function(path) {
+    return true;
+  };
+
+  this.shouldSearchContinueWith = function(path, results) {
+    var costSum = path.getCostSum();
+
+    return results.reduce(function(isCheaper, result) {
+      return isCheaper && (rule.compare(costSum, result.getCostSum()) < 0);
+    }, true);
+  };
+}
+
+module.exports = CostAwareSearchCriterion;
+
+},{}],29:[function(require,module,exports){
+"use strict";
+
+/**
  * A search criterion that looks for a specific system and stops searches
  * when this system has been reached.
  *
@@ -1158,7 +1231,7 @@ function DestinationSystemSearchCriterion(systemId) {
 
 module.exports = DestinationSystemSearchCriterion;
 
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1183,7 +1256,7 @@ module.exports = DestinationSystemSearchCriterion;
  * @param {everoute.travel.Path} start The start for the search.
  * @param {everoute.travel.capabilities.TravelCapability} capability the capability to use for advancing.
  * @param {everoute.travel.search.SearchCriterion} criterion The criterion by which to determine results.
- * @param {everoute.travel.search.SearchResultCollector.<everoute.travel.Path>} collector The collector for any found paths.
+ * @param {everoute.travel.search.PathSearchResultCollector} collector The collector for any found paths.
  * @memberof everoute.travel.search
  */
 function PathFinder(start, capability, criterion, collector) {
@@ -1213,7 +1286,7 @@ function PathFinder(start, capability, criterion, collector) {
     var nextPaths;
 
     if (candidates.length > 0) {
-      nextPaths = capability.getNextPaths(candidates.pop());
+      nextPaths = capability.getNextPaths(candidates.shift());
       nextPaths.forEach(processNewCandidate);
     }
   }
@@ -1222,7 +1295,7 @@ function PathFinder(start, capability, criterion, collector) {
     if (criterion.isDesired(path)) {
       collector.collect(path);
     }
-    if (criterion.shouldSearchContinueWith(path)) {
+    if (criterion.shouldSearchContinueWith(path, collector.getResults())) {
       candidates.push(path);
     }
   }
@@ -1230,7 +1303,7 @@ function PathFinder(start, capability, criterion, collector) {
 
 module.exports = PathFinder;
 
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 var PathFinder = require("./PathFinder");
@@ -1257,6 +1330,7 @@ function PathSearchAgent(start, capability, rule, criterion) {
   this.queries = [];
   this.shortest = null;
   this.results = {};
+  this.resultsAsList = [];
 
   var contest = new PathContest(rule);
   var finderCapability = new OptimizingTravelCapability(capability, new StaticPathContestProvider(contest));
@@ -1264,6 +1338,9 @@ function PathSearchAgent(start, capability, rule, criterion) {
   this.finder = new PathFinder(start, finderCapability, criterion, {
     collect: function(path) {
       self.onFinderResult(path);
+    },
+    getResults: function() {
+      return self.resultsAsList;
     }
   });
 }
@@ -1331,7 +1408,15 @@ PathSearchAgent.prototype.request = function(listener, destinationKey) {
  * @memberof! everoute.travel.search.PathSearchAgent.prototype
  */
 PathSearchAgent.prototype.onFinderResult = function(path) {
+  var key;
+
   this.results[path.getDestinationKey()] = path;
+  this.resultsAsList = [];
+  for (key in this.results) {
+    if (this.results.hasOwnProperty(key)) {
+      this.resultsAsList.push(this.results[key]);
+    }
+  }
   if (!this.shortest || this.rule.compare(path.getCostSum(), this.shortest.getCostSum()) < 0) {
     this.shortest = path;
   }
@@ -1386,7 +1471,7 @@ PathSearchAgent.prototype.completeQuery = function(listener, destinationKey) {
 
 module.exports = PathSearchAgent;
 
-},{"../PathContest":7,"../StaticPathContestProvider":9,"../capabilities/OptimizingTravelCapability":14,"./PathFinder":28}],30:[function(require,module,exports){
+},{"../PathContest":7,"../StaticPathContestProvider":9,"../capabilities/OptimizingTravelCapability":14,"./PathFinder":30}],32:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1471,7 +1556,7 @@ function Route(startPath, waypoints, destinationPath) {
 
 module.exports = Route;
 
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1599,7 +1684,7 @@ RouteChromosomeSplicer.prototype.isWaypointIndexUsed = function(waypoints, index
 
 module.exports = RouteChromosomeSplicer;
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 var RouteChromosomeSplicer = require("./RouteChromosomeSplicer");
@@ -1758,7 +1843,7 @@ RouteFinder.prototype.createMutatedOffsprings = function(parent1, parent2, cross
 
 module.exports = RouteFinder;
 
-},{"./RouteChromosomeSplicer":31,"./RouteIncubator":34,"./RouteList":36}],33:[function(require,module,exports){
+},{"./RouteChromosomeSplicer":33,"./RouteIncubator":36,"./RouteList":38}],35:[function(require,module,exports){
 "use strict";
 
 var DefaultRandomizer = require("../../util/DefaultRandomizer");
@@ -1771,7 +1856,7 @@ var RouteFinder = require("./RouteFinder");
  * @param {everoute.travel.capabilities.TravelCapability} capability The capability for travel.
  * @param {everoute.travel.rules.TravelRule} rule The rule for searches.
  * @param {Array.<everoute.travel.Path>} startPaths An array of possible start paths.
- * @param {everoute.travel.search.SearchResultCollector.<everoute.travel.search.Route>} collector The collector for results.
+ * @param {everoute.travel.search.PathSearchResultCollector} collector The collector for results.
  * @memberof everoute.travel.search
  */
 function RouteFinderBuilder(capability, rule, startPaths, collector) {
@@ -1854,7 +1939,7 @@ function RouteFinderBuilder(capability, rule, startPaths, collector) {
 
 module.exports = RouteFinderBuilder;
 
-},{"../../util/DefaultRandomizer":47,"./RouteFinder":32}],34:[function(require,module,exports){
+},{"../../util/DefaultRandomizer":49,"./RouteFinder":34}],36:[function(require,module,exports){
 /* jshint maxparams:6 */
 "use strict";
 
@@ -2037,7 +2122,7 @@ RouteIncubator.prototype.dropCulture = function(culture) {
 
 module.exports = RouteIncubator;
 
-},{"../Path":6,"./PathFinder":28,"./PathSearchAgent":29,"./RouteIncubatorCulture":35}],35:[function(require,module,exports){
+},{"../Path":6,"./PathFinder":30,"./PathSearchAgent":31,"./RouteIncubatorCulture":37}],37:[function(require,module,exports){
 "use strict";
 
 var Route = require("./Route");
@@ -2098,7 +2183,7 @@ RouteIncubatorCulture.prototype.toRoute = function() {
 
 module.exports = RouteIncubatorCulture;
 
-},{"./Route":30}],36:[function(require,module,exports){
+},{"./Route":32}],38:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2177,7 +2262,7 @@ RouteList.prototype.limit = function(limit) {
 
 module.exports = RouteList;
 
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /**
  * This namespace contains logic for searching paths.
  *
@@ -2185,6 +2270,8 @@ module.exports = RouteList;
  * @memberof everoute.travel
  */
 module.exports = {
+  CombiningSearchCriterion: require("./CombiningSearchCriterion"),
+  CostAwareSearchCriterion: require("./CostAwareSearchCriterion"),
   DestinationSystemSearchCriterion: require("./DestinationSystemSearchCriterion"),
   PathFinder: require("./PathFinder"),
 
@@ -2194,7 +2281,7 @@ module.exports = {
   RouteFinderBuilder: require("./RouteFinderBuilder")
 };
 
-},{"./DestinationSystemSearchCriterion":27,"./PathFinder":28,"./Route":30,"./RouteChromosomeSplicer":31,"./RouteFinderBuilder":33,"./RouteIncubator":34}],38:[function(require,module,exports){
+},{"./CombiningSearchCriterion":27,"./CostAwareSearchCriterion":28,"./DestinationSystemSearchCriterion":29,"./PathFinder":30,"./Route":32,"./RouteChromosomeSplicer":33,"./RouteFinderBuilder":35,"./RouteIncubator":36}],40:[function(require,module,exports){
 "use strict";
 
 var Path = require("../travel/Path");
@@ -2280,7 +2367,7 @@ EmptySolarSystem.prototype.startPath = function() {
 
 module.exports = EmptySolarSystem;
 
-},{"../travel/Path":6,"../travel/StepBuilder":11}],39:[function(require,module,exports){
+},{"../travel/Path":6,"../travel/StepBuilder":11}],41:[function(require,module,exports){
 "use strict";
 
 var UniverseBuilder = require("./UniverseBuilder");
@@ -2316,7 +2403,7 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":44}],40:[function(require,module,exports){
+},{"./UniverseBuilder":46}],42:[function(require,module,exports){
 "use strict";
 
 var StepBuilder = require("../travel/StepBuilder");
@@ -2407,7 +2494,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{"../travel/StepBuilder":11}],41:[function(require,module,exports){
+},{"../travel/StepBuilder":11}],43:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2488,7 +2575,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":44}],42:[function(require,module,exports){
+},{"./UniverseBuilder":46}],44:[function(require,module,exports){
 "use strict";
 
 var JumpBuilder = require("../travel/JumpBuilder");
@@ -2537,7 +2624,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],43:[function(require,module,exports){
+},{"../travel/JumpBuilder":5}],45:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2567,7 +2654,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 "use strict";
 
 var EmptySolarSystem = require("./EmptySolarSystem");
@@ -2680,7 +2767,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":38,"./ExtendedSolarSystem":40,"./ExtendedUniverse":41,"./SolarSystemExtension":42,"./SolarSystemExtensionData":43,"./UniverseExtensionData":45}],45:[function(require,module,exports){
+},{"./EmptySolarSystem":40,"./ExtendedSolarSystem":42,"./ExtendedUniverse":43,"./SolarSystemExtension":44,"./SolarSystemExtensionData":45,"./UniverseExtensionData":47}],47:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2706,7 +2793,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -2726,7 +2813,7 @@ module.exports = {
   SolarSystemExtensionData: require("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":38,"./EmptyUniverse":39,"./ExtendedSolarSystem":40,"./ExtendedUniverse":41,"./SolarSystemExtension":42,"./SolarSystemExtensionData":43,"./UniverseBuilder":44,"./UniverseExtensionData":45}],47:[function(require,module,exports){
+},{"./EmptySolarSystem":40,"./EmptyUniverse":41,"./ExtendedSolarSystem":42,"./ExtendedUniverse":43,"./SolarSystemExtension":44,"./SolarSystemExtensionData":45,"./UniverseBuilder":46,"./UniverseExtensionData":47}],49:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2757,7 +2844,7 @@ DefaultRandomizer.prototype.getIndex = function(limit) {
 
 module.exports = DefaultRandomizer;
 
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2775,13 +2862,24 @@ var noop = function() {
 
 };
 
+var METERS_PER_AU = 149597870700;
+
+var constants = {
+  GALAXY_ID_NEW_EDEN: 9,
+  GALAXY_ID_W_SPACE: 9000001,
+  METERS_PER_AU: METERS_PER_AU,
+  METERS_PER_LY: METERS_PER_AU * 63241
+};
+
 module.exports = {
   DefaultRandomizer: require("./DefaultRandomizer"),
+
+  constants: constants,
 
   noop: noop
 };
 
-},{"./DefaultRandomizer":47}]},{},[1])
+},{"./DefaultRandomizer":49}]},{},[1])
 (1)
 });
 ;

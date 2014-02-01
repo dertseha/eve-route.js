@@ -8,6 +8,8 @@ describe("New Eden Gate Travel", function() {
   var PathContest = everoute.travel.PathContest;
   var StaticPathContestProvider = everoute.travel.StaticPathContestProvider;
   var OptimizingTravelCapability = everoute.travel.capabilities.OptimizingTravelCapability;
+  var CombiningSearchCriterion = everoute.travel.search.CombiningSearchCriterion;
+  var CostAwareSearchCriterion = everoute.travel.search.CostAwareSearchCriterion;
   var DestinationSystemSearchCriterion = everoute.travel.search.DestinationSystemSearchCriterion;
   var TravelRuleset = everoute.travel.rules.TravelRuleset;
   var NaturalOrderTravelRule = everoute.travel.rules.NaturalOrderTravelRule;
@@ -28,7 +30,7 @@ describe("New Eden Gate Travel", function() {
 
       it("should find a path from Rens to Ivar", function() {
         // second path exists, this one is found with test-data; is order dependent.
-        verifyPath("Rens", "Ivar", rules, ["Rens", "Frarn", "Meirakulf", "Ivar"]);
+        verifyPath("Rens", "Ivar", rules, ["Rens", "Odatrik", "Trytedald", "Ivar"]);
       });
     });
 
@@ -61,21 +63,28 @@ describe("New Eden Gate Travel", function() {
     });
 
     function verifyPath(from, to, rules, expected) {
+      var bestPath;
       var result;
+      var rule = new TravelRuleset(rules);
       var start = universe.getSolarSystem(getIdByName(from)).startPath();
-      var contest = new PathContest(new TravelRuleset(rules));
+      var contest = new PathContest(rule);
       var gateCapability = new JumpGateTravelCapability(universe);
       var combiningCapability = new CombiningTravelCapability([gateCapability]);
       var capability = new OptimizingTravelCapability(combiningCapability, new StaticPathContestProvider(contest));
-      var criterion = new DestinationSystemSearchCriterion(getIdByName(to));
+      var criterion = getOptimizedSystemSearchCriterion(to, rule);
       var collector = {
         collect: function(path) {
           var steps = path.getSteps();
 
+          bestPath = path;
           result = [];
           steps.forEach(function(step) {
             result.push(solarSystemNamesById[step.getSolarSystemId()]);
           });
+        },
+
+        getResults: function() {
+          return bestPath ? [bestPath] : [];
         }
       };
       var finder = new PathFinder(start, capability, criterion, collector);
@@ -142,9 +151,9 @@ describe("New Eden Gate Travel", function() {
       var capability = new JumpGateTravelCapability(universe);
       var rule = everoute.travel.rules.transitCount.getRule();
       var waypoints = via.map(function(waypoint) {
-        return new DestinationSystemSearchCriterion(getIdByName(waypoint));
+        return getOptimizedSystemSearchCriterion(waypoint, rule);
       });
-      var destination = to && new DestinationSystemSearchCriterion(getIdByName(to));
+      var destination = to && getOptimizedSystemSearchCriterion(to, rule);
       var collector = {
         collect: function(route) {
           var steps = route.getSteps();
@@ -175,6 +184,13 @@ describe("New Eden Gate Travel", function() {
       expect(result).to.be.eql(expected);
     }
   });
+
+  function getOptimizedSystemSearchCriterion(systemName, rule) {
+    return new CombiningSearchCriterion([
+      new DestinationSystemSearchCriterion(getIdByName(systemName)),
+      new CostAwareSearchCriterion(rule)
+    ]);
+  }
 
   function getIdByName(name) {
     return solarSystemIdsByName[name];

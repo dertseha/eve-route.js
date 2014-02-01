@@ -39,6 +39,9 @@ describe("PathFinder", function() {
     collector = {
       collect: function(path) {
         collected.push(path);
+      },
+      getResults: function() {
+        return collected;
       }
     };
 
