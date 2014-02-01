@@ -14,10 +14,11 @@ var statics = require("./statics");
  * @memberof everoute.travel.rules
  */
 function MaxSecurityTravelRule(limit) {
+  var integerLimit = limit * 10;
 
   this.compare = function(sumA, sumB) {
-    var valueA = statics.sumSecurityCosts(sumA, limit, 1.0);
-    var valueB = statics.sumSecurityCosts(sumB, limit, 1.0);
+    var valueA = statics.sumSecurityCosts(sumA, integerLimit, 10);
+    var valueB = statics.sumSecurityCosts(sumB, integerLimit, 10);
 
     return valueA - valueB;
   };

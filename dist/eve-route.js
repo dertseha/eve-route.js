@@ -894,10 +894,11 @@ var statics = require("./statics");
  * @memberof everoute.travel.rules
  */
 function MaxSecurityTravelRule(limit) {
+  var integerLimit = limit * 10;
 
   this.compare = function(sumA, sumB) {
-    var valueA = statics.sumSecurityCosts(sumA, limit, 1.0);
-    var valueB = statics.sumSecurityCosts(sumB, limit, 1.0);
+    var valueA = statics.sumSecurityCosts(sumA, integerLimit, 10);
+    var valueB = statics.sumSecurityCosts(sumB, integerLimit, 10);
 
     return valueA - valueB;
   };
@@ -922,10 +923,11 @@ var statics = require("./statics");
  * @memberof everoute.travel.rules
  */
 function MinSecurityTravelRule(limit) {
+  var integerLimit = (limit * 10) - 1;
 
   this.compare = function(sumA, sumB) {
-    var valueA = statics.sumSecurityCosts(sumA, 0.0, limit - 0.1);
-    var valueB = statics.sumSecurityCosts(sumB, 0.0, limit - 0.1);
+    var valueA = statics.sumSecurityCosts(sumA, 0, integerLimit);
+    var valueB = statics.sumSecurityCosts(sumB, 0, integerLimit);
 
     return valueA - valueB;
   };
@@ -1034,14 +1036,15 @@ var nullCosts = {};
   var security;
   var cost;
 
-  for (security = 0.0; security <= 1.0; security += 0.1) {
-    cost = getTravelCost(security, 0);
+  for (security = 0; security <= 10; security++) {
+    cost = getTravelCost(security / 10, 0);
     nullCosts[cost.getType()] = cost;
   }
 })();
 
 /**
  * Returns the sum of all security costs between the two given security limits.
+ * The limits are integer values (0..10) to avoid rounding errors.
  *
  * @param {everoute.travel.TravelCostSum} costSum The cost sum from which to extract costs.
  * @param {Number} from Security value, from which to check (inclusive).
@@ -1054,8 +1057,8 @@ var sumSecurityCosts = function(costSum, from, to) {
   var security;
   var nullCost;
 
-  for (security = from; security <= to; security += 0.1) {
-    nullCost = nullCosts[getTravelCostType(security)];
+  for (security = from; security <= to; security++) {
+    nullCost = nullCosts[getTravelCostType(security / 10)];
     result += costSum.getCost(nullCost).getValue();
   }
 
