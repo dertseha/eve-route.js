@@ -11,6 +11,7 @@ describe("New Eden Gate Travel", function() {
   var CombiningSearchCriterion = everoute.travel.search.CombiningSearchCriterion;
   var CostAwareSearchCriterion = everoute.travel.search.CostAwareSearchCriterion;
   var DestinationSystemSearchCriterion = everoute.travel.search.DestinationSystemSearchCriterion;
+  var SystemAvoidingSearchCriterion = everoute.travel.search.SystemAvoidingSearchCriterion;
   var TravelRuleset = everoute.travel.rules.TravelRuleset;
   var NaturalOrderTravelRule = everoute.travel.rules.NaturalOrderTravelRule;
   var JumpGateTravelCapability = everoute.travel.capabilities.jumpGate.JumpGateTravelCapability;
@@ -62,7 +63,25 @@ describe("New Eden Gate Travel", function() {
 
     });
 
-    function verifyPath(from, to, rules, expected) {
+    describe("system avoidance", function() {
+      var rules = [everoute.travel.rules.transitCount.getRule()];
+      var ignored = ["Abudban", "Rens"];
+
+      it("should ignore transit systems if specified", function() {
+        verifyPath("Odatrik", "Frarn", rules, ["Odatrik", "Trytedald", "Ivar", "Meirakulf", "Frarn"], ignored);
+      });
+
+      it("should still allow ignored systems to be used as destination", function() {
+        verifyPath("Avesber", "Rens", rules, ["Avesber", "Frarn", "Rens"], ignored);
+      });
+
+      it("should still allow ignored systems to be used as start", function() {
+        verifyPath("Rens", "Avesber", rules, ["Rens", "Frarn", "Avesber"], ignored);
+      });
+
+    });
+
+    function verifyPath(from, to, rules, expected, ignored) {
       var bestPath;
       var result;
       var rule = new TravelRuleset(rules);
@@ -71,7 +90,7 @@ describe("New Eden Gate Travel", function() {
       var gateCapability = new JumpGateTravelCapability(universe);
       var combiningCapability = new CombiningTravelCapability([gateCapability]);
       var capability = new OptimizingTravelCapability(combiningCapability, new StaticPathContestProvider(contest));
-      var criterion = getOptimizedSystemSearchCriterion(to, rule);
+      var criterion = getOptimizedSystemSearchCriterion(to, rule, ignored);
       var collector = {
         collect: function(path) {
           var steps = path.getSteps();
@@ -127,7 +146,7 @@ describe("New Eden Gate Travel", function() {
     });
 
     // The following is brittle. Too many waypoints and the test passes only rarely (although, most of the time the
-    // proposed route has a length between 30-40; That's close to the listed ideal of 28.
+    // proposed route has a length between 30-40; That's close to the listed ideal of 28.)
     it.skip("should find a route with ten waypoints", function() {
       verifyRoute(["Lantorn"], [
         "Dumkirinur", "Gerek", "Odatrik", "Offugen", "Hulm",
@@ -185,11 +204,19 @@ describe("New Eden Gate Travel", function() {
     }
   });
 
-  function getOptimizedSystemSearchCriterion(systemName, rule) {
-    return new CombiningSearchCriterion([
+  function getOptimizedSystemSearchCriterion(systemName, rule, ignored) {
+    var criteria = [
       new DestinationSystemSearchCriterion(getIdByName(systemName)),
       new CostAwareSearchCriterion(rule)
-    ]);
+    ];
+
+    if (ignored) {
+      criteria.push(new SystemAvoidingSearchCriterion(ignored.map(function(ignoredName) {
+        return getIdByName(ignoredName);
+      })));
+    }
+
+    return new CombiningSearchCriterion(criteria);
   }
 
   function getIdByName(name) {

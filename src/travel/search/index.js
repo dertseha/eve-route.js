@@ -8,6 +8,7 @@ module.exports = {
   CombiningSearchCriterion: require("./CombiningSearchCriterion"),
   CostAwareSearchCriterion: require("./CostAwareSearchCriterion"),
   DestinationSystemSearchCriterion: require("./DestinationSystemSearchCriterion"),
+  SystemAvoidingSearchCriterion: require("./SystemAvoidingSearchCriterion"),
   PathFinder: require("./PathFinder"),
 
   Route: require("./Route"),

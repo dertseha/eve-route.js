@@ -7,7 +7,7 @@
  * @constructor
  * @implements everoute.travel.search.SearchCriterion
  * @extends everoute.travel.search.SearchCriterion
- * @param {Function(everoute.travel.rules.TravelRule)} rule the rule by which to compare costs
+ * @param {everoute.travel.rules.TravelRule} rule the rule by which to compare costs
  * @memberof everoute.travel.search
  */
 function CostAwareSearchCriterion(rule) {

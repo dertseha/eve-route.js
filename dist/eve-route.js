@@ -26,7 +26,7 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":18,"./universe":48,"./util":50}],2:[function(_dereq_,module,exports){
+},{"./travel":18,"./universe":49,"./util":51}],2:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -808,7 +808,7 @@ module.exports = {
   TravelCostSum: _dereq_("./TravelCostSum")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":39}],19:[function(_dereq_,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":40}],19:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1188,7 +1188,7 @@ module.exports = CombiningSearchCriterion;
  * @constructor
  * @implements everoute.travel.search.SearchCriterion
  * @extends everoute.travel.search.SearchCriterion
- * @param {Function(everoute.travel.rules.TravelRule)} rule the rule by which to compare costs
+ * @param {everoute.travel.rules.TravelRule} rule the rule by which to compare costs
  * @memberof everoute.travel.search
  */
 function CostAwareSearchCriterion(rule) {
@@ -1942,7 +1942,7 @@ function RouteFinderBuilder(capability, rule, startPaths, collector) {
 
 module.exports = RouteFinderBuilder;
 
-},{"../../util/DefaultRandomizer":49,"./RouteFinder":34}],36:[function(_dereq_,module,exports){
+},{"../../util/DefaultRandomizer":50,"./RouteFinder":34}],36:[function(_dereq_,module,exports){
 /* jshint maxparams:6 */
 "use strict";
 
@@ -2266,6 +2266,34 @@ RouteList.prototype.limit = function(limit) {
 module.exports = RouteList;
 
 },{}],39:[function(_dereq_,module,exports){
+"use strict";
+
+/**
+ * A search criterion that aborts searches if they run across a specified
+ * solar system.
+ *
+ * @constructor
+ * @implements everoute.travel.search.SearchCriterion
+ * @extends everoute.travel.search.SearchCriterion
+ * @param {Array.<Integer>} ignored the list of ignored solar systems
+ * @memberof everoute.travel.search
+ */
+function SystemAvoidingSearchCriterion(ignored) {
+
+  var ignoredIds = ignored.slice(0);
+
+  this.isDesired = function(path) {
+    return true;
+  };
+
+  this.shouldSearchContinueWith = function(path, results) {
+    return path.isStart() || (ignoredIds.indexOf(path.getStep().getSolarSystemId()) < 0);
+  };
+}
+
+module.exports = SystemAvoidingSearchCriterion;
+
+},{}],40:[function(_dereq_,module,exports){
 /**
  * This namespace contains logic for searching paths.
  *
@@ -2276,6 +2304,7 @@ module.exports = {
   CombiningSearchCriterion: _dereq_("./CombiningSearchCriterion"),
   CostAwareSearchCriterion: _dereq_("./CostAwareSearchCriterion"),
   DestinationSystemSearchCriterion: _dereq_("./DestinationSystemSearchCriterion"),
+  SystemAvoidingSearchCriterion: _dereq_("./SystemAvoidingSearchCriterion"),
   PathFinder: _dereq_("./PathFinder"),
 
   Route: _dereq_("./Route"),
@@ -2284,7 +2313,7 @@ module.exports = {
   RouteFinderBuilder: _dereq_("./RouteFinderBuilder")
 };
 
-},{"./CombiningSearchCriterion":27,"./CostAwareSearchCriterion":28,"./DestinationSystemSearchCriterion":29,"./PathFinder":30,"./Route":32,"./RouteChromosomeSplicer":33,"./RouteFinderBuilder":35,"./RouteIncubator":36}],40:[function(_dereq_,module,exports){
+},{"./CombiningSearchCriterion":27,"./CostAwareSearchCriterion":28,"./DestinationSystemSearchCriterion":29,"./PathFinder":30,"./Route":32,"./RouteChromosomeSplicer":33,"./RouteFinderBuilder":35,"./RouteIncubator":36,"./SystemAvoidingSearchCriterion":39}],41:[function(_dereq_,module,exports){
 "use strict";
 
 var Path = _dereq_("../travel/Path");
@@ -2370,7 +2399,7 @@ EmptySolarSystem.prototype.startPath = function() {
 
 module.exports = EmptySolarSystem;
 
-},{"../travel/Path":6,"../travel/StepBuilder":11}],41:[function(_dereq_,module,exports){
+},{"../travel/Path":6,"../travel/StepBuilder":11}],42:[function(_dereq_,module,exports){
 "use strict";
 
 var UniverseBuilder = _dereq_("./UniverseBuilder");
@@ -2406,7 +2435,7 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":46}],42:[function(_dereq_,module,exports){
+},{"./UniverseBuilder":47}],43:[function(_dereq_,module,exports){
 "use strict";
 
 var StepBuilder = _dereq_("../travel/StepBuilder");
@@ -2497,7 +2526,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{"../travel/StepBuilder":11}],43:[function(_dereq_,module,exports){
+},{"../travel/StepBuilder":11}],44:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2578,7 +2607,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":46}],44:[function(_dereq_,module,exports){
+},{"./UniverseBuilder":47}],45:[function(_dereq_,module,exports){
 "use strict";
 
 var JumpBuilder = _dereq_("../travel/JumpBuilder");
@@ -2627,7 +2656,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],45:[function(_dereq_,module,exports){
+},{"../travel/JumpBuilder":5}],46:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2657,7 +2686,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],46:[function(_dereq_,module,exports){
+},{}],47:[function(_dereq_,module,exports){
 "use strict";
 
 var EmptySolarSystem = _dereq_("./EmptySolarSystem");
@@ -2770,7 +2799,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":40,"./ExtendedSolarSystem":42,"./ExtendedUniverse":43,"./SolarSystemExtension":44,"./SolarSystemExtensionData":45,"./UniverseExtensionData":47}],47:[function(_dereq_,module,exports){
+},{"./EmptySolarSystem":41,"./ExtendedSolarSystem":43,"./ExtendedUniverse":44,"./SolarSystemExtension":45,"./SolarSystemExtensionData":46,"./UniverseExtensionData":48}],48:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2796,7 +2825,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],48:[function(_dereq_,module,exports){
+},{}],49:[function(_dereq_,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -2816,7 +2845,7 @@ module.exports = {
   SolarSystemExtensionData: _dereq_("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":40,"./EmptyUniverse":41,"./ExtendedSolarSystem":42,"./ExtendedUniverse":43,"./SolarSystemExtension":44,"./SolarSystemExtensionData":45,"./UniverseBuilder":46,"./UniverseExtensionData":47}],49:[function(_dereq_,module,exports){
+},{"./EmptySolarSystem":41,"./EmptyUniverse":42,"./ExtendedSolarSystem":43,"./ExtendedUniverse":44,"./SolarSystemExtension":45,"./SolarSystemExtensionData":46,"./UniverseBuilder":47,"./UniverseExtensionData":48}],50:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2847,7 +2876,7 @@ DefaultRandomizer.prototype.getIndex = function(limit) {
 
 module.exports = DefaultRandomizer;
 
-},{}],50:[function(_dereq_,module,exports){
+},{}],51:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2882,6 +2911,6 @@ module.exports = {
   noop: noop
 };
 
-},{"./DefaultRandomizer":49}]},{},[1])
+},{"./DefaultRandomizer":50}]},{},[1])
 (1)
 });
