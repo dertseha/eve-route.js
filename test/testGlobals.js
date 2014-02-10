@@ -15,7 +15,15 @@
 // Spy/Mock:   http://sinonjs.org/
 //             https://github.com/lightsofapollo/sinon-expect
 
-global.sinon = require("sinon");
+if (!global.sinon) {
+  global.sinon = require("sinon");
+}
 
-global.expect = require("expect.js");
-global.expect = require("sinon-expect").enhance(global.expect, global.sinon, "was");
+if (!global.expect) {
+  global.expect = require("expect.js");
+}
+
+if (!global.SinonExpect) {
+  global.SinonExpect = require("sinon-expect");
+}
+global.expect = global.SinonExpect.enhance(global.expect, global.sinon, "was");

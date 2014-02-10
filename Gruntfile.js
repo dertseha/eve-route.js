@@ -81,6 +81,29 @@ module.exports = function(grunt) {
       }
     },
 
+    karma: {
+      live: {
+        options: {
+          files: ["dist/eve-route.js",
+            "node_modules/expect.js/expect.js",
+            "node_modules/sinon/pkg/sinon.js",
+            "node_modules/sinon-expect/lib/sinon-expect.js",
+            "test/testGlobals.js",
+            "test/**/*Test.js"
+          ],
+          frameworks: ["mocha"],
+          client: {
+            mocha: {
+              ui: "bdd"
+            }
+          },
+          reporters: ["dots"],
+          autoWatch: true,
+          browsers: ["PhantomJS"]
+        }
+      }
+    },
+
     // tasks for coverage analysis (istanbul)
     instrument: {
       files: ["src/**/*.js"],
@@ -121,6 +144,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-istanbul");
   grunt.loadNpmTasks("grunt-jsbeautifier");
   grunt.loadNpmTasks("grunt-jsdoc");
+  grunt.loadNpmTasks("grunt-karma");
   grunt.loadNpmTasks("grunt-mocha-test");
 
   grunt.registerTask("lint", ["jshint"]);

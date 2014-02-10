@@ -38,7 +38,12 @@
     "grunt-istanbul": "~0.2.2",
     "grunt-jsbeautifier": "~0.2.0",
     "grunt-jsdoc": "~0.5.1",
+    "grunt-karma": "~0.6.2",
     "grunt-mocha-test": "~0.9.0",
+    "karma": "~0.10.9",
+    "karma-mocha": "~0.1.1",
+    "karma-phantomjs-launcher": "~0.1.2",
+    "mocha": "~1.17.1",
     "sinon": "~1.7.3",
     "sinon-expect": "~0.2.0"
   },
