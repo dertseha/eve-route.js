@@ -3,6 +3,8 @@
 var util = require("../../../util");
 var jumpDistance = require("../../rules/jumpDistance");
 
+var JumpDriveTravelCapability = require("./JumpDriveTravelCapability");
+
 /**
  * This namespace contains helper regarding the jump drive travel capability.
  *
@@ -17,7 +19,7 @@ var jumpDistance = require("../../rules/jumpDistance");
  * @const
  * @memberof everoute.travel.capabilities.jumpDrive
  */
-var JUMP_TYPE = "jumpDrive";
+var JUMP_TYPE = JumpDriveTravelCapability.JUMP_TYPE;
 
 /**
  * The maximum distance one can jump with a jump drive. As per http://wiki.eveonline.com/en/wiki/Jump_drive, this is
@@ -108,6 +110,8 @@ var extendUniverse = function(builder) {
 module.exports = {
   JUMP_TYPE: JUMP_TYPE,
   DISTANCE_LIMIT_LY: DISTANCE_LIMIT_LY,
+
+  JumpDriveTravelCapability: JumpDriveTravelCapability,
 
   extendUniverse: extendUniverse
 };
