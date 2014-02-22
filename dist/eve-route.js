@@ -83,6 +83,15 @@ AnyLocation.prototype.distanceTo = function(other) {
   return 0;
 };
 
+/**
+ * Singleton instance
+ *
+ * @const
+ * @type {everoute.travel.Location}
+ * @memberof! everoute.travel.AnyLocation
+ */
+AnyLocation.INSTANCE = new AnyLocation();
+
 module.exports = AnyLocation;
 
 },{}],4:[function(_dereq_,module,exports){
@@ -101,43 +110,52 @@ module.exports = AnyLocation;
  */
 function Jump(ofType, fromLocation, toSystemId, toLocation, costs) {
 
-  var jumpCosts = costs.slice(0);
-
-  /**
-   * @return {String} Type identifying how the jump is performed.
-   */
-  this.getType = function() {
-    return ofType;
-  };
-
-  /**
-   * @return {Number} Identifying the destination solar system.
-   */
-  this.getDestinationId = function() {
-    return toSystemId;
-  };
-
-  /**
-   * @param {everoute.travel.Location} Location within the source system.
-   */
-  this.getSourceLocation = function() {
-    return fromLocation;
-  };
-
-  /**
-   * @param {everoute.travel.Location} toLocation location within destination system.
-   */
-  this.getDestinationLocation = function() {
-    return toLocation;
-  };
-
-  /**
-   * @param {Array.<everoute.travel.TravelCost>} Array of costs involved with this jump
-   */
-  this.getCosts = function() {
-    return jumpCosts.slice(0);
-  };
+  this.ofType = ofType;
+  this.fromLocation = fromLocation;
+  this.toSystemId = toSystemId;
+  this.toLocation = toLocation;
+  this.jumpCosts = costs.slice(0);
 }
+
+/**
+ * @return {String} Type identifying how the jump is performed.
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getType = function() {
+  return this.ofType;
+};
+
+/**
+ * @return {Number} Identifying the destination solar system.
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getDestinationId = function() {
+  return this.toSystemId;
+};
+
+/**
+ * @param {everoute.travel.Location} Location within the source system.
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getSourceLocation = function() {
+  return this.fromLocation;
+};
+
+/**
+ * @param {everoute.travel.Location} toLocation location within destination system.
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getDestinationLocation = function() {
+  return this.toLocation;
+};
+
+/**
+ * @param {Array.<everoute.travel.TravelCost>} Array of costs involved with this jump
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getCosts = function() {
+  return this.jumpCosts.slice(0);
+};
 
 module.exports = Jump;
 
@@ -156,58 +174,64 @@ var Jump = _dereq_("./Jump");
  * @param {Number} destinationId ID of the destination solar system
  */
 function JumpBuilder(jumpType, destinationId) {
-
-  var from = new AnyLocation();
-  var to = new AnyLocation();
-  var costs = [];
-
-  /**
-   * Builds a new jump instance, based on the current configured members.
-   *
-   * @return {everoute.travel.Jump} the built jump instance
-   */
-  this.build = function() {
-    return new Jump(jumpType, from, destinationId, to, costs);
-  };
-
-  /**
-   * The location in the source solar system where this jump is started.
-   * Defaults to AnyLocation.
-   *
-   * @param  {everoute.travel.Location} location the source location
-   * @return {everoute.travel.JumpBuilder} this instance
-   */
-  this.from = function(location) {
-    from = location;
-
-    return this;
-  };
-
-  /**
-   * The location in the destination solar system where this jump is landing.
-   * Defaults to AnyLocation.
-   *
-   * @param  {everoute.travel.Location} location the destination location
-   * @return {everoute.travel.JumpBuilder} this instance
-   */
-  this.to = function(location) {
-    to = location;
-
-    return this;
-  };
-
-  /**
-   * Adds another cost involved in this jump.
-   *
-   * @param  {everoute.travel.TravelCost} cost the extra cost
-   * @return {everoute.travel.JumpBuilder} this instance
-   */
-  this.addCost = function(cost) {
-    costs.push(cost);
-
-    return this;
-  };
+  this.jumpType = jumpType;
+  this.destinationId = destinationId;
+  this.fromLocation = AnyLocation.INSTANCE;
+  this.toLocation = AnyLocation.INSTANCE;
+  this.costs = [];
 }
+
+/**
+ * Builds a new jump instance, based on the current configured members.
+ *
+ * @return {everoute.travel.Jump} the built jump instance
+ * @memberof! everoute.travel.JumpBuilder.prototype
+ */
+JumpBuilder.prototype.build = function() {
+  return new Jump(this.jumpType, this.fromLocation, this.destinationId, this.toLocation, this.costs);
+};
+
+/**
+ * The location in the source solar system where this jump is started.
+ * Defaults to AnyLocation.
+ *
+ * @param  {everoute.travel.Location} location the source location
+ * @return {everoute.travel.JumpBuilder} this instance
+ * @memberof! everoute.travel.JumpBuilder.prototype
+ */
+JumpBuilder.prototype.from = function(location) {
+  this.fromLocation = location;
+
+  return this;
+};
+
+/**
+ * The location in the destination solar system where this jump is landing.
+ * Defaults to AnyLocation.
+ *
+ * @param  {everoute.travel.Location} location the destination location
+ * @return {everoute.travel.JumpBuilder} this instance
+ * @memberof! everoute.travel.JumpBuilder.prototype
+ */
+JumpBuilder.prototype.to = function(location) {
+  this.toLocation = location;
+
+  return this;
+};
+
+/**
+ * Adds another cost involved in this jump.
+ *
+ * @param  {everoute.travel.TravelCost} cost the extra cost
+ * @return {everoute.travel.JumpBuilder} this instance
+ * @memberof! everoute.travel.JumpBuilder.prototype
+ */
+JumpBuilder.prototype.addCost = function(cost) {
+  this.costs.push(cost);
+
+  return this;
+};
+
 
 module.exports = JumpBuilder;
 
@@ -762,10 +786,10 @@ var isNewEdenSystem = function(extension) {
 
 /**
  * @param {everoute.universe.SolarSystemExtension} extension the solar system extension to check
- * @return {Boolean} true if the given system is not a high sec system
+ * @return {Boolean} true if the given system is a high sec system
  */
-var isNotHighSecSystem = function(extension) {
-  return extension.getSecurityValue() < 0.5;
+var isHighSecSystem = function(extension) {
+  return extension.getSecurityValue() >= 0.5;
 };
 
 /**
@@ -777,39 +801,52 @@ var isNotHighSecSystem = function(extension) {
  */
 var extendUniverse = function(builder) {
   var solarSystemIds = builder.getSolarSystemIds();
-  var solarSystems = solarSystemIds.length;
+  var highSecSystems = [];
+  var nonHighSecSystems = [];
 
-  function checkJump(extensionFrom, extensionTo) {
-    var distance;
-
-    if (isNotHighSecSystem(extensionTo)) {
-      distance = extensionFrom.getLocation().distanceTo(extensionTo.getLocation()) / util.constants.METERS_PER_LY;
-      if (distance <= DISTANCE_LIMIT_LY) {
-        extensionFrom.addJump(JUMP_TYPE, extensionTo.getId());
-      }
-    }
-  }
-
-  function checkJumpsFollowing(extension, index) {
-    var i;
-    var extension2;
-
-    for (i = index + 1; i < solarSystems; i++) {
-      extension2 = builder.extendSolarSystem(solarSystemIds[i]);
-
-      if (isNewEdenSystem(extension2)) {
-        checkJump(extension, extension2);
-        checkJump(extension2, extension);
-      }
-    }
-  }
-
-  solarSystemIds.forEach(function(id, index) {
+  solarSystemIds.forEach(function(id) {
     var extension = builder.extendSolarSystem(id);
 
     if (isNewEdenSystem(extension)) {
-      checkJumpsFollowing(extension, index);
+      if (isHighSecSystem(extension)) {
+        highSecSystems.push(extension);
+      } else {
+        nonHighSecSystems.push(extension);
+      }
     }
+  });
+
+  function createJumpsFromHighSec(source) {
+    nonHighSecSystems.forEach(function(destination) {
+      var distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
+
+      if (distance <= DISTANCE_LIMIT_LY) {
+        source.addJump(JUMP_TYPE, destination.getId());
+      }
+    });
+  }
+
+  function createJumpsBetween(source, startIndex) {
+    var limit = nonHighSecSystems.length;
+    var destination;
+    var i;
+
+    for (i = startIndex; i < limit; i++) {
+      destination = nonHighSecSystems[i];
+      var distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
+
+      if (distance <= DISTANCE_LIMIT_LY) {
+        destination.addJump(JUMP_TYPE, source.getId());
+        source.addJump(JUMP_TYPE, destination.getId());
+      }
+    }
+  }
+
+  highSecSystems.forEach(function(source) {
+    createJumpsFromHighSec(source);
+  });
+  nonHighSecSystems.forEach(function(source, index) {
+    createJumpsBetween(source, index + 1);
   });
 };
 

@@ -13,42 +13,51 @@
  */
 function Jump(ofType, fromLocation, toSystemId, toLocation, costs) {
 
-  var jumpCosts = costs.slice(0);
-
-  /**
-   * @return {String} Type identifying how the jump is performed.
-   */
-  this.getType = function() {
-    return ofType;
-  };
-
-  /**
-   * @return {Number} Identifying the destination solar system.
-   */
-  this.getDestinationId = function() {
-    return toSystemId;
-  };
-
-  /**
-   * @param {everoute.travel.Location} Location within the source system.
-   */
-  this.getSourceLocation = function() {
-    return fromLocation;
-  };
-
-  /**
-   * @param {everoute.travel.Location} toLocation location within destination system.
-   */
-  this.getDestinationLocation = function() {
-    return toLocation;
-  };
-
-  /**
-   * @param {Array.<everoute.travel.TravelCost>} Array of costs involved with this jump
-   */
-  this.getCosts = function() {
-    return jumpCosts.slice(0);
-  };
+  this.ofType = ofType;
+  this.fromLocation = fromLocation;
+  this.toSystemId = toSystemId;
+  this.toLocation = toLocation;
+  this.jumpCosts = costs.slice(0);
 }
+
+/**
+ * @return {String} Type identifying how the jump is performed.
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getType = function() {
+  return this.ofType;
+};
+
+/**
+ * @return {Number} Identifying the destination solar system.
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getDestinationId = function() {
+  return this.toSystemId;
+};
+
+/**
+ * @param {everoute.travel.Location} Location within the source system.
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getSourceLocation = function() {
+  return this.fromLocation;
+};
+
+/**
+ * @param {everoute.travel.Location} toLocation location within destination system.
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getDestinationLocation = function() {
+  return this.toLocation;
+};
+
+/**
+ * @param {Array.<everoute.travel.TravelCost>} Array of costs involved with this jump
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getCosts = function() {
+  return this.jumpCosts.slice(0);
+};
 
 module.exports = Jump;

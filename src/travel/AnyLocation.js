@@ -25,4 +25,13 @@ AnyLocation.prototype.distanceTo = function(other) {
   return 0;
 };
 
+/**
+ * Singleton instance
+ *
+ * @const
+ * @type {everoute.travel.Location}
+ * @memberof! everoute.travel.AnyLocation
+ */
+AnyLocation.INSTANCE = new AnyLocation();
+
 module.exports = AnyLocation;

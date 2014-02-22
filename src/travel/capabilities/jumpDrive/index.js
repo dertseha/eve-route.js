@@ -38,10 +38,10 @@ var isNewEdenSystem = function(extension) {
 
 /**
  * @param {everoute.universe.SolarSystemExtension} extension the solar system extension to check
- * @return {Boolean} true if the given system is not a high sec system
+ * @return {Boolean} true if the given system is a high sec system
  */
-var isNotHighSecSystem = function(extension) {
-  return extension.getSecurityValue() < 0.5;
+var isHighSecSystem = function(extension) {
+  return extension.getSecurityValue() >= 0.5;
 };
 
 /**
@@ -53,39 +53,52 @@ var isNotHighSecSystem = function(extension) {
  */
 var extendUniverse = function(builder) {
   var solarSystemIds = builder.getSolarSystemIds();
-  var solarSystems = solarSystemIds.length;
+  var highSecSystems = [];
+  var nonHighSecSystems = [];
 
-  function checkJump(extensionFrom, extensionTo) {
-    var distance;
-
-    if (isNotHighSecSystem(extensionTo)) {
-      distance = extensionFrom.getLocation().distanceTo(extensionTo.getLocation()) / util.constants.METERS_PER_LY;
-      if (distance <= DISTANCE_LIMIT_LY) {
-        extensionFrom.addJump(JUMP_TYPE, extensionTo.getId());
-      }
-    }
-  }
-
-  function checkJumpsFollowing(extension, index) {
-    var i;
-    var extension2;
-
-    for (i = index + 1; i < solarSystems; i++) {
-      extension2 = builder.extendSolarSystem(solarSystemIds[i]);
-
-      if (isNewEdenSystem(extension2)) {
-        checkJump(extension, extension2);
-        checkJump(extension2, extension);
-      }
-    }
-  }
-
-  solarSystemIds.forEach(function(id, index) {
+  solarSystemIds.forEach(function(id) {
     var extension = builder.extendSolarSystem(id);
 
     if (isNewEdenSystem(extension)) {
-      checkJumpsFollowing(extension, index);
+      if (isHighSecSystem(extension)) {
+        highSecSystems.push(extension);
+      } else {
+        nonHighSecSystems.push(extension);
+      }
     }
+  });
+
+  function createJumpsFromHighSec(source) {
+    nonHighSecSystems.forEach(function(destination) {
+      var distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
+
+      if (distance <= DISTANCE_LIMIT_LY) {
+        source.addJump(JUMP_TYPE, destination.getId());
+      }
+    });
+  }
+
+  function createJumpsBetween(source, startIndex) {
+    var limit = nonHighSecSystems.length;
+    var destination;
+    var i;
+
+    for (i = startIndex; i < limit; i++) {
+      destination = nonHighSecSystems[i];
+      var distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
+
+      if (distance <= DISTANCE_LIMIT_LY) {
+        destination.addJump(JUMP_TYPE, source.getId());
+        source.addJump(JUMP_TYPE, destination.getId());
+      }
+    }
+  }
+
+  highSecSystems.forEach(function(source) {
+    createJumpsFromHighSec(source);
+  });
+  nonHighSecSystems.forEach(function(source, index) {
+    createJumpsBetween(source, index + 1);
   });
 };
 

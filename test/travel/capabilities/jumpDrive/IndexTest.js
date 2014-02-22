@@ -69,9 +69,19 @@ describe("JumpDrive Index", function() {
       thenTheSolarSystemShouldNotHaveAJumpDriveJump(1);
     });
 
-    it("should not create jumps beyond maximum possible jump distance", function() {
+    it("should not create jumps beyond maximum possible jump distance (1)", function() {
       var veryFar = util.constants.METERS_PER_LY * (jumpDrive.DISTANCE_LIMIT_LY + 0.1);
       givenASolarSystemInNewEden(1, 0.0, [0.0, 0.0, 0.0]);
+      givenASolarSystemInNewEden(2, 0.0, [veryFar, 0.0, 0.0]);
+
+      whenExtendingTheUniverse();
+
+      thenTheSolarSystemShouldNotHaveAJumpDriveJump(1);
+    });
+
+    it("should not create jumps beyond maximum possible jump distance (2)", function() {
+      var veryFar = util.constants.METERS_PER_LY * (jumpDrive.DISTANCE_LIMIT_LY + 0.1);
+      givenASolarSystemInNewEden(1, 1.0, [0.0, 0.0, 0.0]);
       givenASolarSystemInNewEden(2, 0.0, [veryFar, 0.0, 0.0]);
 
       whenExtendingTheUniverse();
