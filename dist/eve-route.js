@@ -850,9 +850,11 @@ var isHighSecSystem = function(extension) {
  * Jumps will only be possible in New Eden (Galaxy ID 9) and only be into non-high-sec systems.
  *
  * @param {everoute.universe.UniverseBuilder} builder The builder for extension.
+ * @param {Number} [limitLy] Optional limit of jumps, in light years
  * @memberof everoute.travel.capabilities.jumpDrive
  */
-var extendUniverse = function(builder) {
+var extendUniverse = function(builder, limitLy) {
+  var usedLimit = limitLy || DISTANCE_LIMIT_LY;
   var solarSystemIds = builder.getSolarSystemIds();
   var highSecSystems = [];
   var nonHighSecSystems = [];
@@ -873,7 +875,7 @@ var extendUniverse = function(builder) {
     nonHighSecSystems.forEach(function(destination) {
       var distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
 
-      if (distance <= DISTANCE_LIMIT_LY) {
+      if (distance <= usedLimit) {
         source.addJump(JUMP_TYPE, destination.getId()).addCost(jumpDistance.getCost(distance));
       }
     });
@@ -889,7 +891,7 @@ var extendUniverse = function(builder) {
     for (i = startIndex; i < limit; i++) {
       destination = nonHighSecSystems[i];
       distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
-      if (distance <= DISTANCE_LIMIT_LY) {
+      if (distance <= usedLimit) {
         cost = jumpDistance.getCost(distance);
         destination.addJump(JUMP_TYPE, source.getId()).addCost(cost);
         source.addJump(JUMP_TYPE, destination.getId()).addCost(cost);
