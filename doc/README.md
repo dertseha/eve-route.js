@@ -92,6 +92,6 @@ Life data from the cluster could also be introduced.
 Typically, a chain could look like this:
 BaseUniverse (containing the static cluster map information) ->
 UserUniverse (containing user specific data, such as jump bridges) ->
-LifeUniverse (containing life cluster data)
+LiveUniverse (containing live cluster data)
 
 (This under the assumption that user data changes less frequent than the life data.)

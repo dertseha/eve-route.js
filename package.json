@@ -1,6 +1,6 @@
 {
   "name": "eve-route",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Route calculator for EVE Online that considers any form of travel anywhere.",
   "author": {
     "name": "Christian Haas",
