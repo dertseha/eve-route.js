@@ -475,6 +475,8 @@ function Step(solarSystemId, location, enterCosts, continueCosts) {
   this.location = location;
   this.enterCosts = enterCosts.slice(0);
   this.continueCosts = continueCosts.slice(0);
+
+  this.key = this.solarSystemId.toString() + "@" + this.location.toString();
 }
 
 /**
@@ -490,7 +492,7 @@ Step.prototype.asFirstStep = function() {
  * @memberof! everoute.travel.Step.prototype
  */
 Step.prototype.getKey = function() {
-  return this.solarSystemId.toString() + "@" + this.location.toString();
+  return this.key;
 };
 
 /**
@@ -1062,6 +1064,7 @@ module.exports = TravelRuleset;
  * @memberof everoute.travel
  */
 module.exports = {
+  jumpDistance: _dereq_("./jumpDistance"),
   security: _dereq_("./security"),
   transitCount: _dereq_("./transitCount"),
 
@@ -1069,7 +1072,7 @@ module.exports = {
   TravelRuleset: _dereq_("./TravelRuleset")
 };
 
-},{"./NaturalOrderTravelRule":21,"./TravelRuleset":22,"./security":27,"./transitCount":29}],24:[function(_dereq_,module,exports){
+},{"./NaturalOrderTravelRule":21,"./TravelRuleset":22,"./jumpDistance":24,"./security":27,"./transitCount":29}],24:[function(_dereq_,module,exports){
 "use strict";
 
 var AddingTravelCost = _dereq_("../../AddingTravelCost");
