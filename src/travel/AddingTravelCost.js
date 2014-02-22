@@ -11,17 +11,20 @@
  * @param {Number} value the value
  */
 function AddingTravelCost(type, value) {
-  this.getType = function() {
-    return type;
-  };
-
-  this.getValue = function() {
-    return value;
-  };
-
-  this.join = function(other) {
-    return new AddingTravelCost(type, value + other.getValue());
-  };
+  this.type = type;
+  this.value = value;
 }
+
+AddingTravelCost.prototype.getType = function() {
+  return this.type;
+};
+
+AddingTravelCost.prototype.getValue = function() {
+  return this.value;
+};
+
+AddingTravelCost.prototype.join = function(other) {
+  return new AddingTravelCost(this.type, this.value + other.getValue());
+};
 
 module.exports = AddingTravelCost;

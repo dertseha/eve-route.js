@@ -13,6 +13,27 @@ var JumpBuilder = require("../travel/JumpBuilder");
 function SolarSystemExtension(data) {
 
   /**
+   * @return {Number} The unique ID for the solar system.
+   */
+  this.getId = function() {
+    return data.base.getId();
+  };
+
+  /**
+   * @return {Number} The galaxy ID of the solar system
+   */
+  this.getGalaxyId = function() {
+    return data.base.getGalaxyId();
+  };
+
+  /**
+   * @return {everoute.travel.Location} The location of the solar system in the universe.
+   */
+  this.getLocation = function() {
+    return data.base.getLocation();
+  };
+
+  /**
    * @return {Number} The security value of the solar system.
    */
   this.getSecurityValue = function() {

@@ -5,6 +5,7 @@
  * @memberof everoute.travel
  */
 module.exports = {
+  jumpDistance: require("./jumpDistance"),
   security: require("./security"),
   transitCount: require("./transitCount"),
 

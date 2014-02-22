@@ -5,6 +5,7 @@
  * @memberof everoute.travel
  */
 module.exports = {
+  jumpDrive: require("./jumpDrive"),
   jumpGate: require("./jumpGate"),
 
   CombiningTravelCapability: require("./CombiningTravelCapability"),

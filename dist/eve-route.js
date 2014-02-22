@@ -26,7 +26,7 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":18,"./universe":49,"./util":51}],2:[function(_dereq_,module,exports){
+},{"./travel":20,"./universe":52,"./util":54}],2:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -40,18 +40,21 @@ module.exports = {
  * @param {Number} value the value
  */
 function AddingTravelCost(type, value) {
-  this.getType = function() {
-    return type;
-  };
-
-  this.getValue = function() {
-    return value;
-  };
-
-  this.join = function(other) {
-    return new AddingTravelCost(type, value + other.getValue());
-  };
+  this.type = type;
+  this.value = value;
 }
+
+AddingTravelCost.prototype.getType = function() {
+  return this.type;
+};
+
+AddingTravelCost.prototype.getValue = function() {
+  return this.value;
+};
+
+AddingTravelCost.prototype.join = function(other) {
+  return new AddingTravelCost(this.type, this.value + other.getValue());
+};
 
 module.exports = AddingTravelCost;
 
@@ -83,6 +86,15 @@ AnyLocation.prototype.distanceTo = function(other) {
   return 0;
 };
 
+/**
+ * Singleton instance
+ *
+ * @const
+ * @type {everoute.travel.Location}
+ * @memberof! everoute.travel.AnyLocation
+ */
+AnyLocation.INSTANCE = new AnyLocation();
+
 module.exports = AnyLocation;
 
 },{}],4:[function(_dereq_,module,exports){
@@ -101,43 +113,52 @@ module.exports = AnyLocation;
  */
 function Jump(ofType, fromLocation, toSystemId, toLocation, costs) {
 
-  var jumpCosts = costs.slice(0);
-
-  /**
-   * @return {String} Type identifying how the jump is performed.
-   */
-  this.getType = function() {
-    return ofType;
-  };
-
-  /**
-   * @return {Number} Identifying the destination solar system.
-   */
-  this.getDestinationId = function() {
-    return toSystemId;
-  };
-
-  /**
-   * @param {everoute.travel.Location} Location within the source system.
-   */
-  this.getSourceLocation = function() {
-    return fromLocation;
-  };
-
-  /**
-   * @param {everoute.travel.Location} toLocation location within destination system.
-   */
-  this.getDestinationLocation = function() {
-    return toLocation;
-  };
-
-  /**
-   * @param {Array.<everoute.travel.TravelCost>} Array of costs involved with this jump
-   */
-  this.getCosts = function() {
-    return jumpCosts.slice(0);
-  };
+  this.ofType = ofType;
+  this.fromLocation = fromLocation;
+  this.toSystemId = toSystemId;
+  this.toLocation = toLocation;
+  this.jumpCosts = costs.slice(0);
 }
+
+/**
+ * @return {String} Type identifying how the jump is performed.
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getType = function() {
+  return this.ofType;
+};
+
+/**
+ * @return {Number} Identifying the destination solar system.
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getDestinationId = function() {
+  return this.toSystemId;
+};
+
+/**
+ * @param {everoute.travel.Location} Location within the source system.
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getSourceLocation = function() {
+  return this.fromLocation;
+};
+
+/**
+ * @param {everoute.travel.Location} toLocation location within destination system.
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getDestinationLocation = function() {
+  return this.toLocation;
+};
+
+/**
+ * @param {Array.<everoute.travel.TravelCost>} Array of costs involved with this jump
+ * @memberof! everoute.travel.Jump.prototype
+ */
+Jump.prototype.getCosts = function() {
+  return this.jumpCosts.slice(0);
+};
 
 module.exports = Jump;
 
@@ -156,58 +177,64 @@ var Jump = _dereq_("./Jump");
  * @param {Number} destinationId ID of the destination solar system
  */
 function JumpBuilder(jumpType, destinationId) {
-
-  var from = new AnyLocation();
-  var to = new AnyLocation();
-  var costs = [];
-
-  /**
-   * Builds a new jump instance, based on the current configured members.
-   *
-   * @return {everoute.travel.Jump} the built jump instance
-   */
-  this.build = function() {
-    return new Jump(jumpType, from, destinationId, to, costs);
-  };
-
-  /**
-   * The location in the source solar system where this jump is started.
-   * Defaults to AnyLocation.
-   *
-   * @param  {everoute.travel.Location} location the source location
-   * @return {everoute.travel.JumpBuilder} this instance
-   */
-  this.from = function(location) {
-    from = location;
-
-    return this;
-  };
-
-  /**
-   * The location in the destination solar system where this jump is landing.
-   * Defaults to AnyLocation.
-   *
-   * @param  {everoute.travel.Location} location the destination location
-   * @return {everoute.travel.JumpBuilder} this instance
-   */
-  this.to = function(location) {
-    to = location;
-
-    return this;
-  };
-
-  /**
-   * Adds another cost involved in this jump.
-   *
-   * @param  {everoute.travel.TravelCost} cost the extra cost
-   * @return {everoute.travel.JumpBuilder} this instance
-   */
-  this.addCost = function(cost) {
-    costs.push(cost);
-
-    return this;
-  };
+  this.jumpType = jumpType;
+  this.destinationId = destinationId;
+  this.fromLocation = AnyLocation.INSTANCE;
+  this.toLocation = AnyLocation.INSTANCE;
+  this.costs = [];
 }
+
+/**
+ * Builds a new jump instance, based on the current configured members.
+ *
+ * @return {everoute.travel.Jump} the built jump instance
+ * @memberof! everoute.travel.JumpBuilder.prototype
+ */
+JumpBuilder.prototype.build = function() {
+  return new Jump(this.jumpType, this.fromLocation, this.destinationId, this.toLocation, this.costs);
+};
+
+/**
+ * The location in the source solar system where this jump is started.
+ * Defaults to AnyLocation.
+ *
+ * @param  {everoute.travel.Location} location the source location
+ * @return {everoute.travel.JumpBuilder} this instance
+ * @memberof! everoute.travel.JumpBuilder.prototype
+ */
+JumpBuilder.prototype.from = function(location) {
+  this.fromLocation = location;
+
+  return this;
+};
+
+/**
+ * The location in the destination solar system where this jump is landing.
+ * Defaults to AnyLocation.
+ *
+ * @param  {everoute.travel.Location} location the destination location
+ * @return {everoute.travel.JumpBuilder} this instance
+ * @memberof! everoute.travel.JumpBuilder.prototype
+ */
+JumpBuilder.prototype.to = function(location) {
+  this.toLocation = location;
+
+  return this;
+};
+
+/**
+ * Adds another cost involved in this jump.
+ *
+ * @param  {everoute.travel.TravelCost} cost the extra cost
+ * @return {everoute.travel.JumpBuilder} this instance
+ * @memberof! everoute.travel.JumpBuilder.prototype
+ */
+JumpBuilder.prototype.addCost = function(cost) {
+  this.costs.push(cost);
+
+  return this;
+};
+
 
 module.exports = JumpBuilder;
 
@@ -448,6 +475,8 @@ function Step(solarSystemId, location, enterCosts, continueCosts) {
   this.location = location;
   this.enterCosts = enterCosts.slice(0);
   this.continueCosts = continueCosts.slice(0);
+
+  this.key = this.solarSystemId.toString() + "@" + this.location.toString();
 }
 
 /**
@@ -463,7 +492,7 @@ Step.prototype.asFirstStep = function() {
  * @memberof! everoute.travel.Step.prototype
  */
 Step.prototype.getKey = function() {
-  return this.solarSystemId.toString() + "@" + this.location.toString();
+  return this.key;
 };
 
 /**
@@ -714,13 +743,178 @@ module.exports = OptimizingTravelCapability;
  * @memberof everoute.travel
  */
 module.exports = {
+  jumpDrive: _dereq_("./jumpDrive"),
   jumpGate: _dereq_("./jumpGate"),
 
   CombiningTravelCapability: _dereq_("./CombiningTravelCapability"),
   OptimizingTravelCapability: _dereq_("./OptimizingTravelCapability")
 };
 
-},{"./CombiningTravelCapability":13,"./OptimizingTravelCapability":14,"./jumpGate":17}],16:[function(_dereq_,module,exports){
+},{"./CombiningTravelCapability":13,"./OptimizingTravelCapability":14,"./jumpDrive":17,"./jumpGate":19}],16:[function(_dereq_,module,exports){
+"use strict";
+
+var StepBuilder = _dereq_("../../StepBuilder");
+var jumpDistance = _dereq_("../../rules/jumpDistance");
+
+/**
+ * This capability uses jump drive jumps to get out of a system
+ *
+ * @constructor
+ * @implements {everoute.travel.capabilities.TravelCapability}
+ * @extends {everoute.travel.capabilities.TravelCapability}
+ * @param {everoute.universe.Universe} universe the universe to query
+ * @param {Number} distanceLimit amount of light years the capability can jump
+ * @memberof everoute.travel.capabilities.jumpDrive
+ */
+function JumpDriveTravelCapability(universe, distanceLimit) {
+
+  this.getNextPaths = function(path) {
+    var solarSystem = universe.getSolarSystem(path.getStep().getSolarSystemId());
+    var jumps = solarSystem.getJumps(JumpDriveTravelCapability.JUMP_TYPE);
+    var result = [];
+
+    jumps = jumps.filter(function(jump) {
+      var costs = jump.getCosts();
+
+      return costs.reduce(function(result, cost) {
+        return result && ((cost.getType() !== jumpDistance.COST_TYPE) || (cost.getValue() <= distanceLimit));
+      }, true);
+    });
+    jumps.forEach(function(jump) {
+      var destination = universe.getSolarSystem(jump.getDestinationId());
+      var builder = new StepBuilder(destination.getId()).withEnterCosts(jump.getCosts()).withContinueCosts(destination.getCosts());
+
+      result.push(path.extend(builder.build()));
+    });
+
+    return result;
+  };
+}
+
+JumpDriveTravelCapability.JUMP_TYPE = "jumpDrive";
+
+module.exports = JumpDriveTravelCapability;
+
+},{"../../StepBuilder":11,"../../rules/jumpDistance":24}],17:[function(_dereq_,module,exports){
+"use strict";
+
+var util = _dereq_("../../../util");
+var jumpDistance = _dereq_("../../rules/jumpDistance");
+
+var JumpDriveTravelCapability = _dereq_("./JumpDriveTravelCapability");
+
+/**
+ * This namespace contains helper regarding the jump drive travel capability.
+ *
+ * @namespace jumpDrive
+ * @memberof everoute.travel.capabilities
+ */
+
+/**
+ * The type identification for the jumps: "jumpDrive".
+ *
+ * @type {String}
+ * @const
+ * @memberof everoute.travel.capabilities.jumpDrive
+ */
+var JUMP_TYPE = JumpDriveTravelCapability.JUMP_TYPE;
+
+/**
+ * The maximum distance one can jump with a jump drive. As per http://wiki.eveonline.com/en/wiki/Jump_drive, this is
+ * based on a carrier (6.5) times 2.5 at maximum skill level - rounded up for paranoia.
+ *
+ * @type {Number}
+ * @const
+ * @memberof everoute.travel.capabilities.jumpDrive
+ */
+var DISTANCE_LIMIT_LY = 17.0;
+
+/**
+ * @param {everoute.universe.SolarSystemExtension} extension the solar system extension to check
+ * @return {Boolean} true if the given system is from the New Eden galaxy
+ */
+var isNewEdenSystem = function(extension) {
+  return extension.getGalaxyId() === util.constants.GALAXY_ID_NEW_EDEN;
+};
+
+/**
+ * @param {everoute.universe.SolarSystemExtension} extension the solar system extension to check
+ * @return {Boolean} true if the given system is a high sec system
+ */
+var isHighSecSystem = function(extension) {
+  return extension.getSecurityValue() >= 0.5;
+};
+
+/**
+ * Extends the given universe builder with jump drive jumps according to game rules.
+ * Jumps will only be possible in New Eden (Galaxy ID 9) and only be into non-high-sec systems.
+ *
+ * @param {everoute.universe.UniverseBuilder} builder The builder for extension.
+ * @memberof everoute.travel.capabilities.jumpDrive
+ */
+var extendUniverse = function(builder) {
+  var solarSystemIds = builder.getSolarSystemIds();
+  var highSecSystems = [];
+  var nonHighSecSystems = [];
+
+  solarSystemIds.forEach(function(id) {
+    var extension = builder.extendSolarSystem(id);
+
+    if (isNewEdenSystem(extension)) {
+      if (isHighSecSystem(extension)) {
+        highSecSystems.push(extension);
+      } else {
+        nonHighSecSystems.push(extension);
+      }
+    }
+  });
+
+  function createJumpsFromHighSec(source) {
+    nonHighSecSystems.forEach(function(destination) {
+      var distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
+
+      if (distance <= DISTANCE_LIMIT_LY) {
+        source.addJump(JUMP_TYPE, destination.getId()).addCost(jumpDistance.getCost(distance));
+      }
+    });
+  }
+
+  function createJumpsBetween(source, startIndex) {
+    var limit = nonHighSecSystems.length;
+    var destination;
+    var distance;
+    var cost;
+    var i;
+
+    for (i = startIndex; i < limit; i++) {
+      destination = nonHighSecSystems[i];
+      distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
+      if (distance <= DISTANCE_LIMIT_LY) {
+        cost = jumpDistance.getCost(distance);
+        destination.addJump(JUMP_TYPE, source.getId()).addCost(cost);
+        source.addJump(JUMP_TYPE, destination.getId()).addCost(cost);
+      }
+    }
+  }
+
+  highSecSystems.forEach(function(source) {
+    createJumpsFromHighSec(source);
+  });
+  nonHighSecSystems.forEach(function(source, index) {
+    createJumpsBetween(source, index + 1);
+  });
+};
+
+module.exports = {
+  JUMP_TYPE: JUMP_TYPE,
+  DISTANCE_LIMIT_LY: DISTANCE_LIMIT_LY,
+
+  JumpDriveTravelCapability: JumpDriveTravelCapability,
+
+  extendUniverse: extendUniverse
+};
+
+},{"../../../util":54,"../../rules/jumpDistance":24,"./JumpDriveTravelCapability":16}],18:[function(_dereq_,module,exports){
 "use strict";
 
 var StepBuilder = _dereq_("../../StepBuilder");
@@ -756,7 +950,7 @@ JumpGateTravelCapability.JUMP_TYPE = "jumpGate";
 
 module.exports = JumpGateTravelCapability;
 
-},{"../../StepBuilder":11}],17:[function(_dereq_,module,exports){
+},{"../../StepBuilder":11}],19:[function(_dereq_,module,exports){
 "use strict";
 
 var JumpGateTravelCapability = _dereq_("./JumpGateTravelCapability");
@@ -783,7 +977,7 @@ module.exports = {
   JumpGateTravelCapability: JumpGateTravelCapability
 };
 
-},{"./JumpGateTravelCapability":16}],18:[function(_dereq_,module,exports){
+},{"./JumpGateTravelCapability":18}],20:[function(_dereq_,module,exports){
 /**
  * This namespace contains entries regarding travel.
  *
@@ -808,7 +1002,7 @@ module.exports = {
   TravelCostSum: _dereq_("./TravelCostSum")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":21,"./search":40}],19:[function(_dereq_,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":23,"./search":43}],21:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -830,7 +1024,7 @@ function NaturalOrderTravelRule(nullCost) {
 
 module.exports = NaturalOrderTravelRule;
 
-},{}],20:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -862,7 +1056,7 @@ TravelRuleset.prototype.compare = function(sumA, sumB) {
 
 module.exports = TravelRuleset;
 
-},{}],21:[function(_dereq_,module,exports){
+},{}],23:[function(_dereq_,module,exports){
 /**
  * This namespace contains rules for travelling.
  *
@@ -870,6 +1064,7 @@ module.exports = TravelRuleset;
  * @memberof everoute.travel
  */
 module.exports = {
+  jumpDistance: _dereq_("./jumpDistance"),
   security: _dereq_("./security"),
   transitCount: _dereq_("./transitCount"),
 
@@ -877,7 +1072,57 @@ module.exports = {
   TravelRuleset: _dereq_("./TravelRuleset")
 };
 
-},{"./NaturalOrderTravelRule":19,"./TravelRuleset":20,"./security":24,"./transitCount":26}],22:[function(_dereq_,module,exports){
+},{"./NaturalOrderTravelRule":21,"./TravelRuleset":22,"./jumpDistance":24,"./security":27,"./transitCount":29}],24:[function(_dereq_,module,exports){
+"use strict";
+
+var AddingTravelCost = _dereq_("../../AddingTravelCost");
+var NaturalOrderTravelRule = _dereq_("../NaturalOrderTravelRule");
+
+/**
+ * This namespace contains helper regarding the jump distance rule. This
+ * rule is used to determine the distance of jump drive jumps.
+ *
+ * @namespace jumpDistance
+ * @memberof everoute.travel.rules
+ */
+
+/**
+ * The type identification used for cost: "jumpDistance".
+ *
+ * @type {String}
+ * @const
+ * @memberof everoute.travel.rules.jumpDistance
+ */
+var COST_TYPE = "jumpDistance";
+
+/**
+ * @param {Number} lightYears The distance in light years
+ * @return {everoute.travel.TravelCost} the cost representing the distance
+ * @memberof everoute.travel.rules.jumpDistance
+ */
+var getCost = function(lightYears) {
+  return new AddingTravelCost(COST_TYPE, lightYears);
+};
+
+/**
+ * Returns a rule that will search for the lowest jump distance - in effect,
+ * the path between a source and a destination that requires the least amount
+ * of jump fuel.
+ *
+ * @return {everoute.travel.rules.TravelRule} The rule intance.
+ * @memberof everoute.travel.rules.jumpDistance
+ */
+var getRule = function() {
+  return new NaturalOrderTravelRule(getCost(0));
+};
+
+module.exports = {
+  COST_TYPE: COST_TYPE,
+  getCost: getCost,
+  getRule: getRule
+};
+
+},{"../../AddingTravelCost":2,"../NaturalOrderTravelRule":21}],25:[function(_dereq_,module,exports){
 "use strict";
 
 var statics = _dereq_("./statics");
@@ -906,7 +1151,7 @@ function MaxSecurityTravelRule(limit) {
 
 module.exports = MaxSecurityTravelRule;
 
-},{"./statics":25}],23:[function(_dereq_,module,exports){
+},{"./statics":28}],26:[function(_dereq_,module,exports){
 "use strict";
 
 var statics = _dereq_("./statics");
@@ -935,7 +1180,7 @@ function MinSecurityTravelRule(limit) {
 
 module.exports = MinSecurityTravelRule;
 
-},{"./statics":25}],24:[function(_dereq_,module,exports){
+},{"./statics":28}],27:[function(_dereq_,module,exports){
 "use strict";
 
 var statics = _dereq_("./statics");
@@ -1000,7 +1245,7 @@ module.exports = {
   getTravelCostType: statics.getTravelCostType
 };
 
-},{"./MaxSecurityTravelRule":22,"./MinSecurityTravelRule":23,"./statics":25}],25:[function(_dereq_,module,exports){
+},{"./MaxSecurityTravelRule":25,"./MinSecurityTravelRule":26,"./statics":28}],28:[function(_dereq_,module,exports){
 "use strict";
 
 var AddingTravelCost = _dereq_("../../AddingTravelCost");
@@ -1072,7 +1317,7 @@ module.exports = {
   sumSecurityCosts: sumSecurityCosts
 };
 
-},{"../../AddingTravelCost":2}],26:[function(_dereq_,module,exports){
+},{"../../AddingTravelCost":2}],29:[function(_dereq_,module,exports){
 "use strict";
 
 var AddingTravelCost = _dereq_("../../AddingTravelCost");
@@ -1135,7 +1380,7 @@ module.exports = {
   getRule: getRule
 };
 
-},{"../../AddingTravelCost":2,"../NaturalOrderTravelRule":19}],27:[function(_dereq_,module,exports){
+},{"../../AddingTravelCost":2,"../NaturalOrderTravelRule":21}],30:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1178,7 +1423,7 @@ function CombiningSearchCriterion(criteria) {
 
 module.exports = CombiningSearchCriterion;
 
-},{}],28:[function(_dereq_,module,exports){
+},{}],31:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1208,7 +1453,7 @@ function CostAwareSearchCriterion(rule) {
 
 module.exports = CostAwareSearchCriterion;
 
-},{}],29:[function(_dereq_,module,exports){
+},{}],32:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1234,7 +1479,7 @@ function DestinationSystemSearchCriterion(systemId) {
 
 module.exports = DestinationSystemSearchCriterion;
 
-},{}],30:[function(_dereq_,module,exports){
+},{}],33:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1306,7 +1551,7 @@ function PathFinder(start, capability, criterion, collector) {
 
 module.exports = PathFinder;
 
-},{}],31:[function(_dereq_,module,exports){
+},{}],34:[function(_dereq_,module,exports){
 "use strict";
 
 var PathFinder = _dereq_("./PathFinder");
@@ -1474,7 +1719,7 @@ PathSearchAgent.prototype.completeQuery = function(listener, destinationKey) {
 
 module.exports = PathSearchAgent;
 
-},{"../PathContest":7,"../StaticPathContestProvider":9,"../capabilities/OptimizingTravelCapability":14,"./PathFinder":30}],32:[function(_dereq_,module,exports){
+},{"../PathContest":7,"../StaticPathContestProvider":9,"../capabilities/OptimizingTravelCapability":14,"./PathFinder":33}],35:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1559,7 +1804,7 @@ function Route(startPath, waypoints, destinationPath) {
 
 module.exports = Route;
 
-},{}],33:[function(_dereq_,module,exports){
+},{}],36:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1687,7 +1932,7 @@ RouteChromosomeSplicer.prototype.isWaypointIndexUsed = function(waypoints, index
 
 module.exports = RouteChromosomeSplicer;
 
-},{}],34:[function(_dereq_,module,exports){
+},{}],37:[function(_dereq_,module,exports){
 "use strict";
 
 var RouteChromosomeSplicer = _dereq_("./RouteChromosomeSplicer");
@@ -1846,7 +2091,7 @@ RouteFinder.prototype.createMutatedOffsprings = function(parent1, parent2, cross
 
 module.exports = RouteFinder;
 
-},{"./RouteChromosomeSplicer":33,"./RouteIncubator":36,"./RouteList":38}],35:[function(_dereq_,module,exports){
+},{"./RouteChromosomeSplicer":36,"./RouteIncubator":39,"./RouteList":41}],38:[function(_dereq_,module,exports){
 "use strict";
 
 var DefaultRandomizer = _dereq_("../../util/DefaultRandomizer");
@@ -1942,7 +2187,7 @@ function RouteFinderBuilder(capability, rule, startPaths, collector) {
 
 module.exports = RouteFinderBuilder;
 
-},{"../../util/DefaultRandomizer":50,"./RouteFinder":34}],36:[function(_dereq_,module,exports){
+},{"../../util/DefaultRandomizer":53,"./RouteFinder":37}],39:[function(_dereq_,module,exports){
 /* jshint maxparams:6 */
 "use strict";
 
@@ -2125,7 +2370,7 @@ RouteIncubator.prototype.dropCulture = function(culture) {
 
 module.exports = RouteIncubator;
 
-},{"../Path":6,"./PathFinder":30,"./PathSearchAgent":31,"./RouteIncubatorCulture":37}],37:[function(_dereq_,module,exports){
+},{"../Path":6,"./PathFinder":33,"./PathSearchAgent":34,"./RouteIncubatorCulture":40}],40:[function(_dereq_,module,exports){
 "use strict";
 
 var Route = _dereq_("./Route");
@@ -2186,7 +2431,7 @@ RouteIncubatorCulture.prototype.toRoute = function() {
 
 module.exports = RouteIncubatorCulture;
 
-},{"./Route":32}],38:[function(_dereq_,module,exports){
+},{"./Route":35}],41:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2265,7 +2510,7 @@ RouteList.prototype.limit = function(limit) {
 
 module.exports = RouteList;
 
-},{}],39:[function(_dereq_,module,exports){
+},{}],42:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2293,7 +2538,7 @@ function SystemAvoidingSearchCriterion(ignored) {
 
 module.exports = SystemAvoidingSearchCriterion;
 
-},{}],40:[function(_dereq_,module,exports){
+},{}],43:[function(_dereq_,module,exports){
 /**
  * This namespace contains logic for searching paths.
  *
@@ -2313,7 +2558,7 @@ module.exports = {
   RouteFinderBuilder: _dereq_("./RouteFinderBuilder")
 };
 
-},{"./CombiningSearchCriterion":27,"./CostAwareSearchCriterion":28,"./DestinationSystemSearchCriterion":29,"./PathFinder":30,"./Route":32,"./RouteChromosomeSplicer":33,"./RouteFinderBuilder":35,"./RouteIncubator":36,"./SystemAvoidingSearchCriterion":39}],41:[function(_dereq_,module,exports){
+},{"./CombiningSearchCriterion":30,"./CostAwareSearchCriterion":31,"./DestinationSystemSearchCriterion":32,"./PathFinder":33,"./Route":35,"./RouteChromosomeSplicer":36,"./RouteFinderBuilder":38,"./RouteIncubator":39,"./SystemAvoidingSearchCriterion":42}],44:[function(_dereq_,module,exports){
 "use strict";
 
 var Path = _dereq_("../travel/Path");
@@ -2399,7 +2644,7 @@ EmptySolarSystem.prototype.startPath = function() {
 
 module.exports = EmptySolarSystem;
 
-},{"../travel/Path":6,"../travel/StepBuilder":11}],42:[function(_dereq_,module,exports){
+},{"../travel/Path":6,"../travel/StepBuilder":11}],45:[function(_dereq_,module,exports){
 "use strict";
 
 var UniverseBuilder = _dereq_("./UniverseBuilder");
@@ -2435,7 +2680,7 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":47}],43:[function(_dereq_,module,exports){
+},{"./UniverseBuilder":50}],46:[function(_dereq_,module,exports){
 "use strict";
 
 var StepBuilder = _dereq_("../travel/StepBuilder");
@@ -2526,7 +2771,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{"../travel/StepBuilder":11}],44:[function(_dereq_,module,exports){
+},{"../travel/StepBuilder":11}],47:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2607,7 +2852,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":47}],45:[function(_dereq_,module,exports){
+},{"./UniverseBuilder":50}],48:[function(_dereq_,module,exports){
 "use strict";
 
 var JumpBuilder = _dereq_("../travel/JumpBuilder");
@@ -2621,6 +2866,27 @@ var JumpBuilder = _dereq_("../travel/JumpBuilder");
  * @memberof everoute.universe
  */
 function SolarSystemExtension(data) {
+
+  /**
+   * @return {Number} The unique ID for the solar system.
+   */
+  this.getId = function() {
+    return data.base.getId();
+  };
+
+  /**
+   * @return {Number} The galaxy ID of the solar system
+   */
+  this.getGalaxyId = function() {
+    return data.base.getGalaxyId();
+  };
+
+  /**
+   * @return {everoute.travel.Location} The location of the solar system in the universe.
+   */
+  this.getLocation = function() {
+    return data.base.getLocation();
+  };
 
   /**
    * @return {Number} The security value of the solar system.
@@ -2656,7 +2922,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],46:[function(_dereq_,module,exports){
+},{"../travel/JumpBuilder":5}],49:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2686,7 +2952,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],47:[function(_dereq_,module,exports){
+},{}],50:[function(_dereq_,module,exports){
 "use strict";
 
 var EmptySolarSystem = _dereq_("./EmptySolarSystem");
@@ -2799,7 +3065,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":41,"./ExtendedSolarSystem":43,"./ExtendedUniverse":44,"./SolarSystemExtension":45,"./SolarSystemExtensionData":46,"./UniverseExtensionData":48}],48:[function(_dereq_,module,exports){
+},{"./EmptySolarSystem":44,"./ExtendedSolarSystem":46,"./ExtendedUniverse":47,"./SolarSystemExtension":48,"./SolarSystemExtensionData":49,"./UniverseExtensionData":51}],51:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2825,7 +3091,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],49:[function(_dereq_,module,exports){
+},{}],52:[function(_dereq_,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -2845,7 +3111,7 @@ module.exports = {
   SolarSystemExtensionData: _dereq_("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":41,"./EmptyUniverse":42,"./ExtendedSolarSystem":43,"./ExtendedUniverse":44,"./SolarSystemExtension":45,"./SolarSystemExtensionData":46,"./UniverseBuilder":47,"./UniverseExtensionData":48}],50:[function(_dereq_,module,exports){
+},{"./EmptySolarSystem":44,"./EmptyUniverse":45,"./ExtendedSolarSystem":46,"./ExtendedUniverse":47,"./SolarSystemExtension":48,"./SolarSystemExtensionData":49,"./UniverseBuilder":50,"./UniverseExtensionData":51}],53:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2876,7 +3142,7 @@ DefaultRandomizer.prototype.getIndex = function(limit) {
 
 module.exports = DefaultRandomizer;
 
-},{}],51:[function(_dereq_,module,exports){
+},{}],54:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2911,6 +3177,6 @@ module.exports = {
   noop: noop
 };
 
-},{"./DefaultRandomizer":50}]},{},[1])
+},{"./DefaultRandomizer":53}]},{},[1])
 (1)
 });
