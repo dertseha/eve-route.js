@@ -88,6 +88,17 @@ describe("JumpDrive Index", function() {
 
       thenTheSolarSystemShouldNotHaveAJumpDriveJump(1);
     });
+
+    it("should add cost in light years to a jump", function() {
+      var lightYears = 2;
+      var distance = util.constants.METERS_PER_LY * lightYears;
+      givenASolarSystemInNewEden(1, 0.4, [0.0, 0.0, 0.0]);
+      givenASolarSystemInNewEden(2, 0.0, [distance, 0.0, 0.0]);
+
+      whenExtendingTheUniverse();
+
+      thenTheJumpFromSystemShouldHaveDistanceCost(1, lightYears);
+    });
   });
 
   function givenASolarSystemInNewEden(id, trueSec, position) {
@@ -126,5 +137,14 @@ describe("JumpDrive Index", function() {
     var jumps = solarSystem.getJumps(jumpDrive.JUMP_TYPE);
 
     expect(jumps.length).to.be.equal(0);
+  }
+
+  function thenTheJumpFromSystemShouldHaveDistanceCost(id, expected) {
+    var solarSystem = universe.getSolarSystem(id);
+    var jumps = solarSystem.getJumps(jumpDrive.JUMP_TYPE);
+    var cost = jumps[0].getCosts()[0];
+    var result = cost.getType() + "=" + cost.getValue();
+
+    expect(result).to.be.equal("jumpDistance=" + expected);
   }
 });

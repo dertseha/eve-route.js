@@ -26,7 +26,7 @@ module.exports = {
   newUniverseBuilder: newUniverseBuilder
 };
 
-},{"./travel":19,"./universe":50,"./util":52}],2:[function(_dereq_,module,exports){
+},{"./travel":19,"./universe":51,"./util":53}],2:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -40,18 +40,21 @@ module.exports = {
  * @param {Number} value the value
  */
 function AddingTravelCost(type, value) {
-  this.getType = function() {
-    return type;
-  };
-
-  this.getValue = function() {
-    return value;
-  };
-
-  this.join = function(other) {
-    return new AddingTravelCost(type, value + other.getValue());
-  };
+  this.type = type;
+  this.value = value;
 }
+
+AddingTravelCost.prototype.getType = function() {
+  return this.type;
+};
+
+AddingTravelCost.prototype.getValue = function() {
+  return this.value;
+};
+
+AddingTravelCost.prototype.join = function(other) {
+  return new AddingTravelCost(this.type, this.value + other.getValue());
+};
 
 module.exports = AddingTravelCost;
 
@@ -749,6 +752,7 @@ module.exports = {
 "use strict";
 
 var util = _dereq_("../../../util");
+var jumpDistance = _dereq_("../../rules/jumpDistance");
 
 /**
  * This namespace contains helper regarding the jump drive travel capability.
@@ -821,7 +825,7 @@ var extendUniverse = function(builder) {
       var distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
 
       if (distance <= DISTANCE_LIMIT_LY) {
-        source.addJump(JUMP_TYPE, destination.getId());
+        source.addJump(JUMP_TYPE, destination.getId()).addCost(jumpDistance.getCost(distance));
       }
     });
   }
@@ -829,15 +833,17 @@ var extendUniverse = function(builder) {
   function createJumpsBetween(source, startIndex) {
     var limit = nonHighSecSystems.length;
     var destination;
+    var distance;
+    var cost;
     var i;
 
     for (i = startIndex; i < limit; i++) {
       destination = nonHighSecSystems[i];
-      var distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
-
+      distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
       if (distance <= DISTANCE_LIMIT_LY) {
-        destination.addJump(JUMP_TYPE, source.getId());
-        source.addJump(JUMP_TYPE, destination.getId());
+        cost = jumpDistance.getCost(distance);
+        destination.addJump(JUMP_TYPE, source.getId()).addCost(cost);
+        source.addJump(JUMP_TYPE, destination.getId()).addCost(cost);
       }
     }
   }
@@ -857,7 +863,7 @@ module.exports = {
   extendUniverse: extendUniverse
 };
 
-},{"../../../util":52}],17:[function(_dereq_,module,exports){
+},{"../../../util":53,"../../rules/jumpDistance":23}],17:[function(_dereq_,module,exports){
 "use strict";
 
 var StepBuilder = _dereq_("../../StepBuilder");
@@ -945,7 +951,7 @@ module.exports = {
   TravelCostSum: _dereq_("./TravelCostSum")
 };
 
-},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":22,"./search":41}],20:[function(_dereq_,module,exports){
+},{"./AddingTravelCost":2,"./AnyLocation":3,"./Jump":4,"./JumpBuilder":5,"./Path":6,"./PathContest":7,"./SpecificLocation":8,"./StaticPathContestProvider":9,"./Step":10,"./StepBuilder":11,"./TravelCostSum":12,"./capabilities":15,"./rules":22,"./search":42}],20:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1014,7 +1020,57 @@ module.exports = {
   TravelRuleset: _dereq_("./TravelRuleset")
 };
 
-},{"./NaturalOrderTravelRule":20,"./TravelRuleset":21,"./security":25,"./transitCount":27}],23:[function(_dereq_,module,exports){
+},{"./NaturalOrderTravelRule":20,"./TravelRuleset":21,"./security":26,"./transitCount":28}],23:[function(_dereq_,module,exports){
+"use strict";
+
+var AddingTravelCost = _dereq_("../../AddingTravelCost");
+var NaturalOrderTravelRule = _dereq_("../NaturalOrderTravelRule");
+
+/**
+ * This namespace contains helper regarding the jump distance rule. This
+ * rule is used to determine the distance of jump drive jumps.
+ *
+ * @namespace jumpDistance
+ * @memberof everoute.travel.rules
+ */
+
+/**
+ * The type identification used for cost: "jumpDistance".
+ *
+ * @type {String}
+ * @const
+ * @memberof everoute.travel.rules.jumpDistance
+ */
+var COST_TYPE = "jumpDistance";
+
+/**
+ * @param {Number} lightYears The distance in light years
+ * @return {everoute.travel.TravelCost} the cost representing the distance
+ * @memberof everoute.travel.rules.jumpDistance
+ */
+var getCost = function(lightYears) {
+  return new AddingTravelCost(COST_TYPE, lightYears);
+};
+
+/**
+ * Returns a rule that will search for the lowest jump distance - in effect,
+ * the path between a source and a destination that requires the least amount
+ * of jump fuel.
+ *
+ * @return {everoute.travel.rules.TravelRule} The rule intance.
+ * @memberof everoute.travel.rules.jumpDistance
+ */
+var getRule = function() {
+  return new NaturalOrderTravelRule(getCost(0));
+};
+
+module.exports = {
+  COST_TYPE: COST_TYPE,
+  getCost: getCost,
+  getRule: getRule
+};
+
+},{"../../AddingTravelCost":2,"../NaturalOrderTravelRule":20}],24:[function(_dereq_,module,exports){
 "use strict";
 
 var statics = _dereq_("./statics");
@@ -1043,7 +1099,7 @@ function MaxSecurityTravelRule(limit) {
 
 module.exports = MaxSecurityTravelRule;
 
-},{"./statics":26}],24:[function(_dereq_,module,exports){
+},{"./statics":27}],25:[function(_dereq_,module,exports){
 "use strict";
 
 var statics = _dereq_("./statics");
@@ -1072,7 +1128,7 @@ function MinSecurityTravelRule(limit) {
 
 module.exports = MinSecurityTravelRule;
 
-},{"./statics":26}],25:[function(_dereq_,module,exports){
+},{"./statics":27}],26:[function(_dereq_,module,exports){
 "use strict";
 
 var statics = _dereq_("./statics");
@@ -1137,7 +1193,7 @@ module.exports = {
   getTravelCostType: statics.getTravelCostType
 };
 
-},{"./MaxSecurityTravelRule":23,"./MinSecurityTravelRule":24,"./statics":26}],26:[function(_dereq_,module,exports){
+},{"./MaxSecurityTravelRule":24,"./MinSecurityTravelRule":25,"./statics":27}],27:[function(_dereq_,module,exports){
 "use strict";
 
 var AddingTravelCost = _dereq_("../../AddingTravelCost");
@@ -1209,7 +1265,7 @@ module.exports = {
   sumSecurityCosts: sumSecurityCosts
 };
 
-},{"../../AddingTravelCost":2}],27:[function(_dereq_,module,exports){
+},{"../../AddingTravelCost":2}],28:[function(_dereq_,module,exports){
 "use strict";
 
 var AddingTravelCost = _dereq_("../../AddingTravelCost");
@@ -1272,7 +1328,7 @@ module.exports = {
   getRule: getRule
 };
 
-},{"../../AddingTravelCost":2,"../NaturalOrderTravelRule":20}],28:[function(_dereq_,module,exports){
+},{"../../AddingTravelCost":2,"../NaturalOrderTravelRule":20}],29:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1315,7 +1371,7 @@ function CombiningSearchCriterion(criteria) {
 
 module.exports = CombiningSearchCriterion;
 
-},{}],29:[function(_dereq_,module,exports){
+},{}],30:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1345,7 +1401,7 @@ function CostAwareSearchCriterion(rule) {
 
 module.exports = CostAwareSearchCriterion;
 
-},{}],30:[function(_dereq_,module,exports){
+},{}],31:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1371,7 +1427,7 @@ function DestinationSystemSearchCriterion(systemId) {
 
 module.exports = DestinationSystemSearchCriterion;
 
-},{}],31:[function(_dereq_,module,exports){
+},{}],32:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1443,7 +1499,7 @@ function PathFinder(start, capability, criterion, collector) {
 
 module.exports = PathFinder;
 
-},{}],32:[function(_dereq_,module,exports){
+},{}],33:[function(_dereq_,module,exports){
 "use strict";
 
 var PathFinder = _dereq_("./PathFinder");
@@ -1611,7 +1667,7 @@ PathSearchAgent.prototype.completeQuery = function(listener, destinationKey) {
 
 module.exports = PathSearchAgent;
 
-},{"../PathContest":7,"../StaticPathContestProvider":9,"../capabilities/OptimizingTravelCapability":14,"./PathFinder":31}],33:[function(_dereq_,module,exports){
+},{"../PathContest":7,"../StaticPathContestProvider":9,"../capabilities/OptimizingTravelCapability":14,"./PathFinder":32}],34:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1696,7 +1752,7 @@ function Route(startPath, waypoints, destinationPath) {
 
 module.exports = Route;
 
-},{}],34:[function(_dereq_,module,exports){
+},{}],35:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -1824,7 +1880,7 @@ RouteChromosomeSplicer.prototype.isWaypointIndexUsed = function(waypoints, index
 
 module.exports = RouteChromosomeSplicer;
 
-},{}],35:[function(_dereq_,module,exports){
+},{}],36:[function(_dereq_,module,exports){
 "use strict";
 
 var RouteChromosomeSplicer = _dereq_("./RouteChromosomeSplicer");
@@ -1983,7 +2039,7 @@ RouteFinder.prototype.createMutatedOffsprings = function(parent1, parent2, cross
 
 module.exports = RouteFinder;
 
-},{"./RouteChromosomeSplicer":34,"./RouteIncubator":37,"./RouteList":39}],36:[function(_dereq_,module,exports){
+},{"./RouteChromosomeSplicer":35,"./RouteIncubator":38,"./RouteList":40}],37:[function(_dereq_,module,exports){
 "use strict";
 
 var DefaultRandomizer = _dereq_("../../util/DefaultRandomizer");
@@ -2079,7 +2135,7 @@ function RouteFinderBuilder(capability, rule, startPaths, collector) {
 
 module.exports = RouteFinderBuilder;
 
-},{"../../util/DefaultRandomizer":51,"./RouteFinder":35}],37:[function(_dereq_,module,exports){
+},{"../../util/DefaultRandomizer":52,"./RouteFinder":36}],38:[function(_dereq_,module,exports){
 /* jshint maxparams:6 */
 "use strict";
 
@@ -2262,7 +2318,7 @@ RouteIncubator.prototype.dropCulture = function(culture) {
 
 module.exports = RouteIncubator;
 
-},{"../Path":6,"./PathFinder":31,"./PathSearchAgent":32,"./RouteIncubatorCulture":38}],38:[function(_dereq_,module,exports){
+},{"../Path":6,"./PathFinder":32,"./PathSearchAgent":33,"./RouteIncubatorCulture":39}],39:[function(_dereq_,module,exports){
 "use strict";
 
 var Route = _dereq_("./Route");
@@ -2323,7 +2379,7 @@ RouteIncubatorCulture.prototype.toRoute = function() {
 
 module.exports = RouteIncubatorCulture;
 
-},{"./Route":33}],39:[function(_dereq_,module,exports){
+},{"./Route":34}],40:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2402,7 +2458,7 @@ RouteList.prototype.limit = function(limit) {
 
 module.exports = RouteList;
 
-},{}],40:[function(_dereq_,module,exports){
+},{}],41:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2430,7 +2486,7 @@ function SystemAvoidingSearchCriterion(ignored) {
 
 module.exports = SystemAvoidingSearchCriterion;
 
-},{}],41:[function(_dereq_,module,exports){
+},{}],42:[function(_dereq_,module,exports){
 /**
  * This namespace contains logic for searching paths.
  *
@@ -2450,7 +2506,7 @@ module.exports = {
   RouteFinderBuilder: _dereq_("./RouteFinderBuilder")
 };
 
-},{"./CombiningSearchCriterion":28,"./CostAwareSearchCriterion":29,"./DestinationSystemSearchCriterion":30,"./PathFinder":31,"./Route":33,"./RouteChromosomeSplicer":34,"./RouteFinderBuilder":36,"./RouteIncubator":37,"./SystemAvoidingSearchCriterion":40}],42:[function(_dereq_,module,exports){
+},{"./CombiningSearchCriterion":29,"./CostAwareSearchCriterion":30,"./DestinationSystemSearchCriterion":31,"./PathFinder":32,"./Route":34,"./RouteChromosomeSplicer":35,"./RouteFinderBuilder":37,"./RouteIncubator":38,"./SystemAvoidingSearchCriterion":41}],43:[function(_dereq_,module,exports){
 "use strict";
 
 var Path = _dereq_("../travel/Path");
@@ -2536,7 +2592,7 @@ EmptySolarSystem.prototype.startPath = function() {
 
 module.exports = EmptySolarSystem;
 
-},{"../travel/Path":6,"../travel/StepBuilder":11}],43:[function(_dereq_,module,exports){
+},{"../travel/Path":6,"../travel/StepBuilder":11}],44:[function(_dereq_,module,exports){
 "use strict";
 
 var UniverseBuilder = _dereq_("./UniverseBuilder");
@@ -2572,7 +2628,7 @@ EmptyUniverse.prototype.getSolarSystemIds = function() {
 
 module.exports = EmptyUniverse;
 
-},{"./UniverseBuilder":48}],44:[function(_dereq_,module,exports){
+},{"./UniverseBuilder":49}],45:[function(_dereq_,module,exports){
 "use strict";
 
 var StepBuilder = _dereq_("../travel/StepBuilder");
@@ -2663,7 +2719,7 @@ function ExtendedSolarSystem(data) {
 
 module.exports = ExtendedSolarSystem;
 
-},{"../travel/StepBuilder":11}],45:[function(_dereq_,module,exports){
+},{"../travel/StepBuilder":11}],46:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2744,7 +2800,7 @@ ExtendedUniverse.prototype.extend = function() {
 
 module.exports = ExtendedUniverse;
 
-},{"./UniverseBuilder":48}],46:[function(_dereq_,module,exports){
+},{"./UniverseBuilder":49}],47:[function(_dereq_,module,exports){
 "use strict";
 
 var JumpBuilder = _dereq_("../travel/JumpBuilder");
@@ -2814,7 +2870,7 @@ function SolarSystemExtension(data) {
 
 module.exports = SolarSystemExtension;
 
-},{"../travel/JumpBuilder":5}],47:[function(_dereq_,module,exports){
+},{"../travel/JumpBuilder":5}],48:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2844,7 +2900,7 @@ function SolarSystemExtensionData(baseSystem) {
 
 module.exports = SolarSystemExtensionData;
 
-},{}],48:[function(_dereq_,module,exports){
+},{}],49:[function(_dereq_,module,exports){
 "use strict";
 
 var EmptySolarSystem = _dereq_("./EmptySolarSystem");
@@ -2957,7 +3013,7 @@ function UniverseBuilder(base) {
 
 module.exports = UniverseBuilder;
 
-},{"./EmptySolarSystem":42,"./ExtendedSolarSystem":44,"./ExtendedUniverse":45,"./SolarSystemExtension":46,"./SolarSystemExtensionData":47,"./UniverseExtensionData":49}],49:[function(_dereq_,module,exports){
+},{"./EmptySolarSystem":43,"./ExtendedSolarSystem":45,"./ExtendedUniverse":46,"./SolarSystemExtension":47,"./SolarSystemExtensionData":48,"./UniverseExtensionData":50}],50:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -2983,7 +3039,7 @@ function UniverseExtensionData(base) {
 
 module.exports = UniverseExtensionData;
 
-},{}],50:[function(_dereq_,module,exports){
+},{}],51:[function(_dereq_,module,exports){
 /**
  * This namespace contains objects regarding the respresentation of things
  * in the universe.
@@ -3003,7 +3059,7 @@ module.exports = {
   SolarSystemExtensionData: _dereq_("./SolarSystemExtensionData")
 };
 
-},{"./EmptySolarSystem":42,"./EmptyUniverse":43,"./ExtendedSolarSystem":44,"./ExtendedUniverse":45,"./SolarSystemExtension":46,"./SolarSystemExtensionData":47,"./UniverseBuilder":48,"./UniverseExtensionData":49}],51:[function(_dereq_,module,exports){
+},{"./EmptySolarSystem":43,"./EmptyUniverse":44,"./ExtendedSolarSystem":45,"./ExtendedUniverse":46,"./SolarSystemExtension":47,"./SolarSystemExtensionData":48,"./UniverseBuilder":49,"./UniverseExtensionData":50}],52:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -3034,7 +3090,7 @@ DefaultRandomizer.prototype.getIndex = function(limit) {
 
 module.exports = DefaultRandomizer;
 
-},{}],52:[function(_dereq_,module,exports){
+},{}],53:[function(_dereq_,module,exports){
 "use strict";
 
 /**
@@ -3069,6 +3125,6 @@ module.exports = {
   noop: noop
 };
 
-},{"./DefaultRandomizer":51}]},{},[1])
+},{"./DefaultRandomizer":52}]},{},[1])
 (1)
 });

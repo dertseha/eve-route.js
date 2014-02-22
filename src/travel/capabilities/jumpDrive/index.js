@@ -1,6 +1,7 @@
 "use strict";
 
 var util = require("../../../util");
+var jumpDistance = require("../../rules/jumpDistance");
 
 /**
  * This namespace contains helper regarding the jump drive travel capability.
@@ -73,7 +74,7 @@ var extendUniverse = function(builder) {
       var distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
 
       if (distance <= DISTANCE_LIMIT_LY) {
-        source.addJump(JUMP_TYPE, destination.getId());
+        source.addJump(JUMP_TYPE, destination.getId()).addCost(jumpDistance.getCost(distance));
       }
     });
   }
@@ -81,15 +82,17 @@ var extendUniverse = function(builder) {
   function createJumpsBetween(source, startIndex) {
     var limit = nonHighSecSystems.length;
     var destination;
+    var distance;
+    var cost;
     var i;
 
     for (i = startIndex; i < limit; i++) {
       destination = nonHighSecSystems[i];
-      var distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
-
+      distance = source.getLocation().distanceTo(destination.getLocation()) / util.constants.METERS_PER_LY;
       if (distance <= DISTANCE_LIMIT_LY) {
-        destination.addJump(JUMP_TYPE, source.getId());
-        source.addJump(JUMP_TYPE, destination.getId());
+        cost = jumpDistance.getCost(distance);
+        destination.addJump(JUMP_TYPE, source.getId()).addCost(cost);
+        source.addJump(JUMP_TYPE, destination.getId()).addCost(cost);
       }
     }
   }
