@@ -1,4 +1,7 @@
 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coveralls Status][coveralls-image]][coveralls-url] [![Dependency Status][depstat-image]][depstat-url]
+
+**This project is discontinued. It has been superseded by [everoute](https://github.com/dertseha/everoute), an implementation in Go. Should someone find reuse of this library, I'd be happy about a reference.**
+
 ## EVE-Route.js
 
 This JavaScript library provides a route calculator and optimizer for ship travel in [EVE Online](https://www.eveonline.com/).
